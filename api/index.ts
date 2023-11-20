@@ -10,10 +10,11 @@ const backendAxiosInstance = axios.create({
 });
 
 // Users Endpoints
-import { _getMe } from "./services/users";
+import { _getMe, _registerUser } from "./services/users";
 
 const usersService = {
-    getMe: _getMe
+    getMe: _getMe,
+    registerUser: _registerUser,
 };
 
 export { usersService };
