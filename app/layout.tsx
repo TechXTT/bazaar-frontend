@@ -2,6 +2,7 @@ import Script from "next/script";
 import Navigation from "./components/navbar";
 import "./globals.css";
 import { Inter } from "next/font/google";
+import ReduxProvider from "./components/redux";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,8 +33,12 @@ export default function RootLayout({
 				<link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any"></link>
 			</head>
       <body className="bg-[#182628]">
-        <Navigation />
-        {children}
+      <ReduxProvider>
+            <Navigation />
+            <div className="ml-20">
+            {children}
+            </div>
+      </ReduxProvider>
       </body>
     </html>
   );

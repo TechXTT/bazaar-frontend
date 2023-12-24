@@ -8,6 +8,11 @@ interface IRegisterUser {
     confirmPassword: string;
 }
 
+interface ILoginUser {
+    email: string;
+    password: string;
+}
+
 export const validatePassword = (password: string): boolean => {
     if (!password) {
         return false;
@@ -31,5 +36,11 @@ export const validateRegisterUser = (user: IRegisterUser) => {
     if (!user.password) return ERRORS.PASSWORD_REQUIRED;
     if (user.password !== user.confirmPassword) return ERRORS.PASSWORDS_NOT_MATCH;
     if (!validatePassword(user.password)) return ERRORS.PASSWORD_INVALID;
+    return null;
+}
+
+export const validateLoginUser = (user: ILoginUser) => {
+    if (!user.email) return ERRORS.EMAIL_REQUIRED;
+    if (!user.password) return ERRORS.PASSWORD_REQUIRED;
     return null;
 }
