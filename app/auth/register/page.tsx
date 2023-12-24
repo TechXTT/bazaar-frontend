@@ -52,12 +52,12 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center md:justify-center px-6 mx-auto md:h-screen py-20 md:py-0">
-      <div className="w-full bg-[#324B4E] rounded-lg shadow md:mt-0 sm:max-w-md p-6 space-y-2 md:space-y-4 sm:p-8">
+    <div className="flex flex-col items-center md:justify-center px-4 mx-auto md:h-screen py-20 md:py-0">
+      <div className="w-full bg-[#324B4E] rounded-lg shadow md:mt-0 sm:max-w-md p-4 space-y-2 md:space-y-4 sm:p-8">
         <h1 className="text-2xl font-bold leading-tight tracking-tight md:text-2xl">
           Register
         </h1>
-        <form onSubmit={handleSubmit} className="space-y-2 md:space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-1 md:space-y-2">
           <div className="flex flex-col">
             <label htmlFor="firstName" className="mb-2 font-medium">
               First name:
@@ -121,12 +121,14 @@ const RegisterPage = () => {
               className="text-[#182628] sm:text-sm rounded-lg block py-2.5 px-6"
             />
           </div>
+          <div className="flex flex-col">
           <button
             type="submit"
-            className="w-full text-white bg-[#182628] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-xl px-5 py-2.5 text-center"
+            className="w-full mt-2 text-white bg-[#182628] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-xl block py-2.5 text-center"
           >
             Sign in
           </button>
+          </div>
           <p className="text-sm font-light text-gray-500">
             Already have an account?{" "}
             <a
