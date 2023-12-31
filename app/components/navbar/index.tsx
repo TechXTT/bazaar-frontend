@@ -4,15 +4,42 @@ import Link from "next/link";
 
 import { TbMenu2 } from "react-icons/tb";
 import { useEffect, useRef, useState } from "react";
+import { connect } from "react-redux";
+import { usersService } from "@/api";
+import { useAppDispatch } from "@/redux/store";
+import { logout, setUser } from "@/redux/slices/auth-slice";
+import { FaUser, FaShoppingCart } from "react-icons/fa";
 
-const LINKS = [
+const MAIN_LINKS = [
   {
     href: "/",
     title: "Начало",
   },
   {
+    href: "/stores",
+    title: "Магазини",
+  }
+];
+
+const UNAUTH_LINKS = [
+  {
+    href: "/auth/login",
+    title: "Вход",
+  },
+  {
     href: "/auth/register",
     title: "Регистрация",
+  },
+];
+
+const AUTH_LINKS = [
+  {
+    href: "/auth/logout",
+    title: "Акаунт",
+  },
+  {
+    href: "/cart",
+    title: "Количка",
   }
 ];
 
@@ -31,25 +58,86 @@ const Linky = ({ href, children }: { href: string; children: string }) => {
   );
 };
 
-const Navigation = () => {
+const Navigation = (props:any) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const [links, setLinks] = useState<any>(null);
+
+  const [jwt, setJwt] = useState<any>(null);
+
+  const dispatch = useAppDispatch();
 
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const mobileButtonRef = useRef<HTMLButtonElement>(null);
 
-  const handleScroll = () => {
-    const offset = window.scrollY;
-    if (offset > 50) {
-      setScrolled(true);
-    } else {
-      setScrolled(false);
-    }
-  };
+  const [accounts, setAccounts] = useState<any[]>([]);
+
+  // const handleScroll = (event: any) => {
+  //   if (event.wheel.target.layerY) {
+  //     setScrolled(true);
+  //   } else {
+  //     setScrolled(false);
+  //   }
+  // };
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
+    // window.addEventListener("wheel", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (props.auth.jwt && props.auth.jwt !== jwt) {
+      setJwt(props.auth.jwt);
+    }
+  }, [props.auth.jwt]);
+
+  useEffect(() => {
+    const auth = async () => {
+      try {
+        const res = await usersService.getMe(props.auth.jwt);
+        console.log('res', res)
+        if (res.status === 200) {
+          setLinks(AUTH_LINKS);
+          dispatch(setUser(res.data));
+
+        } else {
+          setLinks(UNAUTH_LINKS);
+          dispatch(logout())
+        }
+      } catch (error) {
+        setLinks(UNAUTH_LINKS);
+          dispatch(logout())
+    }
+    }
+    
+    if (props.auth.jwt && props.auth.isLoggedIn) {
+      auth();
+    } else {
+      setLinks(UNAUTH_LINKS);
+      dispatch(logout())
+    }
+  }, [jwt]);
+
+  useEffect(() => {
+    const fetchAccounts = async () => {
+    if (props.auth.jwt) {
+      if (window.ethereum) {
+        try {
+          const accounts: any = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          setAccounts(accounts);
+          console.log('accounts', accounts)
+        } catch (error: any) {
+          if (error.code === 4001) {
+            // User rejected request
+            console.error('Please connect to MetaMask.');
+          }
+      }
+    }
+  }
+}
+
+    fetchAccounts();
+}, [links]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -141,7 +229,6 @@ const Navigation = () => {
             </Link>
           </div>
           <div className="flex w-full items-center justify-between px-4">
-            <div>
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 id="navbarToggler"
@@ -155,12 +242,14 @@ const Navigation = () => {
                 id="navbarCollapse"
                 ref={mobileMenuRef}
                 className={
-                  `absolute right-4 top-full w-full max-w-[250px] rounded-lg bg-bg-color shadow-lg lg:static lg:block lg:w-full lg:max-w-full lg:bg-transparent py-3 lg:py-0 lg:px-4 lg:shadow-none xl:px-6` +
+                  ` right-4 top-full w-full max-w-[250px] rounded-lg bg-bg-color shadow-lg lg:static lg:block lg:w-full lg:max-w-full lg:bg-transparent py-3 lg:py-0 lg:px-4 lg:shadow-none xl:px-6` +
                   (mobileOpen ? " block" : " hidden")
                 }
               >
-                <ul className="block lg:flex">
-                  {LINKS.map((link) => (
+                <ul className={`block lg:flex place-content-between ${mobileOpen ? 'flex-col' : 'flex-row'}`}>
+                  
+                  <div className={`flex ${mobileOpen ? 'flex-col' : 'flex-row'} items-end justify-items-end`}>
+                  {MAIN_LINKS.map((link: any) => (
                     <li
                       className="group relative"
                       onClick={() => setMobileOpen(false)}
@@ -169,14 +258,82 @@ const Navigation = () => {
                       <Linky href={link.href}>{link.title}</Linky>
                     </li>
                   ))}
+                  </div>
+                  <div className={`flex ${mobileOpen ? 'flex-col items-end' : 'flex-row'}`}>
+                  {props.auth.isLoggedIn && links ? links.map((link: any) => (
+                    <li
+                      className={`${(link.title == 'Акаунт' || link.title == 'Количка') && !mobileOpen ? 'rounded-full ml-4 flex mt-5 mb-4 p-1.5 bg-[#151f20]' : ''} group relative`}
+                      onClick={() => setMobileOpen(false)}
+                      key={link.title}
+                    >
+                      {/* <Linky href={link.href}>{link.title}</Linky> */}
+                      {link.title == 'Акаунт' && !mobileOpen ? (
+                        <div className="rounded-full">
+                          <FaUser 
+                            className=""
+                            size={28}
+                            onClick={() => {
+                              window.location.href = `/users/${props.auth.user?.ID}`;
+                            }}
+                          />
+                        </div>
+                      ): link.title == 'Количка' && !mobileOpen ? (
+                        <div className="rounded-full">
+                          <FaShoppingCart 
+                            className=""
+                            size={28}
+                            onClick={() => {
+                              window.location.href = `/cart`;
+                            }}
+                          />
+                        </div>
+                      ):
+                      (<Linky href={link.href}>{link.title}</Linky>)}
+                    </li>
+                  )) : props.auth.isLoggedIn ? AUTH_LINKS.map((link: any) => (
+                    <li
+                      className={`${link.title == 'Акаунт' ? 'rounded-full  mt-5 mb-4 p-1.5 bg-[#151f20]' : ''} group relative`}
+                      onClick={() => setMobileOpen(false)}
+                      key={link.title}
+                    >
+                      {/* <Linky href={link.href}>{link.title}</Linky> */}
+                      {link.title == 'Акаунт' ? (
+                        <div className="rounded-full">
+                          <FaUser 
+                            className=""
+                            size={28}
+                            onClick={() => {
+                              window.location.href = `/users/${props.auth.user?.ID}`;
+                            }}
+                          />
+                        </div>
+                      ):
+                      (<Linky href={link.href}>{link.title}</Linky>)}
+                    </li>
+                  )) : UNAUTH_LINKS.map((link: any) => (
+                    <li
+                      className="group relative"
+                      onClick={() => setMobileOpen(false)}
+                      key={link.title}
+                    >
+                      <Linky href={link.href}>{link.title}</Linky>
+                    </li>
+                  ))}
+
+                  </div>
                 </ul>
               </nav>
             </div>
-          </div>
         </div>
       </div>
     </header>
   );
 };
 
-export default Navigation;
+const mapStateToProps = (state: any) => {
+  return {
+    auth: state.auth,
+  };
+}
+
+export default connect(mapStateToProps)(Navigation);
