@@ -14,3 +14,17 @@ export interface IProduct {
     StoreID: UUID;
     Store: IStore;
 }
+
+export interface IOrder {
+    CreatedAt: string;
+    UpdatedAt: string;
+    DeletedAt: string | null;
+    ID: UUID;
+    BuyerID: UUID;
+    ProductID: UUID;
+    Product: IProduct;
+    Quantity: number;
+    Total: number;
+    Status: string;
+    TxHash: string | null;
+}
