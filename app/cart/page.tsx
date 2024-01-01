@@ -1,13 +1,33 @@
 "use client";
 
 import backendAxiosInstance from "@/api";
+import { ABI } from "@/escrow_abi";
+import { clearCart } from "@/redux/slices/auth-slice";
+import { useSDK } from "@metamask/sdk-react";
 import { AxiosResponse } from "axios";
-import { encodeBytes32String } from "ethers";
-import { connect } from "react-redux";
+import { BrowserProvider, ethers, parseEther } from "ethers";
+import { useState } from "react";
+import { connect, useDispatch } from "react-redux";
 const bytes32 = require('bytes32');
 
 const CartPage = (props: any) => {
+  const dispatch = useDispatch();
+  const [account, setAccount] = useState("");
+  let orderIds: {id: string, owner_address: string}[] = [];
+	const { sdk, connected, connecting, chainId } = useSDK();
+
   const handleCheckout = async () => {
+    if (!connected) {
+      try {
+        const accounts = await sdk?.connect();
+        if (accounts){
+          //@ts-ignore
+          setAccount(accounts?.[0]);
+        }
+        } catch(err) {
+        console.warn(`failed to connect..`, err);
+        }
+    }
     const createdAt = new Date().toISOString();
     const response: AxiosResponse<string[]> = await backendAxiosInstance.post(
       `/api/products/orders`,
@@ -27,7 +47,7 @@ const CartPage = (props: any) => {
     );
 
     if (response.status === 201) {
-      response.data.forEach((message: string) => {
+      response.data.forEach((resp: any) => {
 
         const messageToBytes32 = (message: string): string => {
             const cleanedUuid = message.replace(/-/g, "");
@@ -39,8 +59,23 @@ const CartPage = (props: any) => {
             return bytes32Uuid;
         }
         
-        console.log("orderId", messageToBytes32(message));
+        console.log("orderId", messageToBytes32(resp.id));
+        orderIds.push({id: messageToBytes32(resp.id), owner_address: resp.owner_address});
       });
+      //@ts-ignore
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const escrow = new ethers.Contract('0x254De371451A1552637A81068e0573193521214D', ABI, signer);
+      orderIds.forEach(async (orderId, index) => {
+        try{const value = parseEther(props.auth.cart.products[index].Price * props.auth.cart.products[index].Quantity /10 ** 4 + "")
+        const result = await escrow.createOrder(orderId.id, orderId.owner_address, 120, {value: value})
+        console.log("result", result);
+        dispatch(clearCart());
+      }
+        catch(err) {
+          console.log("err", err);
+        }
+      })
     }
   };
 
@@ -75,8 +110,9 @@ const CartPage = (props: any) => {
         </div>
 
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-[#151f20] text-white font-bold py-2 rounded"
           onClick={handleCheckout}
+          disabled={connected ? false : true}
         >
           Checkout
         </button>

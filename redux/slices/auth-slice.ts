@@ -45,9 +45,12 @@ export const authSlice = createSlice({
     addItemsToCart: (state: AuthState, action: ICartPayload) => {
       state.cart = action.payload;
     },
+    clearCart: (state: AuthState) => {
+      state.cart = {products: [], total: 0};
+    }
   },
 });
 
-export const { login, logout, setUser, addItemsToCart } = authSlice.actions;
+export const { login, logout, setUser, addItemsToCart, clearCart } = authSlice.actions;
 
 export default authSlice.reducer;
