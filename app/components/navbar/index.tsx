@@ -9,6 +9,7 @@ import { usersService } from "@/api";
 import { useAppDispatch } from "@/redux/store";
 import { logout, setUser } from "@/redux/slices/auth-slice";
 import { FaUser, FaShoppingCart } from "react-icons/fa";
+import { useSDK } from "@metamask/sdk-react";
 
 const buttonStyles = {
   borderRadius: "6px",
@@ -87,9 +88,21 @@ const Navigation = (props: any) => {
 
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const mobileButtonRef = useRef<HTMLButtonElement>(null);
+  
+  const [account, setAccount] = useState<string>();
+	const { sdk, connected, connecting, provider, chainId } = useSDK();
 
-  const [accounts, setAccounts] = useState<any[]>([]);
-
+	const connectMetaMask = async () => {
+	  try {
+		const accounts = await sdk?.connect();
+		if (accounts){
+			//@ts-ignore
+		  setAccount(accounts?.[0]);
+		}
+	  } catch(err) {
+		console.warn(`failed to connect..`, err);
+	  }
+	};
   // const handleScroll = (event: any) => {
   //   if (event.wheel.target.layerY) {
   //     setScrolled(true);
@@ -302,7 +315,10 @@ const Navigation = (props: any) => {
                                 />
                               </div>
                             ) : link.title == "Wallet" && !mobileOpen ? (
-                              <></>
+                              <>
+        <button style={{ paddingLeft: 10, paddingRight: 10 }} disabled={true} onClick={connectMetaMask}>
+        {connected ? "Connected" : "Connect"}
+      </button></>
                             ) : (
                               <Linky href={link.href}>{link.title}</Linky>
                             )}
