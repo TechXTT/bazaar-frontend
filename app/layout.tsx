@@ -5,6 +5,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import ReduxProvider from "./components/redux";
 import { MetaMaskProvider } from '@metamask/sdk-react';
+import { CONFIG } from "@/config/config";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,14 +33,13 @@ export default function RootLayout({
 						gtag('config', 'G-1H1H1CR559');
 					`}
 				</Script>
-				<link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any"></link>
 			</head>
       <body className="bg-[#182628]">
       <ReduxProvider>
         <MetaMaskProvider debug={true} sdkOptions={{
           dappMetadata: {
             name: 'The Bazaar',
-            url: 'http://localhost:3000',
+            url: CONFIG.CURRENT_URL,
           }
         }}>
             <Navigation />
