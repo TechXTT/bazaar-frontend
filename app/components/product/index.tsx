@@ -10,9 +10,8 @@ const ProductCard = (props: any) => {
     const dispatch = useAppDispatch();
 
     const handleAddToCart = () => {
-        console.log('props', props)
         if (props.auth.isLoggedIn && props.auth.cart !== null) {
-            let products = [...props.auth.cart.products];
+            let products = JSON.parse(JSON.stringify(props.auth.cart.products));
             const total = props.auth.cart.total + product.Price;
             if (products.length > 0) {
                 const productIndex = products.findIndex((p: IProduct) => p.ID === product.ID);
