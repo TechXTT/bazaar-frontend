@@ -74,8 +74,7 @@ const Checkout = (props: any) => {
         try {
           const value = parseEther(
             (props.auth.cart.products[index].Price *
-              props.auth.cart.products[index].Quantity) /
-              10 ** 4 +
+              props.auth.cart.products[index].Quantity) +
               ""
           );
           const result = await escrow.createOrder(
