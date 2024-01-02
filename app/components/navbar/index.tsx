@@ -303,7 +303,7 @@ const Navigation = (props: any) => {
                               </div>
                             ) : link.title == "Wallet" && !mobileOpen ? (
                               <>
-        <button style={{ paddingLeft: 10, paddingRight: 10 }} disabled={true} onClick={connectMetaMask}>
+        <button style={{ paddingLeft: 10, paddingRight: 10 }} disabled={connected} onClick={connectMetaMask}>
         {connected ? "Connected" : "Connect"}
       </button></>
                             ) : (
