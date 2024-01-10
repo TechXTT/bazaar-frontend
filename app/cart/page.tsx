@@ -1,5 +1,5 @@
 "use client";
-import Checkout from "../components/checkout";
+import Checkout from "./components/checkout";
 
 const CartPage = () => (
     <div className="flex w-full md:justify-center px-2 mx-auto md:h-screen py-28 px-10">
@@ -12,5 +12,5 @@ const CartPage = () => (
       </div>
     </div>
   );
-  
+
 export default CartPage;

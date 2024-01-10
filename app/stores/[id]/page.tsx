@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import useSWR from "swr";
 import { useInView } from 'react-intersection-observer';  
 import Image from "next/image";
-import ProductCard from "@/app/components/product";
+import ProductCard from "@/app/stores/components/product";
 import { useEffect, useState } from "react";
 import { IProduct } from "@/api/interfaces/products";
 
