@@ -95,7 +95,7 @@ const Checkout = (props: any) => {
         }
       });
     } 
-  } catch (err) {
+  } catch (err: any) {
     if (err?.response?.data.includes("owner and buyer cannot be the same")) {
 
       setError("You cannot buy your own product");
