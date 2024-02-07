@@ -20,9 +20,26 @@ export const _getStore = async (id: string): Promise<AxiosResponse<IStore>> => {
     }
 }
 
-export const _createStore = async (store: {name: string}) => {
+export const _getUserStores = async (token: string): Promise<AxiosResponse<IStore[]>> => {
     try {
-        return await backendAxiosInstance.post("/api/stores", store);
+        return await backendAxiosInstance.get(`/api/stores/user`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const _createStore = async (store: {name: string}, token: string) => {
+    try {
+        return await backendAxiosInstance.post("/api/stores", store,{
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
     } catch (error) {
         console.error(error);
         throw error;
