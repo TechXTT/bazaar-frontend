@@ -1,5 +1,5 @@
 "use client";
-import backendAxiosInstance from "@/api";
+import backendAxiosInstance, { productsService } from "@/api";
 import { AxiosError, AxiosResponse } from "axios";
 import { IStore } from "@/api/interfaces/stores";
 import { useParams } from "next/navigation";
@@ -16,7 +16,6 @@ type storeData = {
 
 const StorePage = () => {
   const { id } = useParams<{ id: string }>();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [cursor, setCursor] = useState<string>("");
   const [prevProductsData, setPrevProductsData] = useState<IProduct[]>([]);
   const [nextProductsData, setNextProductsData] = useState<IProduct[]>([]);
@@ -29,29 +28,22 @@ const StorePage = () => {
 
   const fetchProducts = async () => {
     try {
-      console.log('path', `/api/products/store/${id}?cursor=${cursor}&limit=10`)
-    const response: AxiosResponse<IProduct[]> = await backendAxiosInstance.get(
-      `/api/products/store/${id}?cursor=${cursor}&limit=10`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Expose-Headers": "next-cursor",
-        },
-      }
-    );
+      
+    const response = await productsService.getProducts(id, cursor);
 
     if (response.data.length > 0 && response.data !== nextProductsData) {
       setPrevProductsData([...prevProductsData, ...nextProductsData]);
       setNextProductsData(response.data);
     }
-    setIsLoading(false);
-    console.log('headers', response.headers["next-cursor"].split(" ")[0] + " " + response.headers["next-cursor"].split(" ")[1])
+    
     const date = new Date((response.headers["next-cursor"].split(" ")[0] + " " + response.headers["next-cursor"].split(" ")[1])).getTime();
     const nextCursor = new Date(date + 2 * 60 * 60 * 1000).toISOString()
     setCursor(nextCursor);
-    console.log('nextCursor', nextCursor);
+
   } catch (error: any) {
     if (error.response.status.toString() === '404') {
+      setEnableScroll(false);
+    }else if (error.response.status.toString() === '500') {
       setEnableScroll(false);
     }
     console.log(error);
@@ -61,18 +53,6 @@ const StorePage = () => {
   useEffect(() => {
     fetchProducts();
   }, [inView]);
-
-  const handleScroll = () => {
-
-    console.log('cursor', cursor);
-    if (
-      window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight || isLoading
-    )
-      return;
-
-
-    fetchProducts();
-    }
 
   if (!storeData) return <div>Loading...</div>;
 
