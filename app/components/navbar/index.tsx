@@ -49,7 +49,6 @@ const AUTH_LINKS = [
 ];
 
 const Linky = ({ href, children }: { href: string; children: string }) => {
-  // const [selected, setSelected] = useState(false); - would've been used, but it was deemed unnecessary
 
   return (
     <Link
@@ -90,17 +89,6 @@ const Navigation = (props: any) => {
       console.warn(`failed to connect..`, err);
     }
   };
-  // const handleScroll = (event: any) => {
-  //   if (event.wheel.target.layerY) {
-  //     setScrolled(true);
-  //   } else {
-  //     setScrolled(false);
-  //   }
-  // };
-
-  useEffect(() => {
-    // window.addEventListener("wheel", handleScroll);
-  }, []);
 
   useEffect(() => {
     if (props.auth.jwt && props.auth.jwt !== jwt) {
@@ -300,6 +288,9 @@ const Navigation = (props: any) => {
                                   window.location.href = `/cart`;
                                 }}
                               />
+                              <p className="text-white absolute -top-2 -right-2">
+                                {props.auth.cart.products.length}
+                              </p>
                             </div>
                           ) : link.title == "Wallet" && !mobileOpen ? (
                             <>
