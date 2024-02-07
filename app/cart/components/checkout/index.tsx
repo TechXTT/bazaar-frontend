@@ -4,7 +4,7 @@ import { clearCart } from "@/redux/slices/auth-slice";
 import { useSDK } from "@metamask/sdk-react";
 import { AxiosResponse } from "axios";
 import { ethers, parseEther } from "ethers";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { connect, useDispatch } from "react-redux";
 const bytes32 = require("bytes32");
 
@@ -13,6 +13,7 @@ const Checkout = (props: any) => {
   const [account, setAccount] = useState("");
   let orderIds: { id: string; owner_address: string }[] = [];
   const { sdk, connected } = useSDK();
+  const [error, setError] = useState("");
 
   const handleCheckout = async () => {
     if (!connected) {
@@ -25,7 +26,10 @@ const Checkout = (props: any) => {
       } catch (err) {
         console.warn(`failed to connect..`, err);
       }
+    }else if (account === "") {
+      setAccount(window.ethereum?.selectedAddress!)
     }
+    try {
     const createdAt = new Date().toISOString();
     const response: AxiosResponse<string[]> = await backendAxiosInstance.post(
       `/api/products/orders`,
@@ -34,6 +38,7 @@ const Checkout = (props: any) => {
           CreatedAt: createdAt,
           ProductID: product.ID,
           Quantity: product.Quantity,
+          BuyerAddress: account,
         })),
       },
       {
@@ -66,7 +71,7 @@ const Checkout = (props: any) => {
       const provider = new ethers.BrowserProvider(window.ethereum!);
       const signer = await provider.getSigner();
       const escrow = new ethers.Contract(
-        "0x254De371451A1552637A81068e0573193521214D",
+        "0x0592705fE8c5BcB5a1dB7d3c712C5090376fd3E4",
         ABI,
         signer
       );
@@ -89,8 +94,21 @@ const Checkout = (props: any) => {
           console.log("err", err);
         }
       });
+    } 
+  } catch (err) {
+    if (err?.response?.data.includes("owner and buyer cannot be the same")) {
+
+      setError("You cannot buy your own product");
+      dispatch(clearCart());
+    } else {
+      console.log(err?.response?.data)
     }
+  }
   };
+
+  useEffect(() => {
+    setError("");
+  }, [props.auth.cart.products]);
 
   return (
     <div>
@@ -124,7 +142,15 @@ const Checkout = (props: any) => {
       >
         Checkout
       </button>
+      <div className="w-2"></div>
+      <button
+        className="bg-[#151f20] text-xl text-white font-bold py-2 px-2 rounded"
+        onClick={() => dispatch(clearCart())}
+      >
+        Clear Cart
+      </button>
       </div>
+      {error ? <p>{error}</p> : null}
     </div>
   );
 };

@@ -15,6 +15,14 @@ export interface IProduct {
     Store: IStore;
 }
 
+export interface ProductReq {
+    Name: string;
+    Price: string;
+    Description: string;
+    StoreID: UUID;
+    Image: File | null;
+}
+
 export interface IOrder {
     CreatedAt: string;
     UpdatedAt: string;

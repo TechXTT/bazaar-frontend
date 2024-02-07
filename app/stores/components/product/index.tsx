@@ -1,6 +1,7 @@
 import { IProduct } from "@/api/interfaces/products"
 import { addItemsToCart } from "@/redux/slices/auth-slice";
 import { useAppDispatch } from "@/redux/store";
+import Link from "next/link";
 import { connect } from "react-redux"
 
 const ProductCard = (props: any) => {
@@ -37,11 +38,11 @@ const ProductCard = (props: any) => {
     }
 
     return (
-        <div onClick={handleAddToCart} key={product.ID} className="flex flex-col w-72 justify-center p-2 m-2 bg-[#627C7F] rounded-lg shadow-md">
-            <img src={product.ImageURL} alt={product.Name} className="w-72 h-72 rounded-lg" />
+        <Link href={`/products/${product.ID}`} key={product.ID} className="flex flex-col w-72 justify-center p-2 m-2 bg-[#627C7F] rounded-lg shadow-md">
+            <img src={'https://bucket-for-bazaar.fra1.cdn.digitaloceanspaces.com/' + product.ImageURL} alt={product.Name} className="w-72 h-72 rounded-lg" />
             <h2 className="text-xl font-bold text-left">{product.Name}</h2>
             <p className="text-lg text-right">{product.Price} {product.Unit}</p>
-        </div>
+        </Link>
     )
 }
 
