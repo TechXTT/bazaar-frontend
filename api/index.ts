@@ -14,7 +14,7 @@ const backendAxiosInstance = axios.create({
 
 // Users Endpoints
 import { _getMe, _loginUser, _registerUser } from "./services/users";
-import { _getOrders, _getProducts, _createProduct } from "./services/products";
+import { _getOrders, _getProducts, _createProduct, _updateProduct } from "./services/products";
 import { _getUserStores, _createStore } from "./services/stores";
 
 const usersService = {
@@ -26,7 +26,8 @@ const usersService = {
 const productsService = {
     getProducts: _getProducts, 
     getOrders: _getOrders,
-    createProduct: _createProduct
+    createProduct: _createProduct,
+    updateProduct: _updateProduct
 };
 
 const storesService = {
