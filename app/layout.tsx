@@ -43,7 +43,7 @@ export default function RootLayout({
           }
         }}>
             <Navigation />
-            <div className="ml-20">
+            <div>
             {children}
             </div>
             </MetaMaskProvider>
