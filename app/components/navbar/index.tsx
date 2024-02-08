@@ -296,7 +296,7 @@ const Navigation = (props: any) => {
                             <div className="invisible absolute z-50 bg-[#324B4E] -left-32 top-10 rounded-lg p-2 flex w-96 flex-col group-hover:visible ">
                               <div className="flex flex-col overflow-scroll max-h-48">
                               {props.auth.cart.products.map((product: any) => (
-                                <div className="flex w-full flex-row items-center mb-2">
+                                <div key={product.ID} className="flex w-full flex-row items-center mb-2">
                                   <div className="flex flex-row w-8">
                                     <p>
                                       {product.Quantity} x
