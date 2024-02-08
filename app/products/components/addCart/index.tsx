@@ -65,7 +65,9 @@ const AddToCart = (props: any) => {
             className="text-2xl text-balance font-bold mt-4 bg-[#182628] rounded px-2 py-1"
             onClick={async () => {
               setEdit(false);
-              const res = await productsService.updateProduct(product, props.auth.jwt);
+              let productReq = product
+              productReq.Price = parseFloat(productReq.Price.toString());
+              const res = await productsService.updateProduct(productReq, props.auth.jwt);
                 if (res.status === 200) {
                     setProduct(product);
                 }
