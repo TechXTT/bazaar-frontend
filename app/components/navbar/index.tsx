@@ -97,6 +97,27 @@ const Navigation = (props: any) => {
   }, [props.auth.jwt]);
 
   useEffect(() => {
+    const changeChain = async () => {
+      if (window.ethereum) {
+        try {
+          await window.ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: "0xaa36a7" }],
+          });
+        } catch (error) {
+          console.log("error", error);
+        }
+      }
+      
+    }
+
+    if (chainId != '0xaa36a7') {
+      // force to change to 0xaa36a7
+      changeChain()
+    }
+  }, [chainId]);
+
+  useEffect(() => {
     const auth = async () => {
       try {
         const res = await usersService.getMe(props.auth.jwt);
