@@ -8,6 +8,8 @@ import { IStore } from "@/api/interfaces/stores";
 import StoresPage from "../components/stores";
 import StoreForm from "../components/createForms/createStore";
 import ProductForm from "../components/createForms/createProduct";
+import { useDispatch } from "react-redux";
+import { logout } from "@/redux/slices/auth-slice";
 
 const UserSettingsPage = () => {
 
@@ -18,6 +20,8 @@ const UserSettingsPage = () => {
   const { id } = useParams<{ id: string }>();
 
   const [stores, setStores] = useState<IStore[]>([])
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (!searchParams.get('selected')) {
@@ -42,6 +46,9 @@ const UserSettingsPage = () => {
     {
       title: "Create Product",
       store: true
+    },
+    {
+      title: "Logout",
     }
   ];
 
@@ -58,10 +65,18 @@ const UserSettingsPage = () => {
         return <StoreForm />
       case "Create Product":
         return searchParams.get('store') ? <ProductForm storeId={searchParams.get('store')!} /> : <div />
+      case "Logout":
+        return <div />
     }
   }
 
   const onSelect = (select: string) => {
+
+    if (select === "Logout") {
+      dispatch(logout())
+      router.push('/auth/login')
+      return
+    }
 
     if (select === searchParams.get('selected')) 
       return
