@@ -3,6 +3,8 @@ import { addItemsToCart } from "@/redux/slices/auth-slice";
 import { useAppDispatch } from "@/redux/store";
 import Link from "next/link";
 import { connect } from "react-redux"
+import Image from "next/image";
+
 
 const ProductCard = (props: any) => {
 
@@ -40,7 +42,7 @@ const ProductCard = (props: any) => {
     return (
         <Link href={`/products/${product.ID}`} key={product.ID} className="flex flex-col w-72 h-96 p-2 m-2 bg-[#627C7F] rounded-lg shadow-md">
             <div className="flex flex-col w-full h-full overflow-hidden">
-            <img src={'https://bucket-for-bazaar.fra1.cdn.digitaloceanspaces.com/' + product.ImageURL} alt={product.Name} className="h-64 object-cover rounded-lg" />
+            <Image src={'https://bucket-for-bazaar.fra1.cdn.digitaloceanspaces.com/' + product.ImageURL} alt={product.Name} className="h-64 object-cover rounded-lg" />
             
             <div className="flex flex-col w-full h-full justify-end">
             <p className="text-xl mt-1">{product.Price} {product.Unit}</p>
