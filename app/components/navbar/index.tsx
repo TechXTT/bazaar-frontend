@@ -293,19 +293,21 @@ const Navigation = (props: any) => {
                                 {props.auth.cart.products.length}
                               </p>
                             </div>
-                            <div className="invisible absolute z-50 bg-[#324B4E] -left-32 top-12 rounded-lg p-2 flex w-96 flex-col group-hover:visible ">
+                            <div className="invisible absolute z-50 bg-[#324B4E] -left-32 top-10 rounded-lg p-2 flex w-96 flex-col group-hover:visible ">
+                              <div className="flex flex-col overflow-scroll max-h-48">
                               {props.auth.cart.products.map((product: any) => (
-                                <div className="flex w-full flex-row items-center">
-                                  <div className="flex flex-row w-28">
+                                <div className="flex w-full flex-row items-center mb-2">
+                                  <div className="flex flex-row w-8">
                                     <p>
                                       {product.Quantity} x
                                     </p>
                                   </div>
-                                  <div className="flex bg-[#627C7F] rounded p-1">
+                                  <div className="flex bg-[#627C7F] w-full rounded p-1">
                                     <p> {product.Name}</p>
                                   </div>
                                 </div>
                               ))}
+                              </div>
                               <div className="flex justify-end">
                                 <p className="text-lg text-right">
                                   Total: {props.auth.cart.total ? props.auth.cart.total : "0.00"}
