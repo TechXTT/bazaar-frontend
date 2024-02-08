@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import { usersService } from "@/api";
 import { useAppDispatch } from "@/redux/store";
-import { logout, setUser } from "@/redux/slices/auth-slice";
+import { clearCart, logout, setUser } from "@/redux/slices/auth-slice";
 import { FaUser, FaShoppingCart } from "react-icons/fa";
 import { useSDK } from "@metamask/sdk-react";
 
@@ -280,9 +280,10 @@ const Navigation = (props: any) => {
                               />
                             </div>
                           ) : link.title == "Количка" && !mobileOpen ? (
+                            <div>
                             <div className="rounded-full">
                               <FaShoppingCart
-                                className=""
+                                className="menu-hover"
                                 size={28}
                                 onClick={() => {
                                   window.location.href = `/cart`;
@@ -291,6 +292,43 @@ const Navigation = (props: any) => {
                               <p className="text-white absolute -top-2 -right-2">
                                 {props.auth.cart.products.length}
                               </p>
+                            </div>
+                            <div className="invisible absolute z-50 bg-[#324B4E] -left-32 top-12 rounded-lg p-2 flex w-96 flex-col group-hover:visible ">
+                              {props.auth.cart.products.map((product: any) => (
+                                <div className="flex w-full flex-row items-center">
+                                  <div className="flex flex-row w-28">
+                                    <p>
+                                      {product.Quantity} x
+                                    </p>
+                                  </div>
+                                  <div className="flex bg-[#627C7F] rounded p-1">
+                                    <p> {product.Name}</p>
+                                  </div>
+                                </div>
+                              ))}
+                              <div className="flex justify-end">
+                                <p className="text-lg text-right">
+                                  Total: {props.auth.cart.total ? props.auth.cart.total : "0.00"}
+                                </p>
+                              </div>
+                              <div className="flex w-full justify-center">
+                                <button
+                                  className="bg-[#151f20] text-xl text-white font-bold py-2 px-2 rounded"
+                                  onClick={() => {
+                                    window.location.href = `/cart`;
+                                  }}
+                                >
+                                  Checkout
+                                </button>
+                                <div className="w-2"></div>
+                                <button
+                                  className="bg-[#151f20] text-xl text-white font-bold py-2 px-2 rounded"
+                                  onClick={() => dispatch(clearCart())}
+                                >
+                                  Clear Cart
+                                </button>
+                              </div>
+                              </div>
                             </div>
                           ) : link.title == "Wallet" && !mobileOpen ? (
                             <>

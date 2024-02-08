@@ -33,7 +33,7 @@ const AddToCart = (props: any) => {
   const handleAddToCart = () => {
     if (props.auth.isLoggedIn && props.auth.cart !== null) {
       let products = JSON.parse(JSON.stringify(props.auth.cart.products));
-      const total = props.auth.cart.total + product.Price;
+      const total = props.auth.cart.total + (product.Price * amount);
       if (products.length > 0) {
         const productIndex = products.findIndex(
           (p: IProduct) => p.ID === product.ID
