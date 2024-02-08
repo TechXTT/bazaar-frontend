@@ -57,8 +57,8 @@ const StorePage = () => {
   if (!storeData) return <div>Loading...</div>;
 
   return (
-    <div className="flex w-full md:justify-center px-2 mx-auto md:h-screen py-28 px-10">
-      <div className="flex flex-col w-full rounded-lg shadow p-4 md:space-y-2 ">
+    <div className="flex w-full md:justify-center px-2 mx-auto md:h-screen pt-28 px-10">
+      <div className="flex flex-col w-full p-4 md:space-y-2 ">
         <h1 className="text-2xl font-bold leading-tight tracking-tight md:text-2xl">
           {storeData?.data.Name}
         </h1>
