@@ -21,7 +21,7 @@ export const _getProducts = async (id: string, cursor: string): Promise<AxiosRes
 
 }
 
-export const _getOrders = async (token: string): Promise<AxiosResponse<IOrder[]>> => {
+export const _getOrders = async (token: string, filter: string): Promise<AxiosResponse<IOrder[]>> => {
     try {
         const decoded = jwt.decode(token, { complete: true });
     
@@ -35,7 +35,7 @@ export const _getOrders = async (token: string): Promise<AxiosResponse<IOrder[]>
         //   }
         // });
 
-        const res = await backendAxiosInstance.get("/api/products/orders", {
+        const res = await backendAxiosInstance.get(`/api/products/orders?filter=${filter}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
