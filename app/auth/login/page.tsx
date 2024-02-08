@@ -64,7 +64,7 @@ const LoginPage = () => {
               id="email"
               value={userData.email}
               onChange={handleInputChange}
-              className="border border-gray-400 rounded-md py-2 px-3 text-black"
+              className="text-base rounded-lg block bg-transparent border-2 py-2.5 px-2"
             />
           </div>
           <div className="flex flex-col">
@@ -76,7 +76,7 @@ const LoginPage = () => {
               id="password"
               value={userData.password}
               onChange={handleInputChange}
-              className="border border-gray-400 rounded-md py-2 px-3 text-black"
+              className="text-base rounded-lg block bg-transparent border-2 py-2.5 px-2"
             />
           </div>
           <button

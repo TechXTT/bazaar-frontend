@@ -75,3 +75,24 @@ export const _createProduct = async (data: ProductReq, token: string) => {
     throw error;
   }
 }
+
+export const _updateProduct = async (data: IProduct, token: string) => {
+  try {
+    const decoded = jwt.decode(token, { complete : true });
+
+    if (!decoded) {
+      throw new Error("Invalid token");
+    }
+
+    const res = await backendAxiosInstance.put(`/api/products/${data.ID}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+    return res
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}

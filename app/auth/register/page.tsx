@@ -29,6 +29,8 @@ const RegisterPage = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    
+    setLocalError(null);
 
     const validationError = validateRegisterUser(userData);
     if (validationError) {
@@ -52,7 +54,7 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center md:justify-center px-4 mx-auto md:h-screen py-20 md:py-0">
+    <div className="flex flex-col items-center md:justify-center px-4 mx-auto md:h-screen pt-16">
       <div className="w-full bg-[#324B4E] rounded-lg shadow md:mt-0 sm:max-w-md p-4 space-y-2 md:space-y-4 sm:p-8">
         <h1 className="text-2xl font-bold leading-tight tracking-tight md:text-2xl">
           Register
@@ -67,7 +69,7 @@ const RegisterPage = () => {
               value={userData.firstName}
               autoComplete="given-name"
               onChange={handleInputChange}
-              className="text-[#182628] sm:text-sm rounded-lg block py-2.5 px-6"
+              className="text-base rounded-lg block bg-transparent border-2 py-2.5 px-2"
             />
           </div>
           <div className="flex flex-col">
@@ -79,7 +81,7 @@ const RegisterPage = () => {
               value={userData.lastName}
               autoComplete="family-name"
               onChange={handleInputChange}
-              className="text-[#182628] sm:text-sm rounded-lg block py-2.5 px-6"
+              className="text-base rounded-lg block bg-transparent border-2 py-2.5 px-2"
             />
           </div>
           <div className="flex flex-col">
@@ -92,7 +94,7 @@ const RegisterPage = () => {
               value={userData.email}
               autoComplete="email"
               onChange={handleInputChange}
-              className="text-[#182628] sm:text-sm rounded-lg block py-2.5 px-6"
+              className="text-base rounded-lg block bg-transparent border-2 py-2.5 px-2"
             />
           </div>
           <div className="flex flex-col">
@@ -105,7 +107,7 @@ const RegisterPage = () => {
               value={userData.password}
               autoComplete="new-password"
               onChange={handleInputChange}
-              className="text-[#182628] sm:text-sm rounded-lg block py-2.5 px-6"
+              className="text-base rounded-lg block bg-transparent border-2 py-2.5 px-2"
             />
           </div>
           <div className="flex flex-col">
@@ -118,7 +120,7 @@ const RegisterPage = () => {
               value={userData.confirmPassword}
               autoComplete="new-password"
               onChange={handleInputChange}
-              className="text-[#182628] sm:text-sm rounded-lg block py-2.5 px-6"
+              className="text-base rounded-lg block bg-transparent border-2 py-2.5 px-2"
             />
           </div>
           <div className="flex flex-col">
@@ -128,6 +130,10 @@ const RegisterPage = () => {
           >
             Sign in
           </button>
+          {localError && (
+            <p className="text-sm text-red-500">{localError}</p>
+          )}
+
           </div>
           <p className="text-sm font-light text-gray-500">
             Already have an account?{" "}
