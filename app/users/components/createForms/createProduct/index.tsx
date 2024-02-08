@@ -91,7 +91,7 @@ const ProductForm = (props: any) => {
                     <section className=" flex flex-col border-2 rounded-md h-32">
                         <div {...getRootProps({className: 'dropzone h-full w-full p-4'})}>
                             <input {...getInputProps()} />
-                            <p>Drag 'n' drop the image here, or click to select the file:</p>
+                            <p>{"Drag 'n' drop the image here, or click to select the file:"}</p>
                             {image && <p>{image.name}</p>}
                         </div>
                     </section>

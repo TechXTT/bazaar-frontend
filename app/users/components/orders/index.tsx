@@ -45,9 +45,9 @@ const OrdersPage = (props: any) => {
                 <div className="flex w-full flex-col">
                     {
                         filter === 'receiving' ? orders.receiving.map((order) => (
-                            <OrderComponent order={order} />
+                            <OrderComponent key={order.ID} order={order} />
                         )) : orders.sending.map((order) => (
-                            <OrderComponent order={order} />
+                            <OrderComponent key={order.ID} order={order} />
                         ))
                     }
                     </div>  
