@@ -1,9 +1,10 @@
-import backendAxiosInstance, { productsService } from "@/api";
+import backendAxiosInstance, { productsService, storesService } from "@/api";
 import { IProduct } from "@/api/interfaces/products";
 import { IStore } from "@/api/interfaces/stores";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
+import { connect } from "react-redux";
 import useSWR from "swr";
 
 
@@ -15,8 +16,8 @@ type storeData = {
     data: IStore;
   };
 
-const StoresPage = ({ id }: StoresPageProps) => {
-
+const StoresPage = (props: any) => {
+    const id = props.id
     const [cursor, setCursor] = useState<string>("");
     const [prevProductsData, setPrevProductsData] = useState<IProduct[]>([]);
     const [nextProductsData, setNextProductsData] = useState<IProduct[]>([]);
@@ -27,6 +28,14 @@ const StoresPage = ({ id }: StoresPageProps) => {
         backendAxiosInstance.get
     );
 
+    const handleDeleteStore = async () => {
+        const res = await storesService.deleteStore(id, props.auth.jwt)
+
+        if (res.status === 200) {
+            window.location.href = `/users/${props.auth.user.ID}?selected=Stores`
+        }
+    }
+
     const fetchProducts = async () => {
         try {
 
@@ -35,6 +44,8 @@ const StoresPage = ({ id }: StoresPageProps) => {
             if (resp.data.length > 0 && resp.data !== nextProductsData) {
                 setPrevProductsData([...prevProductsData, ...nextProductsData]);
                 setNextProductsData(resp.data);
+            } else if (resp.data.length === 0) {
+                setEnableScroll(false)
             }
 
             const date = new Date((resp.headers["next-cursor"].split(" ")[0] + " " + resp.headers["next-cursor"].split(" ")[1])).getTime();
@@ -42,11 +53,7 @@ const StoresPage = ({ id }: StoresPageProps) => {
             setCursor(nextCursor);
             
         } catch (error: any) {
-            if (error.response.status.toString() === '404') {
-                setEnableScroll(false);
-            } else if (error.response.status.toString() === '500') {
-                setEnableScroll(false);
-            }
+            setEnableScroll(false)
             console.log(error);
         }
     };
@@ -58,7 +65,7 @@ const StoresPage = ({ id }: StoresPageProps) => {
     if (!storeData) return <div>Loading...</div>;
     
     return (
-        <div className="flex overflow-y-scroll w-2/3">
+        <div className="relative flex overflow-y-scroll w-2/3">
             <div className="flex flex-col w-full shadow p-4 md:space-y-2 ">
             {[...prevProductsData, ...nextProductsData]
             ? [...prevProductsData, ...nextProductsData].map((product) => (
@@ -76,9 +83,26 @@ const StoresPage = ({ id }: StoresPageProps) => {
                 {enableScroll && (<div ref={ref} className="flex justify-center">
           <div><p>Loading...</p></div>
           </div>)}
+
+                {/* add delete button at bottom of screen with absolute value */}
+                
             </div>
+            <div className="flex w-full justify-center absolute left-0 right-0 bottom-2">
+                    <button
+            className="text-2xl w-1/3 justify-self-end text-balance font-bold mt-4 bg-[#D0342C] rounded-lg px-4 py-2"
+            onClick={handleDeleteStore}
+          >
+            Delete Store
+          </button>
+                </div>
         </div>
     )
 }
 
-export default StoresPage
+const mapStateToProps = (state:any) => {
+    return {
+        auth: state.auth
+    }
+}
+
+export default connect(mapStateToProps)(StoresPage)
