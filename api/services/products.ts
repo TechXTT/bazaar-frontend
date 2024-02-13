@@ -96,3 +96,16 @@ export const _updateProduct = async (data: IProduct, token: string) => {
     throw error;
   }
 }
+
+export const _deleteProduct = async (productId: string, token: string) => {
+  try {
+    return await backendAxiosInstance.delete(`/api/products/${productId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+  } catch (error) {
+    console.error(error);
+    throw error
+  }
+}

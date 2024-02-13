@@ -14,8 +14,9 @@ const backendAxiosInstance = axios.create({
 
 // Users Endpoints
 import { _getMe, _loginUser, _registerUser } from "./services/users";
-import { _getOrders, _getProducts, _createProduct, _updateProduct } from "./services/products";
-import { _getUserStores, _createStore } from "./services/stores";
+import { _getOrders, _getProducts, _createProduct, _updateProduct, _deleteProduct } from "./services/products";
+import { _getUserStores, _createStore, _deleteStore } from "./services/stores";
+import { _closeDispute, _createDispute, _getDisputeByOrderID } from "./services/disputes";
 
 const usersService = {
     getMe: _getMe,
@@ -27,14 +28,22 @@ const productsService = {
     getProducts: _getProducts, 
     getOrders: _getOrders,
     createProduct: _createProduct,
-    updateProduct: _updateProduct
+    updateProduct: _updateProduct,
+    deleteProduct: _deleteProduct
 };
 
 const storesService = {
     getUserStores: _getUserStores,
-    createStore: _createStore
+    createStore: _createStore,
+    deleteStore: _deleteStore
 };
 
-export { usersService, productsService, storesService };
+const disputesService = {
+    createDispute: _createDispute,
+    getDisputeByOrderID: _getDisputeByOrderID,
+    closeDispute: _closeDispute
+};
+
+export { usersService, productsService, storesService, disputesService };
 
 export default backendAxiosInstance;

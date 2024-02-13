@@ -57,6 +57,14 @@ const AddToCart = (props: any) => {
     }
   };
 
+  const handleDelete = async () => {
+    const res = await productsService.deleteProduct(product.ID, props.auth.jwt)
+
+    if (res.status === 200) {
+      window.location.href = `/stores/${product.StoreID}`;
+    }
+  }
+
   if (edit) {
     return (
         <div className="flex flex-row space-x-4">
@@ -83,6 +91,13 @@ const AddToCart = (props: any) => {
             }}
           >
             Cancel
+          </button>
+
+          <button
+            className="text-2xl text-balance font-bold mt-4 bg-[#D0342C] rounded px-2 py-1"
+            onClick={handleDelete}
+          >
+            Delete
           </button>
         </div>
       )
