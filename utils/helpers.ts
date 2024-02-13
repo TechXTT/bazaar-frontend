@@ -1,4 +1,5 @@
 import { ERRORS } from "./errors";
+const bytes32 = require("bytes32");
 
 interface IRegisterUser {
     firstName: string;
@@ -44,3 +45,13 @@ export const validateLoginUser = (user: ILoginUser) => {
     if (!user.password) return ERRORS.PASSWORD_REQUIRED;
     return null;
 }
+
+export const messageToBytes32 = (message: string): string => {
+    const cleanedUuid = message.replace(/-/g, "");
+    if (cleanedUuid.length !== 32) {
+      throw new Error("Invalid UUID length");
+    }
+    console.log("cleanedUuid", cleanedUuid);
+    const bytes32Uuid = bytes32({ input: cleanedUuid });
+    return bytes32Uuid;
+  };

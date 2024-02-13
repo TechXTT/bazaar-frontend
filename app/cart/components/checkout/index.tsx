@@ -1,12 +1,13 @@
 import backendAxiosInstance from "@/api";
+import { CONFIG } from "@/config/config";
 import { ABI } from "@/escrow_abi";
 import { clearCart } from "@/redux/slices/auth-slice";
+import { messageToBytes32 } from "@/utils/helpers";
 import { useSDK } from "@metamask/sdk-react";
 import { AxiosResponse } from "axios";
 import { ethers, parseEther } from "ethers";
 import { useEffect, useState } from "react";
 import { connect, useDispatch } from "react-redux";
-const bytes32 = require("bytes32");
 
 const Checkout = (props: any) => {
   const dispatch = useDispatch();
@@ -51,15 +52,6 @@ const Checkout = (props: any) => {
 
     if (response.status === 201) {
       response.data.forEach((resp: any) => {
-        const messageToBytes32 = (message: string): string => {
-          const cleanedUuid = message.replace(/-/g, "");
-          if (cleanedUuid.length !== 32) {
-            throw new Error("Invalid UUID length");
-          }
-          console.log("cleanedUuid", cleanedUuid);
-          const bytes32Uuid = bytes32({ input: cleanedUuid });
-          return bytes32Uuid;
-        };
 
         console.log("orderId", messageToBytes32(resp.id));
         orderIds.push({
@@ -71,7 +63,7 @@ const Checkout = (props: any) => {
       const provider = new ethers.BrowserProvider(window.ethereum!);
       const signer = await provider.getSigner();
       const escrow = new ethers.Contract(
-        "0x0592705fE8c5BcB5a1dB7d3c712C5090376fd3E4",
+        CONFIG.CONTRACT_ADDRESS,
         ABI,
         signer
       );
