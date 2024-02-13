@@ -45,3 +45,16 @@ export const _createStore = async (store: {name: string}, token: string) => {
         throw error;
     }
 }
+
+export const _deleteStore = async (storeId: string, token: string) => {
+    try {
+        return await backendAxiosInstance.delete(`/api/stores/${storeId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+    } catch (error) {
+        console.error(error)
+        throw error
+    }
+}
