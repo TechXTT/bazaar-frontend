@@ -1,5 +1,10 @@
 "use client";
-import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import UserSettingsForm from "../components/userSettings";
 import SideBar from "../components/sidebar";
 import { useEffect, useState } from "react";
@@ -12,22 +17,13 @@ import { useDispatch } from "react-redux";
 import { logout } from "@/redux/slices/auth-slice";
 
 const UserSettingsPage = () => {
-
-  const router = useRouter()
+  const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams();
 
   const { id } = useParams<{ id: string }>();
-
-  const [stores, setStores] = useState<IStore[]>([])
-
-  const dispatch = useDispatch()
-
-  useEffect(() => {
-    if (!searchParams.get('selected')) {
-      router.push(`${pathname}?selected=Settings`)
-    }
-  }, [])
+  const [stores, setStores] = useState<IStore[]>([]);
+  const dispatch = useDispatch();
 
   const menuItems = [
     {
@@ -38,74 +34,83 @@ const UserSettingsPage = () => {
     },
     {
       title: "Stores",
-      store: true
+      store: true,
     },
     {
       title: "Create Store",
     },
     {
       title: "Create Product",
-      store: true
+      store: true,
     },
     {
       title: "Logout",
-    }
+    },
   ];
 
-  const Page = () => {
-    console.log('searchParams.get("selected")', searchParams.get('selected'))
-    switch (searchParams.get('selected')) {
-      case "Settings":
-        return <UserSettingsForm id={id} />
-      case "Orders":
-        return <Orders />
-      case "Stores":
-        return searchParams.get('store') ? <StoresPage id={searchParams.get('store')!} /> : <div />
-      case "Create Store":
-        return <StoreForm />
-      case "Create Product":
-        return searchParams.get('store') ? <ProductForm storeId={searchParams.get('store')!} /> : <div />
-      case "Logout":
-        return <div />
+  useEffect(() => {
+    if (!searchParams.get("selected")) {
+      router.push(`${pathname}?selected=Settings`);
     }
-  }
+  }, []);
+
+  const Page = () => {
+    switch (searchParams.get("selected")) {
+      case "Settings":
+        return <UserSettingsForm id={id} />;
+      case "Orders":
+        return <Orders />;
+      case "Stores":
+        return searchParams.get("store") ? (
+          <StoresPage id={searchParams.get("store")!} />
+        ) : (
+          <div />
+        );
+      case "Create Store":
+        return <StoreForm />;
+      case "Create Product":
+        return searchParams.get("store") ? (
+          <ProductForm storeId={searchParams.get("store")!} />
+        ) : (
+          <div />
+        );
+      case "Logout":
+        return <div />;
+    }
+  };
 
   const onSelect = (select: string) => {
-
     if (select === "Logout") {
-      dispatch(logout())
-      router.push('/auth/login')
-      return
+      dispatch(logout());
+      router.push("/auth/login");
+      return;
     }
 
-    if (select === searchParams.get('selected')) 
-      return
+    if (select === searchParams.get("selected")) return;
 
-    const current = new URLSearchParams(Array.from(searchParams.entries()))
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
 
-    current.set("selected", select)
-    current.delete("store")
+    current.set("selected", select);
+    current.delete("store");
 
-    const search = current.toString()
-    const query = search ? `?${search}` : ""
+    const search = current.toString();
+    const query = search ? `?${search}` : "";
 
-    router.push(`${pathname}${query}`)
-  }
+    router.push(`${pathname}${query}`);
+  };
 
   const onStoreSelect = (store: IStore) => {
-    if (store.ID === searchParams.get('store')) 
-      return
+    if (store.ID === searchParams.get("store")) return;
 
-    const current = new URLSearchParams(Array.from(searchParams.entries()))
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
 
-    current.set("store", store.ID)
+    current.set("store", store.ID);
 
-    const search = current.toString()
-    const query = `${'?'.repeat(search.length && 1)}${search}`;
+    const search = current.toString();
+    const query = `${"?".repeat(search.length && 1)}${search}`;
 
-    router.push(`${pathname}${query}`)
-  }
-
+    router.push(`${pathname}${query}`);
+  };
 
   return (
     <div className="flex flex-col w-full items-center md:justify-center px-2 mx-auto md:h-screen py-10 md:py-0">
@@ -114,8 +119,8 @@ const UserSettingsPage = () => {
           <div className="flex flex-row flex-1 w-full overflow-scroll">
             <SideBar
               menuItems={menuItems}
-              selected={searchParams.get('selected')}
-              selectedStore={searchParams.get('store')}
+              selected={searchParams.get("selected")}
+              selectedStore={searchParams.get("store")}
               setSelected={onSelect}
               setStoresSelected={onStoreSelect}
               setStores={setStores}

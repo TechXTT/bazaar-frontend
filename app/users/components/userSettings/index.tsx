@@ -1,13 +1,17 @@
+import { usersService } from "@/api";
+import { setUser } from "@/redux/slices/auth-slice";
 import { useEffect, useState } from "react";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 
 const UserSettingsForm = (props: any) => {
-  const { id } = props;
-
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
+
+  const dispatch = useDispatch();
+
+  const [edit, setEdit] = useState(false);
 
   useEffect(() => {
     if (!props.auth.isLoggedIn) {
@@ -20,9 +24,32 @@ const UserSettingsForm = (props: any) => {
     }
   }, []);
 
-  const [edit, setEdit] = useState(false);
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setEdit(!edit);
 
-  const handleSubmit = (e: any) => {};
+    if (edit) {
+      await usersService.updateUser(
+        {
+          FirstName: firstName,
+          LastName: lastName,
+          Email: email,
+          WalletAddress: walletAddress,
+        },
+        props.auth.jwt
+      );
+
+      dispatch(
+        setUser({
+          ...props.auth.user,
+          FirstName: firstName,
+          LastName: lastName,
+          Email: email,
+          WalletAddress: walletAddress,
+        })
+      );
+    }
+  };
 
   return (
     <div className="flex w-5/6 p-4">
@@ -83,38 +110,13 @@ const UserSettingsForm = (props: any) => {
                 className="border border-gray-400 rounded-md py-2 px-3 text-black"
               />
             </div>
-            <div className="flex flex-col">
-              <label htmlFor="lastName" className="mb-2 font-medium">
-                Last Name:
-              </label>
-              <input
-                id="lastName"
-                value={lastName}
-                disabled={!edit}
-                onChange={(e) => setLastName(e.target.value)}
-                className="border border-gray-400 rounded-md py-2 px-3 text-black"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="email" className="mb-2 font-medium">
-                Email:
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                disabled={!edit}
-                onChange={(e) => setEmail(e.target.value)}
-                className="border border-gray-400 rounded-md py-2 px-3 text-black"
-              />
-            </div>
           </div>
         </div>
         <button
           type="submit"
           className="w-full text-white bg-[#182628] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-xl block py-2.5 text-center"
         >
-          Update
+          {edit ? "Save" : "Edit"}
         </button>
       </form>
     </div>
