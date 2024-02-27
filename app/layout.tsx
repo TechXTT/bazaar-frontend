@@ -8,10 +8,10 @@ import { MetaMaskProvider } from '@metamask/sdk-react';
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata = {
-  title: "The Bazaar",
-  description: "The Bazaar is a decentralized marketplace for buying and selling goods.",
-};
+// export const metadata = {
+//   title: "The Bazaar",
+//   description: "The Bazaar is a decentralized marketplace for buying and selling goods.",
+// };
 
 export default function RootLayout({
   children,
