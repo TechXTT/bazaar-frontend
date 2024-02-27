@@ -34,5 +34,11 @@ export interface IOrder {
     Quantity: number;
     Total: number;
     Status: string;
-    TxHash: string | null;
+}
+
+export interface OrderReq {
+    CreatedAt: string;
+    ProductID: UUID;
+    Quantity: string;
+    BuyerAddress: string;
 }
