@@ -110,7 +110,7 @@ const ProductForm = (props: any) => {
       >
         Create Product
       </button>
-      {success && <p className="text-green-500">Store created successfully</p>}
+      {success && <p className="text-green-500">Product created successfully</p>}
     </form>
   );
 };

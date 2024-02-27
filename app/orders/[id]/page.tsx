@@ -49,7 +49,7 @@ const OrderPage = () => {
             order.Product?.ImageURL
           }
           alt={order.Product?.Name}
-          className="w-full h-full object-cover rounded-lg mr-8"
+          className="w-full h-5/6 object-cover rounded-lg mr-8"
         />
         <h2 className="text-2xl text-justify font-bold mb-4 text-left">
           {order.Product?.Name}
