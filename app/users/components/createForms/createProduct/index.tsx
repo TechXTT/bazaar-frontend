@@ -12,9 +12,9 @@ const ProductForm = (props: any) => {
   const [success, setSuccess] = useState(false);
 
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
-    accept: { "image/*": [".jpg", ".jpeg", ".png"] },
+    accept: { "image/*": [".jpg", ".jpeg", ".png", ".heic"] },
     maxFiles: 1,
-    maxSize: 1000000,
+    maxSize: 100000000,
   });
 
   useEffect(() => {
