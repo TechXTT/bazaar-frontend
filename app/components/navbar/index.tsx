@@ -49,7 +49,6 @@ const AUTH_LINKS = [
 ];
 
 const Linky = ({ href, children }: { href: string; children: string }) => {
-
   return (
     <Link
       href={href}
@@ -108,12 +107,11 @@ const Navigation = (props: any) => {
           console.log("error", error);
         }
       }
-      
-    }
+    };
 
-    if (chainId != '0xaa36a7') {
+    if (chainId != "0xaa36a7") {
       // force to change to 0xaa36a7
-      changeChain()
+      changeChain();
     }
   }, [chainId]);
 
@@ -302,55 +300,61 @@ const Navigation = (props: any) => {
                             </div>
                           ) : link.title == "Количка" && !mobileOpen ? (
                             <div>
-                            <div className="rounded-full">
-                              <FaShoppingCart
-                                className="menu-hover"
-                                size={28}
-                                onClick={() => {
-                                  window.location.href = `/cart`;
-                                }}
-                              />
-                              <p className="text-white absolute -top-2 -right-2">
-                                {props.auth.cart.products.length}
-                              </p>
-                            </div>
-                            <div className="invisible absolute z-50 bg-[#324B4E] -left-32 top-10 rounded-lg p-2 flex w-96 flex-col group-hover:visible ">
-                              <div className="flex flex-col overflow-scroll max-h-48">
-                              {props.auth.cart.products.map((product: any) => (
-                                <div key={product.ID} className="flex w-full flex-row items-center mb-2">
-                                  <div className="flex flex-row w-8">
-                                    <p>
-                                      {product.Quantity} x
-                                    </p>
-                                  </div>
-                                  <div className="flex bg-[#627C7F] w-full rounded p-1">
-                                    <p> {product.Name}</p>
-                                  </div>
-                                </div>
-                              ))}
-                              </div>
-                              <div className="flex justify-end">
-                                <p className="text-lg text-right">
-                                  Total: {props.auth.cart.total ? props.auth.cart.total : "0.00"}
-                                </p>
-                              </div>
-                              <div className="flex w-full justify-center">
-                                <button
-                                  className="bg-[#151f20] text-xl text-white font-bold py-2 px-2 rounded"
+                              <div className="rounded-full">
+                                <FaShoppingCart
+                                  className="menu-hover"
+                                  size={28}
                                   onClick={() => {
                                     window.location.href = `/cart`;
                                   }}
-                                >
-                                  Checkout
-                                </button>
-                                <div className="w-2"></div>
-                                <button
-                                  className="bg-[#151f20] text-xl text-white font-bold py-2 px-2 rounded"
-                                  onClick={() => dispatch(clearCart())}
-                                >
-                                  Clear Cart
-                                </button>
+                                />
+                                <p className="text-white absolute -top-2 -right-2">
+                                  {props.auth.cart.products.length}
+                                </p>
                               </div>
+                              <div className="invisible absolute z-50 bg-[#324B4E] -left-32 top-10 rounded-lg p-2 flex w-96 flex-col group-hover:visible ">
+                                <div className="flex flex-col overflow-scroll max-h-48">
+                                  {props.auth.cart.products.map(
+                                    (product: any) => (
+                                      <div
+                                        key={product.ID}
+                                        className="flex w-full flex-row items-center mb-2"
+                                      >
+                                        <div className="flex flex-row w-8">
+                                          <p>{product.Quantity} x</p>
+                                        </div>
+                                        <div className="flex bg-[#627C7F] w-full rounded p-1">
+                                          <p> {product.Name}</p>
+                                        </div>
+                                      </div>
+                                    )
+                                  )}
+                                </div>
+                                <div className="flex justify-end">
+                                  <p className="text-lg text-right">
+                                    Total:{" "}
+                                    {props.auth.cart.total
+                                      ? props.auth.cart.total
+                                      : "0.00"}
+                                  </p>
+                                </div>
+                                <div className="flex w-full justify-center">
+                                  <button
+                                    className="bg-[#151f20] text-xl text-white font-bold py-2 px-2 rounded"
+                                    onClick={() => {
+                                      window.location.href = `/cart`;
+                                    }}
+                                  >
+                                    Checkout
+                                  </button>
+                                  <div className="w-2"></div>
+                                  <button
+                                    className="bg-[#151f20] text-xl text-white font-bold py-2 px-2 rounded"
+                                    onClick={() => dispatch(clearCart())}
+                                  >
+                                    Clear Cart
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           ) : link.title == "Wallet" && !mobileOpen ? (

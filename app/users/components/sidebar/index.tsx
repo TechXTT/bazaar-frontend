@@ -39,13 +39,17 @@ const SideBar = (props: any) => {
                     setSelected(title);
                     fetchStores();
                   } else {
-                    setSelected(title);
+                    if (title === "Create Store" && props.auth.user.WalletAddress === '') {
+                      alert('You need to create a wallet first');
+                    } else {
+                      setSelected(title);
+                    }
                   }
                 }}
                 className="flex w-full"
               >
                 <a
-                  className={`flex w-full p-2 text-lg  hover:bg-[#416165] cursor-pointer ${
+                  className={`flex w-full p-2 text-lg  ${title === 'Create Store' && props.auth.user.WalletAddress !== '' ? `hover:bg-[#416165]` : ``} cursor-pointer ${
                     index === 0 && "rounded-tl-lg"
                   } ${selected === title && "bg-[#50787d] text-white"}`}
                 >

@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import { ILoginUser, IRegisterUser, IUser } from "../interfaces/users";
+import { ILoginUser, IRegisterUser, IUser, UserReq } from "../interfaces/users";
 import backendAxiosInstance from "..";
 import jwt from "jsonwebtoken";
 
@@ -10,13 +10,7 @@ export const _getMe = async (token: string): Promise<AxiosResponse<IUser>> => {
     if (!decoded) {
       throw new Error("Invalid token");
     }
-
-    // jwt.verify(token, CONFIG.PUBLIC_KEY, { algorithms: ["RS256"] }, (err) => {
-    //   if (err) {
-    //     throw new Error("Invalid token");
-    //   }
-    // });
-
+    
     const res =  await backendAxiosInstance.get("/api/users/me", {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -51,3 +45,21 @@ export const _loginUser = async (
     throw error;
   }
 };
+
+export const _updateUser = async (
+  user: UserReq,
+  token: string
+): Promise<AxiosResponse<IUser>> => {
+  try {
+    const res = await backendAxiosInstance.put("/api/users", user, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return res;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}

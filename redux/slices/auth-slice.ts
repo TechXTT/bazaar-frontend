@@ -1,30 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { AuthState } from "../types/auth-types";
+import { AuthState, ICartPayload, IUserPayload } from "../types/auth-types";
 import { IUser } from "@/api/interfaces/users";
 
 const initialState: AuthState = {
   isLoggedIn: false,
   user: null,
-  cart: {products: [], total: 0},
-  loading: false,
-  error: null,
+  cart: { products: [], total: 0 },
   jwt: null,
 };
-
-type IUserPayload = {
-  payload: IUser | null;
-};
-
-type ICartPayload = {
-    payload: {
-        products: {
-        product: any;
-        quantity: number;
-        }[];
-        total: number;
-    };
-    };
 
 export const authSlice = createSlice({
   name: "auth",
@@ -33,7 +17,7 @@ export const authSlice = createSlice({
     login: (state: AuthState, action: any) => {
       state.isLoggedIn = true;
       state.jwt = action.payload;
-    },
+    },  
     logout: (state: AuthState) => {
       state.isLoggedIn = false;
       state.user = null;
@@ -46,8 +30,8 @@ export const authSlice = createSlice({
       state.cart = action.payload;
     },
     clearCart: (state: AuthState) => {
-      state.cart = {products: [], total: 0};
-    }
+      state.cart = { products: [], total: 0 };
+    },
   },
 });
 

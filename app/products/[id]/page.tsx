@@ -19,12 +19,11 @@ const ProductPage = () => {
   );
 
   const [product, setProduct] = useState<any | null>();
+  const [edit, setEdit] = useState<boolean>(false);
 
   useEffect(() => {
     setProduct(productData?.data);
   }, [productData]);
-
-  const [edit, setEdit] = useState<boolean>(false);
 
   if (!productData) return <div>Loading...</div>;
 
@@ -50,34 +49,36 @@ const ProductPage = () => {
           </Link>
           {edit ? (
             <div>
-            <p className="text-xl font-bold text-left">Product Name: </p>
+              <p className="text-xl font-bold text-left">Product Name: </p>
               <textarea
-              value={product?.Name}
-              // @ts-ignore
-              onChange={(e) => setProduct({...product, Name: e.target.value})}
-              className="text-2xl text-balance font-bold mb-4 text-left border-2 rounded p-1 bg-transparent w-full "
-            />
+                value={product?.Name}
+                // @ts-ignore
+                onChange={(e) =>
+                  setProduct({ ...product, Name: e.target.value })
+                }
+                className="text-2xl text-balance font-bold mb-4 text-left border-2 rounded p-1 bg-transparent w-full "
+              />
             </div>
           ) : (
             <h2 className="text-2xl text-balance font-bold mb-4 text-left">
-            {product?.Name}
-          </h2>
+              {product?.Name}
+            </h2>
           )}
 
           {edit ? (
             <div>
-            <p className="text-xl font-bold text-left ">Price: </p>
-            <div className="flex flex-row">
-              <input
-              value={product?.Price}
-              // @ts-ignore
-              onChange={(e) => setProduct({...product, Price: e.target.value})}
-              className="text-xl text-left mb-4 mr-1 border-2 rounded px-1 bg-transparent w-16 "
-            /> 
-            <p className="text-2xl text-left mb-4">
-              {product?.Unit}
-            </p>
-            </div>
+              <p className="text-xl font-bold text-left ">Price: </p>
+              <div className="flex flex-row">
+                <input
+                  value={product?.Price}
+                  // @ts-ignore
+                  onChange={(e) =>
+                    setProduct({ ...product, Price: e.target.value })
+                  }
+                  className="text-xl text-right mb-4 mr-1 border-2 rounded px-1 bg-transparent w-20 "
+                />
+                <p className="text-2xl text-left mb-4">{product?.Unit}</p>
+              </div>
             </div>
           ) : (
             <p className="text-xl text-left mb-4">
@@ -91,17 +92,34 @@ const ProductPage = () => {
             <textarea
               value={product?.Description}
               // @ts-ignore
-              onChange={(e) => setProduct({...product, Description: e.target.value})}
+              onChange={(e) =>
+                setProduct({ ...product, Description: e.target.value })
+              }
               className="text-xl text-left border-2 rounded p-1 bg-transparent w-full mb-4"
             />
           ) : (
             <p className="text-lg text-left">{product?.Description}</p>
           )}
 
-        {edit && <AddCart product={product} productData={productData?.data} setProduct={setProduct} edit={edit} setEdit={setEdit} />}
-
+          {edit && (
+            <AddCart
+              product={product}
+              productData={productData?.data}
+              setProduct={setProduct}
+              edit={edit}
+              setEdit={setEdit}
+            />
+          )}
         </div>
-        {!edit && <AddCart product={product} productData={productData?.data} setProduct={setProduct} edit={edit} setEdit={setEdit} />}
+        {!edit && (
+          <AddCart
+            product={product}
+            productData={productData?.data}
+            setProduct={setProduct}
+            edit={edit}
+            setEdit={setEdit}
+          />
+        )}
       </div>
     </div>
   );

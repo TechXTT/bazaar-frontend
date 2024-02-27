@@ -29,7 +29,7 @@ const RegisterPage = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    
+
     setLocalError(null);
 
     const validationError = validateRegisterUser(userData);
@@ -68,6 +68,7 @@ const RegisterPage = () => {
               id="firstName"
               value={userData.firstName}
               autoComplete="given-name"
+              placeholder="John"
               onChange={handleInputChange}
               className="text-base rounded-lg block bg-transparent border-2 py-2.5 px-2"
             />
@@ -80,6 +81,7 @@ const RegisterPage = () => {
               id="lastName"
               value={userData.lastName}
               autoComplete="family-name"
+              placeholder="Doe"
               onChange={handleInputChange}
               className="text-base rounded-lg block bg-transparent border-2 py-2.5 px-2"
             />
@@ -93,6 +95,7 @@ const RegisterPage = () => {
               id="email"
               value={userData.email}
               autoComplete="email"
+              placeholder="john.doe@gmail.com"
               onChange={handleInputChange}
               className="text-base rounded-lg block bg-transparent border-2 py-2.5 px-2"
             />
@@ -106,6 +109,7 @@ const RegisterPage = () => {
               id="password"
               value={userData.password}
               autoComplete="new-password"
+              placeholder="********"
               onChange={handleInputChange}
               className="text-base rounded-lg block bg-transparent border-2 py-2.5 px-2"
             />
@@ -119,21 +123,19 @@ const RegisterPage = () => {
               id="confirmPassword"
               value={userData.confirmPassword}
               autoComplete="new-password"
+              placeholder="********"
               onChange={handleInputChange}
               className="text-base rounded-lg block bg-transparent border-2 py-2.5 px-2"
             />
           </div>
           <div className="flex flex-col">
-          <button
-            type="submit"
-            className="w-full mt-2 text-white bg-[#182628] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-xl block py-2.5 text-center"
-          >
-            Sign in
-          </button>
-          {localError && (
-            <p className="text-sm text-red-500">{localError}</p>
-          )}
-
+            <button
+              type="submit"
+              className="w-full mt-2 text-white bg-[#182628] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-xl block py-2.5 text-center"
+            >
+              Sign in
+            </button>
+            {localError && <p className="text-sm text-red-500">{localError}</p>}
           </div>
           <p className="text-sm font-light text-gray-500">
             Already have an account?{" "}

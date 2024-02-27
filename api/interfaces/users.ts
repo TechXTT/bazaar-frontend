@@ -9,7 +9,7 @@ export interface IUser {
     FirstName: string;
     LastName: string;
     Email: string;
-    Role: string;
+    WalletAddress: string;
 }
 
 export interface IRegisterUser {
@@ -17,6 +17,13 @@ export interface IRegisterUser {
     lastName: string;
     email: string;
     password: string;
+}
+
+export interface UserReq {
+    FirstName: string;
+    LastName: string;
+    Email: string;
+    WalletAddress: string;
 }
 
 export interface ILoginUser {

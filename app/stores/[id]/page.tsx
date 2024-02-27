@@ -4,7 +4,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import { IStore } from "@/api/interfaces/stores";
 import { useParams } from "next/navigation";
 import useSWR from "swr";
-import { useInView } from 'react-intersection-observer';  
+import { useInView } from "react-intersection-observer";
 import Image from "next/image";
 import ProductCard from "@/app/stores/components/product";
 import { useEffect, useState } from "react";
@@ -28,26 +28,28 @@ const StorePage = () => {
 
   const fetchProducts = async () => {
     try {
-      
-    const response = await productsService.getProducts(id, cursor);
+      const response = await productsService.getProducts(id, cursor);
 
-    if (response.data.length > 0 && response.data !== nextProductsData) {
-      setPrevProductsData([...prevProductsData, ...nextProductsData]);
-      setNextProductsData(response.data);
-    }
-    
-    const date = new Date((response.headers["next-cursor"].split(" ")[0] + " " + response.headers["next-cursor"].split(" ")[1])).getTime();
-    const nextCursor = new Date(date + 2 * 60 * 60 * 1000).toISOString()
-    setCursor(nextCursor);
+      if (response.data.length > 0 && response.data !== nextProductsData) {
+        setPrevProductsData([...prevProductsData, ...nextProductsData]);
+        setNextProductsData(response.data);
+      }
 
-  } catch (error: any) {
-    if (error.response.status.toString() === '404') {
-      setEnableScroll(false);
-    }else if (error.response.status.toString() === '500') {
-      setEnableScroll(false);
+      const date = new Date(
+        response.headers["next-cursor"].split(" ")[0] +
+          " " +
+          response.headers["next-cursor"].split(" ")[1]
+      ).getTime();
+      const nextCursor = new Date(date + 2 * 60 * 60 * 1000).toISOString();
+      setCursor(nextCursor);
+    } catch (error: any) {
+      if (error.response.status.toString() === "404") {
+        setEnableScroll(false);
+      } else if (error.response.status.toString() === "500") {
+        setEnableScroll(false);
+      }
+      console.log(error);
     }
-    console.log(error);
-  }
   };
 
   useEffect(() => {
@@ -65,13 +67,18 @@ const StorePage = () => {
 
         <div className="grid grid-auto-fit-lg ">
           {[...prevProductsData, ...nextProductsData]
-            ? [...prevProductsData, ...nextProductsData].map((product) => <ProductCard key={product.ID} product={product} />)
+            ? [...prevProductsData, ...nextProductsData].map((product) => (
+                <ProductCard key={product.ID} product={product} />
+              ))
             : null}
         </div>
-        {enableScroll && (<div ref={ref} className="flex justify-center">
-          <div><p>Loading...</p></div>
-          </div>)}
-        
+        {enableScroll && (
+          <div ref={ref} className="flex justify-center">
+            <div>
+              <p>Loading...</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
