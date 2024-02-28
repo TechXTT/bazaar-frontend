@@ -6,8 +6,6 @@ import { useEffect } from "react";
 const LogoutPage = () => {
     const dispatch = useAppDispatch();
 
-
-    
     useEffect(() => {
         dispatch(logout());
         window.location.href = "/";

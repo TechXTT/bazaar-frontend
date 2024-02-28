@@ -30,6 +30,10 @@ const Checkout = (props: any) => {
     } else if (account === "") {
       setAccount(window.ethereum?.selectedAddress!);
     }
+    if (typeof window.ethereum === "undefined") {
+      setError("Please install Metamask");
+      return;
+    }
     try {
       const createdAt = new Date().toISOString();
       const data = props.auth.cart.products.map((product: any) => ({

@@ -81,8 +81,7 @@ const UserSettingsPage = () => {
 
   const onSelect = (select: string) => {
     if (select === "Logout") {
-      dispatch(logout());
-      router.push("/auth/login");
+      router.push("/auth/logout");
       return;
     }
 
