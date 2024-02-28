@@ -63,7 +63,7 @@ const OpenDispute = (props: any) => {
   const {acceptedFiles, getRootProps, getInputProps} = useDropzone({
     accept: {'image/*': ['.jpg', '.jpeg', '.png']},
     maxFiles: 5,
-    maxSize: 1000000,
+    maxSize: 10000000,
 });
 
   const fetchDispute = async () => {
