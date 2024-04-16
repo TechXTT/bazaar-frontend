@@ -6,6 +6,7 @@ import { IProduct } from "@/api/interfaces/products";
 import Link from "next/link";
 import AddCart from "../components/addCart";
 import { useEffect, useState } from "react";
+import BucketImage from "@/app/components/image";
 
 type productData = {
   data: IProduct;
@@ -32,13 +33,12 @@ const ProductPage = () => {
   return (
     <div className="flex w-full pt-36 pb-2 md:justify-center px-16 mx-auto h-screen ">
       <div className="flex flex-row w-full rounded-lg shadow p-4 h-3/4 bg-[#324B4E]">
-        <img
-          src={
-            "https://bucket-for-bazaar.fra1.cdn.digitaloceanspaces.com/" +
-            product?.ImageURL
-          }
-          alt={product?.Name}
+        
+        <BucketImage
+          key={product.ID}
           className="w-1/3 h-full object-cover rounded-lg mr-8"
+          imageURL={product.ImageURL}
+          name={product.Name}
         />
         <div className={`flex flex-col ${edit ? "w-2/3" : "w-1/3"} mr-4`}>
           <Link

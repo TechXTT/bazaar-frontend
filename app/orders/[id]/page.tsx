@@ -6,6 +6,7 @@ import { IOrder } from "@/api/interfaces/products";
 import { useEffect, useState } from "react";
 import OpenDispute from "../components/openDispute";
 import { IDispute } from "@/api/interfaces/disputes";
+import BucketImage from "@/app/components/image";
 
 type orderData = {
   data: IOrder;
@@ -43,13 +44,12 @@ const OrderPage = () => {
         </h2>
         </div>
         <div className="flex flex-col w-1/3">
-        <img
-          src={
-            "https://bucket-for-bazaar.fra1.cdn.digitaloceanspaces.com/" +
-            order.Product?.ImageURL
-          }
-          alt={order.Product?.Name}
+        
+        <BucketImage
+          key={order.Product?.ID}
           className="w-full h-5/6 object-cover rounded-lg mr-8"
+          imageURL={order.Product?.ImageURL}
+          name={order.Product?.Name}
         />
         <h2 className="text-2xl text-justify font-bold mb-4 text-left">
           {order.Product?.Name}

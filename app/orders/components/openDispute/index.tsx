@@ -9,6 +9,7 @@ import { CONFIG } from "@/config/config";
 import { ethers } from "ethers";
 import { ABI } from "@/escrow_abi";
 import { messageToBytes32 } from "@/utils/helpers";
+import BucketImage from "@/app/components/image";
 
 const OpenDispute = (props: any) => {
   const order: IOrder = props.order;
@@ -194,14 +195,12 @@ const OpenDispute = (props: any) => {
               <h2 className="ml-2 text-3xl">Dispute Images: </h2>
             <div className="ml-2 grid grid-auto-fit">
             {props.dispute?.Images?.map((image: any, index: any) => (
-              <img
+              
+              <BucketImage
                 key={index}
-                src={
-                  "https://bucket-for-bazaar.fra1.cdn.digitaloceanspaces.com/" +
-                  image.Image
-                }
-                alt={image}
-                className="w-28 h-28 object-cover"
+                className="w-28 h-28 object-cover rounded-lg mr-8"
+                imageURL={image.Image}
+                name={image.Image}
               />
               
 

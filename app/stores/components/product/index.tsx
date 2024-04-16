@@ -1,3 +1,4 @@
+import BucketImage from "@/app/components/image";
 import Link from "next/link";
 
 const ProductCard = (props: any) => {
@@ -10,13 +11,11 @@ const ProductCard = (props: any) => {
       className="flex flex-col w-72 h-96 p-2 m-2 bg-[#627C7F] rounded-lg shadow-md"
     >
       <div className="flex flex-col w-full h-full overflow-hidden">
-        <img
-          src={
-            "https://bucket-for-bazaar.fra1.cdn.digitaloceanspaces.com/" +
-            product.ImageURL
-          }
-          alt={product.Name}
+        <BucketImage
+          key={product.ID}
           className="h-64 object-cover rounded-lg"
+          imageURL={product.ImageURL}
+          name={product.Name}
         />
 
         <div className="flex flex-col w-full h-full justify-end">
