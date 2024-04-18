@@ -20,6 +20,10 @@ const MAIN_LINKS = [
     href: "/stores",
     title: "Магазини",
   },
+  {
+    href: "/search",
+    title: "Търсене",
+  }
 ];
 
 const UNAUTH_LINKS = [
