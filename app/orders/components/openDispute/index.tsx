@@ -212,7 +212,7 @@ const OpenDispute = (props: any) => {
                 handleCloseDispute();
               }}
               type="submit"
-                className="w-full text-white bg-[#182628] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-xl block py-2.5 text-center"
+                className="w-full text-white bg-[#182628] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-xl block py-2.5 text-center disabled:opacity-50"
               disabled={order.Status === 'cancelled'}
             >
               {order.BuyerID === props.auth.user.ID ? "Cancel Dispute" : "Approve Dispute"}

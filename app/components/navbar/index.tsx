@@ -293,29 +293,23 @@ const Navigation = (props: any) => {
                         >
                           {/* <Linky href={link.href}>{link.title}</Linky> */}
                           {link.title == "Акаунт" && !mobileOpen ? (
-                            <div className="rounded-full">
+                            <Link className="rounded-full" href={`/users/${props.auth.user?.ID}`}>
                               <FaUser
                                 className=""
                                 size={28}
-                                onClick={() => {
-                                  window.location.href = `/users/${props.auth.user?.ID}`;
-                                }}
                               />
-                            </div>
+                            </Link>
                           ) : link.title == "Количка" && !mobileOpen ? (
                             <div>
-                              <div className="rounded-full">
+                              <Link className="rounded-full" href="/cart">
                                 <FaShoppingCart
                                   className="menu-hover"
                                   size={28}
-                                  onClick={() => {
-                                    window.location.href = `/cart`;
-                                  }}
                                 />
                                 <p className="text-white absolute -top-2 -right-2">
                                   {props.auth.cart.products.length}
                                 </p>
-                              </div>
+                              </Link>
                               <div className="invisible absolute z-50 bg-[#324B4E] -left-32 top-10 rounded-lg p-2 flex w-96 flex-col group-hover:visible ">
                                 <div className="flex flex-col overflow-scroll max-h-48">
                                   {props.auth.cart.products.map(

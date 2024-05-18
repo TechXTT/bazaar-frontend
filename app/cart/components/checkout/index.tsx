@@ -122,7 +122,7 @@ const Checkout = (props: any) => {
       </div>
       <div className="flex w-full justify-center">
         <button
-          className="bg-[#151f20] text-xl text-white font-bold py-2 px-2 rounded"
+          className="bg-[#151f20] text-xl text-white font-bold py-2 px-2 rounded disabled:opacity-50"
           onClick={handleCheckout}
           disabled={connected ? false : true}
         >

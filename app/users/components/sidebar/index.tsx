@@ -49,9 +49,9 @@ const SideBar = (props: any) => {
                 className="flex w-full"
               >
                 <a
-                  className={`flex w-full p-2 text-lg  ${title === 'Create Store' && props.auth.user.WalletAddress !== '' ? `hover:bg-[#416165]` : ``} cursor-pointer ${
+                  className={`flex w-full p-2 text-lg  ${props.auth.user.WalletAddress !== '' && title !== 'Logout' ? `hover:bg-[#416165]` : ``} cursor-pointer ${
                     index === 0 && "rounded-tl-lg"
-                  } ${selected === title && "bg-[#50787d] text-white"}`}
+                  } ${selected === title && "bg-[#50787d] text-white"} ${title === 'Logout' && 'bg-[#cc423b]'}`}
                 >
                   {title}
                 </a>

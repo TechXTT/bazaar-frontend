@@ -110,7 +110,7 @@ const AddToCart = (props: any) => {
       <div className="flex flex-row justify-between">
         <p className="text-3xl -mt-1 mb-8 font-bold text-left">Price: </p>
         <p className="text-2xl mb-8 text-left">
-          {product.Price * amount} {product.Unit}
+          {(product.Price * amount).toFixed(9).replace(/\.?0+$/, '')} {product.Unit}
         </p>
       </div>
       <div className="flex h-1/2 flex-row content-center space-x-2">
@@ -128,7 +128,7 @@ const AddToCart = (props: any) => {
       <div className="flex flex-row w-full">
         <button
           onClick={handleAddToCart}
-          className="bg-[#324B4E] w-full text-xl text-white p-2 rounded-md"
+          className="bg-[#324B4E] w-full text-xl text-white p-2 rounded-md disabled:opacity-50 disabled:opacity-50"
           disabled={!props.auth.isLoggedIn}
         >
           Add to Cart
