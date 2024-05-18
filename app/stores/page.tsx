@@ -3,7 +3,10 @@
 import backendAxiosInstance from "@/api";
 import { IStore } from "@/api/interfaces/stores";
 import Link from "next/link";
+import { useEffect } from "react";
 import useSWR from "swr";
+import ProductCard from "./components/product";
+import MiniProductCard from "./components/mini-product";
 
 type storesData = {
   data: IStore[];
@@ -15,9 +18,9 @@ const StoresPage = () => {
     backendAxiosInstance.get
   );
 
-  const handleStorePress = (id: string) => {
-    window.location.href = `/stores/${id}`;
-  };
+  useEffect(() => {
+    console.log("storesData", storesData);
+  }, [storesData]);
 
   if (!storesData) return <div>Loading...</div>;
   if (storesError) return <div>Failed to load</div>;
@@ -34,10 +37,15 @@ const StoresPage = () => {
             ? storesData.data.map((store) => (
                 <Link
                   key={store.ID}
-                  className="flex flex-col w-72 justify-center p-2 m-2 bg-[#627C7F] rounded-lg shadow-md"
+                  className="flex flex-col w-72 p-2 m-2 bg-[#627C7F] rounded-lg shadow-md"
                   href={`/stores/${store.ID}`}
                 >
                   <h2 className="text-xl font-bold text-left">{store.Name}</h2>
+                  <div className="flex flex-row justify-between overflow-x-auto">
+                  {store.Products?.map((product) => (
+                    <MiniProductCard key={product.ID} product={product} />
+                  ))}
+                  </div>
                 </Link>
               ))
             : null}

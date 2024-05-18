@@ -8,9 +8,9 @@ const ProductCard = (props: any) => {
     <Link
       href={`/products/${product.ID}`}
       key={product.ID}
-      className="flex flex-col w-72 h-96 p-2 m-2 bg-[#627C7F] rounded-lg shadow-md"
+      className="relative flex grow flex-col w-72 h-96 shrink-0 p-2 m-2 bg-[#627C7F] rounded-lg shadow-md"
     >
-      <div className="flex flex-col w-full h-full overflow-hidden">
+      <div className="flex flex-col shrink-0 grow w-full h-full overflow-hidden">
         <BucketImage
           key={product.ID}
           className="h-64 object-cover rounded-lg"
