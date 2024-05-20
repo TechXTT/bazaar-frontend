@@ -43,6 +43,7 @@ const RegisterPage = () => {
 
       if (response.status === 201) {
         setLocalError(null);
+        window.location.href = "/auth/login";
       } else {
         console.error("Register error: ", response);
         setLocalError("Registration failed");
