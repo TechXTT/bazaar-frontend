@@ -42,9 +42,21 @@ const StoresPage = () => {
                 >
                   <h2 className="text-xl font-bold text-left">{store.Name}</h2>
                   <div className="flex flex-row justify-between overflow-x-auto">
-                  {store.Products?.map((product) => (
-                    <MiniProductCard key={product.ID} product={product} />
-                  ))}
+                    {store.Products?.slice(0, 5).map((product) => (
+                      <MiniProductCard key={product.ID} product={product} />
+                    ))}
+                    <Link
+                      href={`/stores/${store.ID}`}
+                      className="relative flex grow shrink-0 flex-col w-36 h-36 p-2 m-2 bg-[#416165] rounded-lg shadow-md opacity-80 align-middle justify-center"
+                    >
+                      <div className="flex flex-col justify-center">
+                        <div className="relative justify-center">
+                          <h1 className="object-cover text-center text-4xl font-bold">
+                            ...
+                          </h1>
+                        </div>
+                      </div>
+                    </Link>
                   </div>
                 </Link>
               ))
