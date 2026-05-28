@@ -8,6 +8,15 @@ export const ORDER_FILTERS = {
   seller: "seller",
 } as const;
 
+export const _getProduct = async (id: string): Promise<AxiosResponse<IProduct>> => {
+  try {
+    return await backendAxiosInstance.get(`/api/products/${id}`);
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 export const _getAllProducts = async (): Promise<AxiosResponse<IProduct[]>> => {
   try {
     const res = await backendAxiosInstance.get("/api/products");

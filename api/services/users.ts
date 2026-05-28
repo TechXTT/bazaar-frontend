@@ -25,9 +25,9 @@ export const _updateUser = async (
   }
 };
 
-export const _getNonce = async (): Promise<AxiosResponse<{ nonce: string }>> => {
+export const _getNonce = async (walletAddress: string): Promise<AxiosResponse<{ nonce: string }>> => {
   try {
-    return await backendAxiosInstance.get("/api/users/nonce");
+    return await backendAxiosInstance.post("/api/auth/nonce", { walletAddress });
   } catch (error) {
     console.error(error);
     throw error;
@@ -37,9 +37,9 @@ export const _getNonce = async (): Promise<AxiosResponse<{ nonce: string }>> => 
 export const _verifySIWE = async (
   message: string,
   signature: string
-): Promise<AxiosResponse<{ token: string }>> => {
+): Promise<AxiosResponse<{ token: string; user: IUser }>> => {
   try {
-    return await backendAxiosInstance.post("/api/users/siwe", { message, signature });
+    return await backendAxiosInstance.post("/api/auth/verify", { message, signature });
   } catch (error) {
     console.error(error);
     throw error;

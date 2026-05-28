@@ -1,102 +1,98 @@
 "use client";
-import { usersService } from "@/api";
-import { login } from "@/redux/slices/auth-slice";
-import { useAppDispatch } from "@/redux/store";
-import { validateLoginUser } from "@/utils/helpers";
-import React, { ChangeEvent, FormEvent, useState } from "react";
 
-interface ILoginUser {
-  email: string;
-  password: string;
+import { usersService } from "@/api";
+import { CONFIG } from "@/config/config";
+import { login, setUser } from "@/redux/slices/auth-slice";
+import { useAppDispatch } from "@/redux/store";
+import { useSDK } from "@metamask/sdk-react";
+import { getAddress } from "ethers";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+
+function buildSiweMessage(address: string, nonce: string): string {
+  const domain = window.location.host;
+  const origin = window.location.origin;
+  const chainId = parseInt(CONFIG.CHAIN_ID, 16);
+  const issuedAt = new Date().toISOString();
+
+  return [
+    `${domain} wants you to sign in with your Ethereum account:`,
+    address,
+    "",
+    "Sign in to The Bazaar",
+    "",
+    `URI: ${origin}`,
+    "Version: 1",
+    `Chain ID: ${chainId}`,
+    `Nonce: ${nonce}`,
+    `Issued At: ${issuedAt}`,
+  ].join("\n");
 }
 
 const LoginPage = () => {
-  const [userData, setUserData] = useState<ILoginUser>({
-    email: "",
-    password: "",
-  });
-
-  const [localError, setLocalError] = useState<string | null>(null);
-
   const dispatch = useAppDispatch();
+  const router = useRouter();
+  const { sdk } = useSDK();
+  const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = event.target;
-    setUserData((prev) => ({ ...prev, [id]: value }));
-  };
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const validationError = validateLoginUser(userData);
-    if (validationError) {
-      setLocalError(validationError);
-      return;
-    }
-
+  const handleSignIn = async () => {
+    setLoading(true);
     try {
-      const response = await usersService.loginUser(userData);
-      if (response.status === 200) {
-        setLocalError(null);
-        dispatch(login(response.data?.token));
-        window.location.href = "/";
-      } else {
-        console.error("Login error: ", response);
-        setLocalError("Login failed");
-      }
-    } catch (error) {
-      console.error("Login error: ", error);
-      setLocalError("An unexpected error occurred while logging in.");
+      // 1. Connect wallet
+      const accounts = await sdk?.connect();
+      const walletAddress = (accounts as string[])?.[0];
+      if (!walletAddress) throw new Error("No wallet address");
+
+      // 2. Get nonce
+      const nonceRes = await usersService.getNonce(walletAddress);
+      const { nonce } = nonceRes.data;
+
+      // 3. Build + sign SIWE message
+      const checksumAddress = getAddress(walletAddress);
+      const message = buildSiweMessage(checksumAddress, nonce);
+      const signature = await window.ethereum!.request({
+        method: "personal_sign",
+        params: [message, walletAddress],
+      });
+
+      // 4. Verify with backend
+      const verifyRes = await usersService.verifySIWE(message, signature as string);
+      const { token, user } = verifyRes.data;
+
+      // 5. Store in Redux
+      dispatch(login(token));
+      dispatch(setUser(user));
+      router.push("/");
+    } catch (err: any) {
+      const msg = err?.response?.data ?? err?.message ?? "Sign-in failed";
+      toast.error(typeof msg === "string" ? msg : "Sign-in failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col items-center md:justify-center px-2 mx-auto md:h-screen py-10 md:py-0">
-      <div className="w-full bg-[#324B4E] rounded-lg shadow md:mt-0 sm:max-w-md p-2 space-y-2 md:space-y-4 sm:p-6">
-        <h1 className="text-2xl font-bold leading-tight tracking-tight md:text-2xl">
-          Login
-        </h1>
-        <form onSubmit={handleSubmit} className="space-y-2 md:space-y-4">
-          <div className="flex flex-col">
-            <label htmlFor="email" className="mb-2 font-medium">
-              Email:
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={userData.email}
-              onChange={handleInputChange}
-              className="text-base rounded-lg block bg-transparent border-2 py-2.5 px-2"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="password" className="mb-2 font-medium">
-              Password:
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={userData.password}
-              onChange={handleInputChange}
-              className="text-base rounded-lg block bg-transparent border-2 py-2.5 px-2"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full text-white bg-[#182628] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-xl block py-2.5 text-center"
-          >
-            Login
-          </button>
-          <p className="text-sm font-light text-gray-500">
-            {"Don't have an account? "}
-            <a
-              href="/auth/register"
-              className="font-medium text-primary-600 hover:underline"
-            >
-              Register
-            </a>
+    <div className="flex flex-col items-center justify-center px-4 mx-auto h-screen">
+      <div className="w-full max-w-sm bg-bg-secondary rounded-xl shadow p-8 space-y-6">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold">Sign in</h1>
+          <p className="text-sm text-text-secondary">
+            Connect your MetaMask wallet to continue.
           </p>
-        </form>
+        </div>
+
+        <button
+          onClick={handleSignIn}
+          disabled={loading}
+          className="w-full bg-primary text-white font-semibold py-3 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? "Signing in…" : "Sign in with MetaMask"}
+        </button>
+
+        <p className="text-xs text-center text-text-secondary">
+          No account? One will be created automatically on first sign-in.
+        </p>
       </div>
     </div>
   );

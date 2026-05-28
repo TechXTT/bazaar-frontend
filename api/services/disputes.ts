@@ -1,12 +1,6 @@
 import { AxiosResponse } from "axios";
 import backendAxiosInstance from "..";
 
-export interface DisputeReq {
-    OrderID: string;
-    Dispute: string;
-    Images?: readonly File[] | File[];
-}
-
 export interface IDisputeEvidence {
     ID: string;
     DisputeID: string;
@@ -36,7 +30,6 @@ export const _getDisputes = async (): Promise<AxiosResponse<IDispute[]>> => {
     }
 };
 
-// Accepts optional token for backward compatibility (ignored — interceptor handles auth)
 export const _getDisputeByOrderID = async (orderId: string, _token?: string | null): Promise<AxiosResponse<IDispute>> => {
     try {
         return await backendAxiosInstance.get(`/api/disputes/${orderId}`);
@@ -49,30 +42,6 @@ export const _getDisputeByOrderID = async (orderId: string, _token?: string | nu
 export const _getEvidence = async (orderId: string): Promise<AxiosResponse<IDisputeEvidence[]>> => {
     try {
         return await backendAxiosInstance.get(`/api/orders/${orderId}/evidence`);
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
-};
-
-export const _createDispute = async (data: DisputeReq, _token?: string | null): Promise<AxiosResponse> => {
-    try {
-        const form = new FormData();
-        form.append("orderId", data.OrderID);
-        form.append("dispute", data.Dispute);
-        if (data.Images) {
-            Array.from(data.Images).forEach((img) => form.append("images", img));
-        }
-        return await backendAxiosInstance.postForm("/api/disputes", form);
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
-};
-
-export const _closeDispute = async (disputeID: string, _token?: string | null): Promise<AxiosResponse> => {
-    try {
-        return await backendAxiosInstance.put(`/api/disputes/${disputeID}`, {});
     } catch (error) {
         console.error(error);
         throw error;

@@ -14,7 +14,7 @@ export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    login: (state: AuthState, action: any) => {
+    login: (state: AuthState, action: PayloadAction<string>) => {
       state.isLoggedIn = true;
       state.jwt = action.payload;
     },
