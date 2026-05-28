@@ -1,150 +1,136 @@
-import backendAxiosInstance, { productsService } from "@/api";
-import { CONFIG } from "@/config/config";
-import { ABI } from "@/escrow_abi";
-import { clearCart } from "@/redux/slices/auth-slice";
-import { messageToBytes32 } from "@/utils/helpers";
-import { useSDK } from "@metamask/sdk-react";
-import { AxiosResponse } from "axios";
-import { ethers, parseEther } from "ethers";
-import { useEffect, useState } from "react";
-import { connect, useDispatch } from "react-redux";
+"use client";
 
-const Checkout = (props: any) => {
-  const dispatch = useDispatch();
-  const [account, setAccount] = useState("");
-  let orderIds: { id: string; owner_address: string }[] = [];
+import { productsService } from "@/api";
+import { CONFIG } from "@/config/config";
+import { createOrder, createOrderERC20 } from "@/components/escrow";
+import { clearCart } from "@/redux/slices/auth-slice";
+import { useAppDispatch } from "@/redux/store";
+import { useSDK } from "@metamask/sdk-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { toast } from "sonner";
+
+interface CheckoutProps {
+  paymentToken: "ETH" | "USDC";
+}
+
+const Checkout = ({ paymentToken }: CheckoutProps) => {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const cart = useSelector((state: any) => state.auth.cart);
   const { sdk, connected } = useSDK();
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleCheckout = async () => {
-    if (!connected) {
+    let buyerAddress = window.ethereum?.selectedAddress ?? "";
+
+    if (!connected || !buyerAddress) {
       try {
         const accounts = await sdk?.connect();
-        if (accounts) {
-          // @ts-expect-error
-          setAccount(accounts?.[0]);
-        }
-      } catch (err) {
-        console.warn(`failed to connect..`, err);
+        buyerAddress = (accounts as string[])?.[0] ?? "";
+      } catch {
+        toast.error("Failed to connect wallet");
+        return;
       }
-    } else if (account === "") {
-      setAccount(window.ethereum?.selectedAddress!);
     }
-    if (typeof window.ethereum === "undefined") {
-      setError("Please install Metamask");
+
+    if (!buyerAddress) {
+      toast.error("No wallet address found");
       return;
     }
+
+    if (paymentToken === "USDC" && !CONFIG.USDC_ADDRESS) {
+      toast.error("USDC not configured");
+      return;
+    }
+
+    setLoading(true);
     try {
       const createdAt = new Date().toISOString();
-      const data = props.auth.cart.products.map((product: any) => ({
+      const orderReqs = cart.products.map((p: any) => ({
         CreatedAt: createdAt,
-        ProductID: product.ID,
-        Quantity: product.Quantity,
-        BuyerAddress: account,
+        ProductID: p.ID,
+        Quantity: p.Quantity ?? 1,
+        BuyerAddress: buyerAddress,
       }));
-      const response: AxiosResponse<string[]> =
-        await productsService.createOrders(data, props.auth.jwt);
 
-      if (response.status === 201) {
-        response.data.forEach((resp: any) => {
-          console.log("orderId", messageToBytes32(resp.id));
-          orderIds.push({
-            id: messageToBytes32(resp.id),
-            owner_address: resp.owner_address,
-          });
-        });
-
-        const provider = new ethers.BrowserProvider(window.ethereum!);
-        const signer = await provider.getSigner();
-        const escrow = new ethers.Contract(
-          CONFIG.CONTRACT_ADDRESS,
-          ABI,
-          signer
-        );
-        orderIds.forEach(async (orderId, index) => {
-          try {
-            const value = parseEther(
-              props.auth.cart.products[index].Price *
-                props.auth.cart.products[index].Quantity +
-                ""
-            );
-            const timeToRelease = 14 * 24 * 60 * 60; //14 days until release
-            const result = await escrow.createOrder(
-              orderId.id,
-              orderId.owner_address,
-              timeToRelease,
-              { value: value }
-            );
-            console.log("result", result);
-            dispatch(clearCart());
-          } catch (err) {
-            console.log("err", err);
-          }
-        });
+      const response = await productsService.createOrders(orderReqs);
+      if (response.status !== 201) {
+        toast.error("Failed to create orders");
+        return;
       }
+
+      const orderResponses: { id: string; owner_address: string }[] = response.data;
+      const releaseTime = CONFIG.ESCROW_RELEASE_DAYS * 24 * 60 * 60;
+      const txs: string[] = [];
+
+      for (let i = 0; i < orderResponses.length; i++) {
+        const order = orderResponses[i];
+        const item = cart.products[i];
+        const quantity = item.Quantity ?? 1;
+
+        if (paymentToken === "USDC") {
+          const amount = BigInt(Math.round(item.Price * quantity * 1e6));
+          const { orderTx } = await createOrderERC20(
+            order.id,
+            item.ID,
+            order.owner_address,
+            releaseTime,
+            amount
+          );
+          txs.push(orderTx.hash);
+        } else {
+          const { parseEther } = await import("ethers");
+          const value = parseEther((item.Price * quantity).toString());
+          const tx = await createOrder(
+            order.id,
+            item.ID,
+            order.owner_address,
+            releaseTime,
+            value
+          );
+          txs.push(tx.hash);
+        }
+      }
+
+      sessionStorage.setItem(
+        "bazaar.checkout.confirmation",
+        JSON.stringify({
+          orders: cart.products.map((p: any) => ({
+            name: p.Name,
+            quantity: p.Quantity ?? 1,
+          })),
+          timestamp: Date.now(),
+          total: cart.total,
+          txs,
+        })
+      );
+
+      dispatch(clearCart());
+      router.push("/cart/confirmation");
     } catch (err: any) {
-      if (err?.response?.data.includes("owner and buyer cannot be the same")) {
-        setError("You cannot buy your own product");
+      const msg: string = err?.response?.data ?? err?.message ?? "Checkout failed";
+      if (msg.includes("owner and buyer cannot be the same")) {
+        toast.error("You cannot buy your own product");
         dispatch(clearCart());
       } else {
-        console.log(err?.response?.data);
+        toast.error(msg);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    setError("");
-  }, [props.auth.cart.products]);
-
   return (
-    <div>
-      <div className="grid grid-auto-fit-lg">
-        {props.auth.cart.products
-          ? props.auth.cart.products.map((product: any) => (
-              <div
-                key={product.ID}
-                className="flex flex-col w-72 justify-center p-2 m-2 bg-[#627C7F] rounded-lg shadow-md"
-              >
-                <h2 className="text-xl font-bold text-left">{product.Name}</h2>
-                <p className="text-lg text-right">
-                  {product.Price} {product.Unit}
-                </p>
-                <p className="text-lg text-right">{product.Quantity}</p>
-              </div>
-            ))
-          : null}
-      </div>
-
-      <div className="flex justify-end">
-        <p className="text-lg text-right">
-          Total: {props.auth.cart.total ? props.auth.cart.total : "0.00"}
-        </p>
-      </div>
-      <div className="flex w-full justify-center">
-        <button
-          className="bg-[#151f20] text-xl text-white font-bold py-2 px-2 rounded"
-          onClick={handleCheckout}
-          disabled={connected ? false : true}
-        >
-          Checkout
-        </button>
-        <div className="w-2"></div>
-        <button
-          className="bg-[#151f20] text-xl text-white font-bold py-2 px-2 rounded"
-          onClick={() => dispatch(clearCart())}
-        >
-          Clear Cart
-        </button>
-      </div>
-      {error ? <p>{error}</p> : null}
-    </div>
+    <button
+      className="w-full bg-primary text-white font-bold py-3 px-6 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:opacity-90"
+      onClick={handleCheckout}
+      disabled={loading || cart.products.length === 0}
+    >
+      {loading ? "Processing…" : `Pay with ${paymentToken}`}
+    </button>
   );
 };
 
-const mapStateToProps = (state: any) => {
-  return {
-    auth: state.auth,
-  };
-};
-
-export default connect(mapStateToProps)(Checkout);
+export default Checkout;
