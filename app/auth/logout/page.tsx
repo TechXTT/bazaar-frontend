@@ -1,19 +1,22 @@
 "use client";
+
 import { logout } from "@/redux/slices/auth-slice";
 import { useAppDispatch } from "@/redux/store";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-const LogoutPage = () => {
-    const dispatch = useAppDispatch();
+export default function LogoutPage() {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
 
-    useEffect(() => {
-        dispatch(logout());
-        window.location.href = "/";
-    }, [dispatch]);
-    
-    return <div className="flex flex-col items-center justify-center h-screen">
-        <h1 className="text-2xl font-bold leading-tight tracking-tight md:text-2xl">Logging out...</h1>
-    </div>;
-    }
+  useEffect(() => {
+    dispatch(logout());
+    router.replace("/");
+  }, []);
 
-export default LogoutPage;
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <p className="text-text-secondary">Signing out…</p>
+    </div>
+  );
+}

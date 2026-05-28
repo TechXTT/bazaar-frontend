@@ -298,7 +298,7 @@ const Navigation = (props: any) => {
                                 className=""
                                 size={28}
                                 onClick={() => {
-                                  window.location.href = `/users/${props.auth.user?.ID}`;
+                                  window.location.href = `/account`;
                                 }}
                               />
                             </div>
@@ -394,7 +394,7 @@ const Navigation = (props: any) => {
                                 className=""
                                 size={28}
                                 onClick={() => {
-                                  window.location.href = `/users/${props.auth.user?.ID}`;
+                                  window.location.href = `/account`;
                                 }}
                               />
                             </div>

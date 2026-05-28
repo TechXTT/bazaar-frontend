@@ -24,7 +24,7 @@ backendAxiosInstance.interceptors.request.use((config) => {
 
 // Users Endpoints
 import { _getMe, _updateUser, _getNonce, _verifySIWE, _refreshToken, _loginUser, _registerUser } from "./services/users";
-import { ORDER_FILTERS, _getProduct, _getAllProducts, _getOrders, _getProducts, _createProduct, _updateProduct, _deleteProduct, _createOrders } from "./services/products";
+import { ORDER_FILTERS, _getOrder, _getProduct, _getAllProducts, _getOrders, _getProducts, _createProduct, _updateProduct, _deleteProduct, _createOrders } from "./services/products";
 import { _getStores, _getStore, _getUserStores, _createStore, _deleteStore } from "./services/stores";
 import { _getDisputes, _getDisputeByOrderID, _getEvidence } from "./services/disputes";
 
@@ -39,6 +39,7 @@ const usersService = {
 };
 
 const productsService = {
+    getOrder: _getOrder,
     getProduct: _getProduct,
     getAllProducts: _getAllProducts,
     getProducts: _getProducts,
