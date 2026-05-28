@@ -12,6 +12,9 @@ const ETHERSCAN_TX_BASE_URL: string = process.env.NEXT_PUBLIC_ETHERSCAN_TX_BASE_
 const USDC_ADDRESS: string = process.env.NEXT_PUBLIC_USDC_ADDRESS ?? '';
 const KLEROS_COURT_URL: string = process.env.NEXT_PUBLIC_KLEROS_COURT_URL ?? 'https://resolve.kleros.io';
 const IPFS_GATEWAY: string = process.env.NEXT_PUBLIC_IPFS_GATEWAY ?? 'https://ipfs.io';
+const ALGOLIA_APP_ID: string = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '';
+const ALGOLIA_SEARCH_KEY: string = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY ?? '';
+const ALGOLIA_INDEX: string = process.env.NEXT_PUBLIC_ALGOLIA_PRODUCTS_INDEX ?? 'products';
 
 export const CONFIG = {
     BACKEND_URL,
@@ -27,4 +30,7 @@ export const CONFIG = {
     USDC_ADDRESS,
     KLEROS_COURT_URL,
     IPFS_GATEWAY,
+    ALGOLIA_APP_ID,
+    ALGOLIA_SEARCH_KEY,
+    ALGOLIA_INDEX,
 };

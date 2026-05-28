@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import ProductSearch from "@/components/search";
 
 import { TbMenu2 } from "react-icons/tb";
 import { useEffect, useRef, useState } from "react";
@@ -229,6 +230,9 @@ const Navigation = (props: any) => {
                 </g>
               </svg>
             </Link>
+          </div>
+          <div className="hidden lg:flex flex-1 max-w-sm mx-4">
+            <ProductSearch />
           </div>
           <div className="flex w-full items-center justify-between px-4">
             <button
