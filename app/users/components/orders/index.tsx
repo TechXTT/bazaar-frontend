@@ -16,7 +16,6 @@ const OrdersPage = (props: any) => {
   useEffect(() => {
     const fetch = async () => {
       const res = await productsService.getOrders(props.auth.jwt, filter);
-      console.log("res", res);
       if (res.status === 200) {
         setOrders({ ...orders, [filter]: res.data });
       }

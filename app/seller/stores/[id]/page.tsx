@@ -10,6 +10,7 @@ import { IStore } from "@/api/interfaces/stores";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function SellerStoreDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -28,6 +29,16 @@ export default function SellerStoreDetailPage() {
 
     load();
   }, [id]);
+
+  const handleDelete = async (productId: string) => {
+    try {
+      await productsService.deleteProduct(productId);
+      setProducts((prev) => prev?.filter((p) => p.ID !== productId) ?? []);
+      toast.success("Product deleted");
+    } catch {
+      toast.error("Failed to delete product");
+    }
+  };
 
   if (!store || !products) {
     return (
@@ -65,14 +76,34 @@ export default function SellerStoreDetailPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {products.map((product) => (
-            <Link key={product.ID} href={`/products/${product.ID}`}>
-              <Card className="space-y-2 transition hover:bg-surface-hover">
+            <Card key={product.ID} className="flex flex-col gap-3 p-4">
+              <Link
+                href={`/products/${product.ID}`}
+                className="hover:underline"
+              >
                 <h2 className="font-semibold">{product.Name}</h2>
                 <p className="text-sm text-text-secondary">
                   {product.Price} {product.Unit}
                 </p>
-              </Card>
-            </Link>
+              </Link>
+              <div className="flex gap-2 border-t border-border-subtle pt-3">
+                <Link
+                  href={`/seller/stores/${id}/products/${product.ID}/edit`}
+                  className="flex-1"
+                >
+                  <Button variant="secondary" size="sm" className="w-full">
+                    Edit
+                  </Button>
+                </Link>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => handleDelete(product.ID)}
+                >
+                  Delete
+                </Button>
+              </div>
+            </Card>
           ))}
         </div>
       )}

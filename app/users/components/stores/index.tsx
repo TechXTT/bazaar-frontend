@@ -49,9 +49,8 @@ const StoresPage = (props: any) => {
       ).getTime();
       const nextCursor = new Date(date + 2 * 60 * 60 * 1000).toISOString();
       setCursor(nextCursor);
-    } catch (error: any) {
+    } catch {
       setEnableScroll(false);
-      console.log(error);
     }
   };
 
@@ -65,8 +64,7 @@ const StoresPage = (props: any) => {
     <div className="relative flex w-2/3 ttb">
       <div className="flex flex-col overflow-y-scroll w-full shadow p-4 md:space-y-2 ">
         <div className="flex flex-col w-full scroll-pb-24">
-        {[...prevProductsData, ...nextProductsData]
-          ? [...prevProductsData, ...nextProductsData].map((product, index) => (
+        {[...prevProductsData, ...nextProductsData].map((product, index) => (
               <Link
                 href={`/products/${product.ID}`}
                 key={product.ID}
@@ -76,8 +74,7 @@ const StoresPage = (props: any) => {
                     {product.Name}
                   </div>
               </Link>
-            ))
-          : null}
+            ))}
           </div>
 
         {enableScroll && (

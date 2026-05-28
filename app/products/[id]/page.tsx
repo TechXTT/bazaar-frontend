@@ -1,128 +1,100 @@
 "use client";
-import backendAxiosInstance from "@/api";
-import { useParams } from "next/navigation";
-import useSWR from "swr";
+
+import { productsService } from "@/api";
 import { IProduct } from "@/api/interfaces/products";
-import Link from "next/link";
-import AddCart from "../components/addCart";
-import { useEffect, useState } from "react";
 import BucketImage from "@/app/components/image";
+import { RootState } from "@/redux/store";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import AddCart from "../components/addCart";
 
-type productData = {
-  data: IProduct;
-};
-
-const ProductPage = () => {
+export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
-  const { data: productData, error: productError } = useSWR<productData, Error>(
-    `/api/products/${id}`,
-    backendAxiosInstance.get
-  );
-
-  const [product, setProduct] = useState<any | null>();
-  const [edit, setEdit] = useState<boolean>(false);
+  const router = useRouter();
+  const auth = useSelector((state: RootState) => state.auth);
+  const [product, setProduct] = useState<IProduct | null>(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    setProduct(productData?.data);
-  }, [productData]);
+    productsService
+      .getProduct(id)
+      .then((res) => setProduct(res.data))
+      .catch(() => setError(true));
+  }, [id]);
 
-  if (!productData) return <div>Loading...</div>;
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-40 space-y-4">
+        <p className="text-text-secondary">Product not found.</p>
+        <button onClick={() => router.back()} className="text-sm text-primary hover:underline">
+          Go back
+        </button>
+      </div>
+    );
+  }
 
-  if (!product) return <div>Loading...</div>;
+  if (!product) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-28 animate-pulse space-y-4">
+        <div className="h-96 rounded-xl bg-bg-secondary" />
+        <div className="h-8 w-64 rounded bg-bg-secondary" />
+        <div className="h-5 w-40 rounded bg-bg-secondary" />
+      </div>
+    );
+  }
+
+  const isOwner = auth.user?.ID === product.Store?.OwnerID;
 
   return (
-    <div className="flex w-full pt-36 pb-2 md:justify-center px-16 mx-auto h-screen ">
-      <div className="flex flex-row w-full rounded-lg shadow p-4 h-3/4 bg-[#324B4E]">
-        
-        <BucketImage
-          key={product.ID}
-          className="w-1/3 h-full object-cover rounded-lg mr-8"
-          imageURL={product.ImageURL}
-          name={product.Name}
-        />
-        <div className={`flex flex-col ${edit ? "w-2/3" : "w-1/3"} mr-4`}>
-          <Link
-            href={`/stores/${product?.StoreID}`}
-            className="text-base underline text-left mb-4"
-          >
-            Visit the {product?.Store.Name} Store
-          </Link>
-          {edit ? (
-            <div>
-              <p className="text-xl font-bold text-left">Product Name: </p>
-              <textarea
-                value={product?.Name}
-                // @ts-ignore
-                onChange={(e) =>
-                  setProduct({ ...product, Name: e.target.value })
-                }
-                className="text-2xl text-balance font-bold mb-4 text-left border-2 rounded p-1 bg-transparent w-full "
-              />
-            </div>
-          ) : (
-            <h2 className="text-2xl text-balance font-bold mb-4 text-left">
-              {product?.Name}
-            </h2>
-          )}
+    <div className="max-w-5xl mx-auto px-4 py-28">
+      <div className="flex flex-col lg:flex-row gap-8 rounded-xl border border-border-subtle bg-bg-secondary p-6">
+        {/* Image */}
+        <div className="lg:w-1/2 shrink-0">
+          <BucketImage
+            key={product.ID}
+            className="w-full h-80 lg:h-full object-cover rounded-lg"
+            imageURL={product.ImageURL}
+            name={product.Name}
+          />
+        </div>
 
-          {edit ? (
-            <div>
-              <p className="text-xl font-bold text-left ">Price: </p>
-              <div className="flex flex-row">
-                <input
-                  value={product?.Price}
-                  // @ts-ignore
-                  onChange={(e) =>
-                    setProduct({ ...product, Price: e.target.value })
-                  }
-                  className="text-xl text-right mb-4 mr-1 border-2 rounded px-1 bg-transparent w-20 "
-                />
-                <p className="text-2xl text-left mb-4">{product?.Unit}</p>
-              </div>
-            </div>
-          ) : (
-            <p className="text-xl text-left mb-4">
-              {product?.Price} {product?.Unit}
+        {/* Details */}
+        <div className="flex flex-col gap-4 flex-1">
+          <Link
+            href={`/stores/${product.StoreID}`}
+            className="text-sm text-primary hover:underline"
+          >
+            {product.Store?.Name}
+          </Link>
+
+          <h1 className="text-3xl font-bold">{product.Name}</h1>
+
+          <p className="text-2xl font-semibold">
+            {product.Price} {product.Unit}
+          </p>
+
+          {product.Description && (
+            <p className="text-text-secondary text-sm leading-relaxed">
+              {product.Description}
             </p>
           )}
-          <p className="text-xl font-bold text-left">
-            Additional information:{" "}
-          </p>
-          {edit ? (
-            <textarea
-              value={product?.Description}
-              // @ts-ignore
-              onChange={(e) =>
-                setProduct({ ...product, Description: e.target.value })
-              }
-              className="text-xl text-left border-2 rounded p-1 bg-transparent w-full mb-4"
-            />
-          ) : (
-            <p className="text-lg text-left">{product?.Description}</p>
-          )}
 
-          {edit && (
-            <AddCart
-              product={product}
-              productData={productData?.data}
-              setProduct={setProduct}
-              edit={edit}
-              setEdit={setEdit}
-            />
-          )}
+          <div className="mt-auto">
+            {isOwner ? (
+              <Link
+                href={`/seller/stores/${product.StoreID}/products/${product.ID}/edit`}
+                className="inline-block bg-bg-secondary border border-border-subtle font-semibold px-5 py-2 rounded-lg hover:border-primary transition-colors text-sm"
+              >
+                Edit this product
+              </Link>
+            ) : (
+              <AddCart product={product} />
+            )}
+          </div>
         </div>
-        {!edit && (
-          <AddCart
-            product={product}
-            productData={productData?.data}
-            setProduct={setProduct}
-            edit={edit}
-            setEdit={setEdit}
-          />
-        )}
       </div>
     </div>
   );
-};
-
-export default ProductPage;
+}

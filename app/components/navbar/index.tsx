@@ -104,8 +104,8 @@ const Navigation = (props: any) => {
             method: "wallet_switchEthereumChain",
             params: [{ chainId: "0xaa36a7" }],
           });
-        } catch (error) {
-          console.log("error", error);
+        } catch {
+          // ignore chain switch errors
         }
       }
     };
@@ -120,7 +120,6 @@ const Navigation = (props: any) => {
     const auth = async () => {
       try {
         const res = await usersService.getMe(props.auth.jwt);
-        console.log("res", res);
         if (res.status === 200) {
           setLinks(AUTH_LINKS);
           dispatch(setUser(res.data));

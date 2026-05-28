@@ -51,7 +51,6 @@ export const messageToBytes32 = (message: string): string => {
     if (cleanedUuid.length !== 32) {
       throw new Error("Invalid UUID length");
     }
-    console.log("cleanedUuid", cleanedUuid);
     const bytes32Uuid = bytes32({ input: cleanedUuid });
     return bytes32Uuid;
   };

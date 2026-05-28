@@ -48,7 +48,6 @@ const StorePage = () => {
       } else if (error.response.status.toString() === "500") {
         setEnableScroll(false);
       }
-      console.log(error);
     }
   };
 
