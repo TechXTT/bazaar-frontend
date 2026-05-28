@@ -1,5 +1,6 @@
 import { persistReducer, persistStore } from "redux-persist";
 import authReducer from "./slices/auth-slice";
+import walletReducer from "./slices/wallet-slice";
 import { configureStore } from "@reduxjs/toolkit";
 import createWebStorage from "redux-persist/es/storage/createWebStorage";
 import { useDispatch } from "react-redux";
@@ -33,6 +34,7 @@ const persistedReducer = persistReducer(persistConfig, authReducer);
 const store = configureStore({
   reducer: {
     auth: persistedReducer,
+    wallet: walletReducer,
   },
   middleware: [],
 });

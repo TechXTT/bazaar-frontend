@@ -2,6 +2,7 @@
 
 import backendAxiosInstance from "@/api";
 import { IStore } from "@/api/interfaces/stores";
+import { ScoreBadgeInline } from "@/app/stores/components/reputation";
 import useSWR from "swr";
 
 type storesData = {
@@ -36,7 +37,10 @@ const StoresPage = () => {
                   className="flex flex-col w-72 justify-center p-2 m-2 bg-[#627C7F] rounded-lg shadow-md"
                   onClick={() => handleStorePress(store.ID)}
                 >
-                  <h2 className="text-xl font-bold text-left">{store.Name}</h2>
+                  <div className="flex items-center justify-between gap-2">
+                    <h2 className="text-xl font-bold text-left">{store.Name}</h2>
+                    <ScoreBadgeInline score={store.Reputation?.Score ?? null} />
+                  </div>
                 </div>
               ))
             : null}

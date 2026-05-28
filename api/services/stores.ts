@@ -9,7 +9,7 @@ export const _getStores = async (): Promise<AxiosResponse<IStore[]>> => {
         console.error(error);
         throw error;
     }
-}
+};
 
 export const _getStore = async (id: string): Promise<AxiosResponse<IStore>> => {
     try {
@@ -18,43 +18,40 @@ export const _getStore = async (id: string): Promise<AxiosResponse<IStore>> => {
         console.error(error);
         throw error;
     }
-}
+};
 
-export const _getUserStores = async (token: string): Promise<AxiosResponse<IStore[]>> => {
+// Accepts optional token for backward compatibility (ignored — interceptor handles auth)
+export const _getUserStores = async (_token?: string | null): Promise<AxiosResponse<IStore[]>> => {
     try {
-        return await backendAxiosInstance.get(`/api/stores/user`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        return await backendAxiosInstance.get("/api/stores/user");
     } catch (error) {
         console.error(error);
         throw error;
     }
-}
+};
 
-export const _createStore = async (store: {name: string}, token: string) => {
+// Accepts name as lowercase or uppercase, plus optional token for backward compatibility
+export const _createStore = async (
+    data: { name?: string; Name?: string },
+    _token?: string | null
+): Promise<AxiosResponse<IStore>> => {
     try {
-        return await backendAxiosInstance.post("/api/stores", store,{
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        const body = { Name: data.Name || data.name };
+        return await backendAxiosInstance.post("/api/stores", body);
     } catch (error) {
         console.error(error);
         throw error;
     }
-}
+};
 
-export const _deleteStore = async (storeId: string, token: string) => {
+export const _deleteStore = async (
+    id: string,
+    _token?: string | null
+): Promise<AxiosResponse> => {
     try {
-        return await backendAxiosInstance.delete(`/api/stores/${storeId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
+        return await backendAxiosInstance.delete(`/api/stores/${id}`);
     } catch (error) {
-        console.error(error)
-        throw error
+        console.error(error);
+        throw error;
     }
-}
+};

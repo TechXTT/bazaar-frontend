@@ -1,7 +1,12 @@
 import { AxiosResponse } from "axios";
 import { IOrder, IProduct, OrderReq, ProductReq } from "../interfaces/products";
 import backendAxiosInstance from "..";
-import jwt from "jsonwebtoken";
+
+export const ORDER_FILTERS = {
+  all: "all",
+  buyer: "buyer",
+  seller: "seller",
+} as const;
 
 export const _getProducts = async (
   id: string,
@@ -24,26 +29,15 @@ export const _getProducts = async (
   }
 };
 
+// Accepts optional leading token for backward compatibility (ignored — interceptor handles auth)
 export const _getOrders = async (
-  token: string,
-  filter: string
+  tokenOrFilter: string,
+  filter?: string
 ): Promise<AxiosResponse<IOrder[]>> => {
   try {
-    const decoded = jwt.decode(token, { complete: true });
-
-    if (!decoded) {
-      throw new Error("Invalid token");
-    }
-
-    const res = await backendAxiosInstance.get(
-      `/api/products/orders?filter=${filter}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
+    // If called as (token, filter), use filter; if called as (filter), use tokenOrFilter
+    const actualFilter = filter !== undefined ? filter : tokenOrFilter;
+    const res = await backendAxiosInstance.get(`/api/orders?filter=${actualFilter}`);
     return res;
   } catch (error) {
     console.error(error);
@@ -51,14 +45,11 @@ export const _getOrders = async (
   }
 };
 
-export const _createProduct = async (data: ProductReq, token: string) => {
+export const _createProduct = async (
+  data: ProductReq,
+  _token?: string | null
+): Promise<AxiosResponse<IProduct>> => {
   try {
-    const decoded = jwt.decode(token, { complete: true });
-
-    if (!decoded) {
-      throw new Error("Invalid token");
-    }
-
     const form = new FormData();
     form.append("name", data.Name);
     form.append("price", data.Price);
@@ -66,12 +57,7 @@ export const _createProduct = async (data: ProductReq, token: string) => {
     form.append("storeId", data.StoreID);
     form.append("image", data.Image!);
 
-    const res = await backendAxiosInstance.postForm("/api/products", form, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
+    const res = await backendAxiosInstance.postForm("/api/products", form);
     return res;
   } catch (error) {
     console.error(error);
@@ -79,24 +65,26 @@ export const _createProduct = async (data: ProductReq, token: string) => {
   }
 };
 
-export const _updateProduct = async (data: IProduct, token: string) => {
+export const _updateProduct = async (
+  idOrData: string | IProduct,
+  dataOrToken?: ProductReq | string | null,
+  _token?: string | null
+): Promise<AxiosResponse<IProduct>> => {
   try {
-    const decoded = jwt.decode(token, { complete: true });
+    let id: string;
+    let data: ProductReq | IProduct;
 
-    if (!decoded) {
-      throw new Error("Invalid token");
+    if (typeof idOrData === "string") {
+      // New signature: (id, data)
+      id = idOrData;
+      data = dataOrToken as ProductReq;
+    } else {
+      // Old signature: (IProduct, token)
+      id = idOrData.ID;
+      data = idOrData;
     }
 
-    const res = await backendAxiosInstance.put(
-      `/api/products/${data.ID}`,
-      data,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
+    const res = await backendAxiosInstance.put(`/api/products/${id}`, data);
     return res;
   } catch (error) {
     console.error(error);
@@ -104,33 +92,26 @@ export const _updateProduct = async (data: IProduct, token: string) => {
   }
 };
 
-export const _deleteProduct = async (productId: string, token: string) => {
+export const _deleteProduct = async (
+  id: string,
+  _token?: string | null
+): Promise<AxiosResponse> => {
   try {
-    return await backendAxiosInstance.delete(`/api/products/${productId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await backendAxiosInstance.delete(`/api/products/${id}`);
   } catch (error) {
     console.error(error);
     throw error;
   }
 };
 
-export const _createOrders = async (data: OrderReq[], token: string) => {
+export const _createOrders = async (
+  orders: OrderReq[],
+  _token?: string | null
+): Promise<AxiosResponse> => {
   try {
-    return await backendAxiosInstance.post(
-      `/api/products/orders`,
-      {
-        data: data,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    return await backendAxiosInstance.post("/api/products/orders", {
+      data: orders,
+    });
   } catch (error) {
     console.error(error);
     throw error;

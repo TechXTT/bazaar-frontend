@@ -1,5 +1,6 @@
 import { CONFIG } from "@/config/config";
 import axios from "axios";
+import store from "@/redux/store";
 
 const backendAxiosInstance = axios.create({
     baseURL: CONFIG.BACKEND_URL,
@@ -12,40 +13,56 @@ const backendAxiosInstance = axios.create({
     },
 });
 
+backendAxiosInstance.interceptors.request.use((config) => {
+    const state = store.getState();
+    const token = state.auth?.jwt;
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+
 // Users Endpoints
-import { _getMe, _loginUser, _registerUser, _updateUser } from "./services/users";
-import { _getOrders, _getProducts, _createProduct, _updateProduct, _deleteProduct, _createOrders } from "./services/products";
-import { _getUserStores, _createStore, _deleteStore } from "./services/stores";
-import { _closeDispute, _createDispute, _getDisputeByOrderID } from "./services/disputes";
+import { _getMe, _updateUser, _getNonce, _verifySIWE, _refreshToken, _loginUser, _registerUser } from "./services/users";
+import { ORDER_FILTERS, _getOrders, _getProducts, _createProduct, _updateProduct, _deleteProduct, _createOrders } from "./services/products";
+import { _getStores, _getStore, _getUserStores, _createStore, _deleteStore } from "./services/stores";
+import { _getDisputes, _getDisputeByOrderID, _getEvidence, _createDispute, _closeDispute } from "./services/disputes";
 
 const usersService = {
     getMe: _getMe,
-    registerUser: _registerUser,
+    updateUser: _updateUser,
+    getNonce: _getNonce,
+    verifySIWE: _verifySIWE,
+    refreshToken: _refreshToken,
     loginUser: _loginUser,
-    updateUser: _updateUser
+    registerUser: _registerUser,
 };
 
 const productsService = {
-    getProducts: _getProducts, 
+    getProducts: _getProducts,
     getOrders: _getOrders,
     createProduct: _createProduct,
     updateProduct: _updateProduct,
     deleteProduct: _deleteProduct,
-    createOrders: _createOrders
+    createOrders: _createOrders,
 };
 
 const storesService = {
+    getStores: _getStores,
+    getStore: _getStore,
     getUserStores: _getUserStores,
     createStore: _createStore,
-    deleteStore: _deleteStore
+    deleteStore: _deleteStore,
 };
 
 const disputesService = {
-    createDispute: _createDispute,
+    getDisputes: _getDisputes,
     getDisputeByOrderID: _getDisputeByOrderID,
-    closeDispute: _closeDispute
+    getEvidence: _getEvidence,
+    createDispute: _createDispute,
+    closeDispute: _closeDispute,
 };
 
-export { usersService, productsService, storesService, disputesService };
+export { usersService, productsService, storesService, disputesService, ORDER_FILTERS };
 
 export default backendAxiosInstance;

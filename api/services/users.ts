@@ -1,23 +1,54 @@
 import { AxiosResponse } from "axios";
 import { ILoginUser, IRegisterUser, IUser, UserReq } from "../interfaces/users";
 import backendAxiosInstance from "..";
-import jwt from "jsonwebtoken";
 
-export const _getMe = async (token: string): Promise<AxiosResponse<IUser>> => {
+export const _getMe = async (_token?: string | null): Promise<AxiosResponse<IUser>> => {
   try {
-    const decoded = jwt.decode(token, { complete: true });
-    
-    if (!decoded) {
-      throw new Error("Invalid token");
-    }
-    
-    const res =  await backendAxiosInstance.get("/api/users/me", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
+    const res = await backendAxiosInstance.get("/api/users/me");
     return res;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const _updateUser = async (
+  user: UserReq,
+  _token?: string | null
+): Promise<AxiosResponse<IUser>> => {
+  try {
+    const res = await backendAxiosInstance.put("/api/users", user);
+    return res;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const _getNonce = async (): Promise<AxiosResponse<{ nonce: string }>> => {
+  try {
+    return await backendAxiosInstance.get("/api/users/nonce");
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const _verifySIWE = async (
+  message: string,
+  signature: string
+): Promise<AxiosResponse<{ token: string }>> => {
+  try {
+    return await backendAxiosInstance.post("/api/users/siwe", { message, signature });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const _refreshToken = async (): Promise<AxiosResponse<{ token: string }>> => {
+  try {
+    return await backendAxiosInstance.post("/api/users/refresh");
   } catch (error) {
     console.error(error);
     throw error;
@@ -45,21 +76,3 @@ export const _loginUser = async (
     throw error;
   }
 };
-
-export const _updateUser = async (
-  user: UserReq,
-  token: string
-): Promise<AxiosResponse<IUser>> => {
-  try {
-    const res = await backendAxiosInstance.put("/api/users", user, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return res;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-}
