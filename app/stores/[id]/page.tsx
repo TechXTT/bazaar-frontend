@@ -54,7 +54,7 @@ const StorePage = () => {
 
   if (!store) {
     return (
-      <div className="mx-auto max-w-7xl px-4 pt-32 pb-10 sm:px-6 lg:px-8 space-y-6">
+      <div className="mx-auto max-w-7xl px-4 pt-10 pb-10 sm:px-6 lg:px-8 space-y-6">
         <div className="h-8 w-48 rounded-lg bg-bg-secondary animate-pulse" />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
@@ -66,7 +66,7 @@ const StorePage = () => {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 pt-32 pb-10 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 pt-10 pb-10 sm:px-6 lg:px-8">
       <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <h1 className="text-2xl font-bold leading-tight tracking-tight">
           {store.Name}

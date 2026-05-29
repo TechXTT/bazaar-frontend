@@ -54,7 +54,7 @@ export default function RootLayout({
             }}
           >
             <Navigation />
-            <div>{children}</div>
+            <div className="pt-16">{children}</div>
             <Toaster position="bottom-right" richColors />
           </MetaMaskProvider>
         </ReduxProvider>

@@ -26,7 +26,7 @@ export default function ProductPage() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center py-40 space-y-4">
+      <div className="flex flex-col items-center justify-center py-10 space-y-4">
         <p className="text-text-secondary">Product not found.</p>
         <button onClick={() => router.back()} className="text-sm text-primary hover:underline">
           Go back
@@ -37,7 +37,7 @@ export default function ProductPage() {
 
   if (!product) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-28 animate-pulse space-y-4">
+      <div className="max-w-4xl mx-auto px-4 py-10 animate-pulse space-y-4">
         <div className="h-96 rounded-xl bg-bg-secondary" />
         <div className="h-8 w-64 rounded bg-bg-secondary" />
         <div className="h-5 w-40 rounded bg-bg-secondary" />
@@ -48,7 +48,7 @@ export default function ProductPage() {
   const isOwner = auth.user?.ID === product.Store?.OwnerID;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-28">
+    <div className="max-w-5xl mx-auto px-4 py-10">
       <div className="flex flex-col lg:flex-row gap-8 rounded-xl border border-border-subtle bg-bg-secondary p-6">
         {/* Image */}
         <div className="lg:w-1/2 shrink-0">

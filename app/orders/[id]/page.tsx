@@ -31,7 +31,7 @@ export default function OrderPage() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center py-40 space-y-4">
+      <div className="flex flex-col items-center justify-center py-10 space-y-4">
         <p className="text-text-secondary">Could not load order.</p>
         <button
           onClick={() => router.back()}
@@ -45,7 +45,7 @@ export default function OrderPage() {
 
   if (!order) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-28 space-y-4 animate-pulse">
+      <div className="max-w-3xl mx-auto px-4 py-10 space-y-4 animate-pulse">
         <div className="h-8 w-48 rounded bg-bg-secondary" />
         <div className="h-64 rounded-lg bg-bg-secondary" />
         <div className="h-6 w-64 rounded bg-bg-secondary" />
@@ -58,7 +58,7 @@ export default function OrderPage() {
   const createdAt = order.CreatedAt ? new Date(order.CreatedAt).toLocaleDateString() : null;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-28 space-y-6">
+    <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
       <div className="flex items-center gap-3">
         <h1 className="text-2xl font-bold">Order detail</h1>
         {order.Status && (

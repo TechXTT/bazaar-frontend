@@ -25,8 +25,8 @@ export default function SellerLayout({ children }: { children: React.ReactNode }
   }, [auth.isLoggedIn, pathname, router]);
 
   return (
-    <main className="min-h-screen bg-surface-base">
-      <div className="mx-auto max-w-7xl px-4 py-32 sm:px-6 lg:px-8">
+    <main className="min-h-screen">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
           <Card className="h-fit p-3">
             <nav className="grid gap-2 lg:block">
@@ -37,7 +37,7 @@ export default function SellerLayout({ children }: { children: React.ReactNode }
                     key={item.href}
                     href={item.href}
                     className={`block rounded-md px-3 py-2 text-sm font-medium ${
-                      active ? "bg-surface-hover text-white" : "text-text-secondary hover:bg-white/10 hover:text-white"
+                      active ? "bg-primary/10 text-primary" : "text-text-secondary hover:bg-bg-secondary hover:text-white"
                     }`}
                   >
                     {item.label}

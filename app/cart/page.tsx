@@ -17,7 +17,7 @@ const CartPage = () => {
 
   if (!cart.products || cart.products.length === 0) {
     return (
-      <div className="flex w-full justify-center items-center py-40">
+      <div className="flex w-full justify-center items-center py-10">
         <div className="text-center space-y-4">
           <p className="text-xl text-text-secondary">Your cart is empty</p>
           <Link
@@ -32,7 +32,7 @@ const CartPage = () => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-28 space-y-8">
+    <div className="max-w-3xl mx-auto px-4 py-10 space-y-8">
       <h1 className="text-2xl font-bold">Your Cart</h1>
 
       {/* Item list */}

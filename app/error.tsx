@@ -13,7 +13,7 @@ export default function GlobalError({
   console.error(error);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-32 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
       <EmptyState
         title="Something went wrong"
         description="The page failed to render. Retry the request or move back to the marketplace."

@@ -27,7 +27,7 @@ export default function OrdersPage() {
 
   if (!orders) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-32 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="space-y-3">
           <Skeleton h={92} />
           <Skeleton h={92} />
@@ -38,7 +38,7 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-32 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold">Your orders</h1>
         <p className="mt-2 text-sm text-text-secondary">
@@ -56,7 +56,7 @@ export default function OrdersPage() {
         <div className="space-y-3">
           {orders.map((order) => (
             <Link key={order.ID} href={`/orders/${order.ID}`}>
-              <Card className="flex flex-col gap-3 transition hover:bg-surface-hover sm:flex-row sm:items-center sm:justify-between">
+              <Card className="flex flex-col gap-3 transition hover:bg-bg-secondary sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="font-semibold">{order.Quantity} x {order.Product.Name}</p>
                   <p className="text-sm text-text-secondary">

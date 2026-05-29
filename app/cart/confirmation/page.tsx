@@ -44,7 +44,7 @@ export default function CartConfirmationPage() {
 
   if (!payload) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-32">
+      <div className="mx-auto max-w-4xl px-4 py-10">
         <EmptyState
           icon={<TbCircleCheckFilled className="h-10 w-10" />}
           title="No checkout summary"
@@ -55,7 +55,7 @@ export default function CartConfirmationPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-32 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
       <Card className="space-y-6 p-6 sm:p-8">
         <div className="flex items-center gap-3">
           <TbCircleCheckFilled className="h-10 w-10 text-status-success" />

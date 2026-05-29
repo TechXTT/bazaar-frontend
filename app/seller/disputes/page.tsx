@@ -75,7 +75,7 @@ export default function SellerDisputesPage() {
                 </div>
                 <Link
                   href={`/orders/${dispute.OrderID}/dispute`}
-                  className="shrink-0 rounded-md border border-border-subtle px-3 py-1.5 text-sm hover:bg-surface-hover"
+                  className="shrink-0 rounded-md border border-border-subtle px-3 py-1.5 text-sm hover:bg-bg-secondary"
                 >
                   View dispute
                 </Link>

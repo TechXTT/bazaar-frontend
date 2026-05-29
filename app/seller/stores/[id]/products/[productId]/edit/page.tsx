@@ -71,7 +71,7 @@ export default function SellerEditProductPage() {
 
   if (!product) {
     return (
-      <div className="flex items-center justify-center py-32">
+      <div className="flex items-center justify-center py-10">
         <p className="text-text-secondary">Loading…</p>
       </div>
     );

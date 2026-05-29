@@ -41,6 +41,7 @@ module.exports = {
       "surface-sunken": "#142024",
       "border-subtle": "#2c4a4e",
       "text-secondary": "#6b9099",
+      "text-muted": "#4a6b70",
     },
     extend: {
       backgroundImage: () => ({
