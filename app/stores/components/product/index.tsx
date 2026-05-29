@@ -1,31 +1,23 @@
+import { IProduct } from "@/api/interfaces/products";
 import BucketImage from "@/app/components/image";
 import Link from "next/link";
 
-const ProductCard = (props: any) => {
-  const { product } = props;
-
+const ProductCard = ({ product }: { product: IProduct }) => {
   return (
     <Link
       href={`/products/${product.ID}`}
-      key={product.ID}
-      className="flex flex-col w-72 h-96 p-2 m-2 bg-[#627C7F] rounded-lg shadow-md"
+      className="group flex flex-col rounded-xl border border-border-subtle bg-bg-secondary overflow-hidden hover:border-primary transition-colors"
     >
-      <div className="flex flex-col w-full h-full overflow-hidden">
+      <div className="aspect-square overflow-hidden bg-surface-sunken">
         <BucketImage
-          key={product.ID}
-          className="h-64 object-cover rounded-lg"
           imageURL={product.ImageURL}
           name={product.Name}
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
-
-        <div className="flex flex-col w-full h-full justify-end">
-          <p className="text-xl mt-1">
-            {product.Price} {product.Unit}
-          </p>
-          <h2 className="text-xl font-bold text-ellipsis text-left">
-            {product.Name}
-          </h2>
-        </div>
+      </div>
+      <div className="p-3 space-y-1">
+        <h2 className="font-semibold text-sm leading-tight line-clamp-2">{product.Name}</h2>
+        <p className="text-sm text-text-secondary">{product.Price} {product.Unit}</p>
       </div>
     </Link>
   );

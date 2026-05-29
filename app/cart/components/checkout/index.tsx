@@ -104,6 +104,7 @@ const Checkout = ({ paymentToken }: CheckoutProps) => {
           timestamp: Date.now(),
           total: cart.total,
           txs,
+          token: paymentToken,
         })
       );
 

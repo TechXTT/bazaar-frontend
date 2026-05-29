@@ -19,6 +19,7 @@ type ConfirmationPayload = {
   timestamp: number;
   total: number;
   txs: string[];
+  token: "ETH" | "USDC";
 };
 
 const STORAGE_KEY = "bazaar.checkout.confirmation";
@@ -81,7 +82,11 @@ export default function CartConfirmationPage() {
         <div className="rounded-md border border-border-subtle bg-surface-sunken p-4">
           <div className="flex items-center justify-between">
             <span className="text-text-secondary">Total paid</span>
-            <span className="font-semibold">{payload.total.toFixed(4)} ETH</span>
+            <span className="font-semibold">
+              {payload.token === "USDC"
+                ? `${payload.total.toFixed(2)} USDC`
+                : `${payload.total.toFixed(4)} ETH`}
+            </span>
           </div>
           <div className="mt-3 space-y-2 text-sm">
             {payload.txs.map((tx) => (

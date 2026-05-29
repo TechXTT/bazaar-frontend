@@ -1,15 +1,19 @@
-const BucketImage = ({ key, className, imageURL, name }: { key: string|null, className: string; imageURL: string, name: string }) => {
-    return (
-        <img
-        key={key}
-        src={
-          "https://the-bazaar-bucket.s3.eu-central-1.amazonaws.com/" +
-          imageURL
-        }
-        alt={name}
-        className={className}
-      />
-    );
-  };
+import { CONFIG } from "@/config/config";
 
-  export default BucketImage;
+const BucketImage = ({
+  className,
+  imageURL,
+  name,
+}: {
+  className: string;
+  imageURL: string;
+  name: string;
+}) => {
+  const src = imageURL
+    ? `${CONFIG.CDN_BASE_URL}/${imageURL}`
+    : "";
+
+  return <img src={src} alt={name} className={className} />;
+};
+
+export default BucketImage;

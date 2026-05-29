@@ -20,33 +20,45 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="max-w-screen-xl mx-auto px-4">
+    <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       {/* Hero */}
-      <section className="flex flex-col items-center justify-center py-24 text-center space-y-6">
-        <h1 className="text-5xl font-extrabold tracking-tight">The Bazaar</h1>
-        <p className="text-xl text-text-secondary max-w-lg">
+      <section className="flex flex-col items-center justify-center py-32 text-center space-y-6">
+        <h1 className="text-5xl font-extrabold tracking-tight leading-tight">
+          The Bazaar
+        </h1>
+        <p className="text-lg text-text-secondary max-w-md">
           A decentralised marketplace. Buy and sell with on-chain escrow and
           community-driven dispute resolution.
         </p>
-        <Link
-          href="/stores"
-          className="bg-primary text-white font-semibold px-8 py-3 rounded-xl hover:opacity-90 transition-opacity"
-        >
-          Browse stores
-        </Link>
+        <div className="flex gap-3">
+          <Link
+            href="/stores"
+            className="bg-primary text-white font-semibold px-7 py-3 rounded-xl hover:opacity-90 transition-opacity"
+          >
+            Browse stores
+          </Link>
+          <Link
+            href="/seller/stores"
+            className="border border-border-subtle font-semibold px-7 py-3 rounded-xl hover:border-primary transition-colors"
+          >
+            Open a store
+          </Link>
+        </div>
       </section>
 
       {/* Featured products */}
-      <section className="pb-20 space-y-6">
-        <h2 className="text-2xl font-bold">Featured products</h2>
+      <section className="pb-24 space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold">Featured products</h2>
+          <Link href="/stores" className="text-sm text-text-secondary hover:text-primary transition-colors">
+            View all stores →
+          </Link>
+        </div>
 
         {loading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-96 rounded-lg bg-bg-secondary animate-pulse"
-              />
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="aspect-square rounded-xl bg-bg-secondary animate-pulse" />
             ))}
           </div>
         )}
@@ -60,7 +72,7 @@ export default function Home() {
         )}
 
         {!loading && !error && products.length > 0 && (
-          <div className="flex flex-wrap">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {products.map((product) => (
               <ProductCard key={product.ID} product={product} />
             ))}

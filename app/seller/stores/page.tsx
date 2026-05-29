@@ -17,7 +17,7 @@ export default function SellerStoresPage() {
 
   useEffect(() => {
     const load = async () => {
-      const response = await storesService.getUserStores(auth.jwt || "");
+      const response = await storesService.getUserStores();
       setStores(response.data);
     };
 

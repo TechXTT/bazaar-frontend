@@ -21,29 +21,11 @@ export interface IDispute {
     Evidence: IDisputeEvidence[];
 }
 
-export const _getDisputes = async (): Promise<AxiosResponse<IDispute[]>> => {
-    try {
-        return await backendAxiosInstance.get("/api/disputes");
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
-};
+export const _getDisputes = async (): Promise<AxiosResponse<IDispute[]>> =>
+    backendAxiosInstance.get("/api/disputes");
 
-export const _getDisputeByOrderID = async (orderId: string, _token?: string | null): Promise<AxiosResponse<IDispute>> => {
-    try {
-        return await backendAxiosInstance.get(`/api/disputes/${orderId}`);
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
-};
+export const _getDisputeByOrderID = async (orderId: string): Promise<AxiosResponse<IDispute>> =>
+    backendAxiosInstance.get(`/api/disputes/${orderId}`);
 
-export const _getEvidence = async (orderId: string): Promise<AxiosResponse<IDisputeEvidence[]>> => {
-    try {
-        return await backendAxiosInstance.get(`/api/orders/${orderId}/evidence`);
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
-};
+export const _getEvidence = async (orderId: string): Promise<AxiosResponse<IDisputeEvidence[]>> =>
+    backendAxiosInstance.get(`/api/orders/${orderId}/evidence`);

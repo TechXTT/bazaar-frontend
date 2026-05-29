@@ -34,7 +34,7 @@ export default function SellerOrdersPage() {
   const [pendingId, setPendingId] = useState("");
 
   const load = async () => {
-    const response = await productsService.getOrders(auth.jwt || "", ORDER_FILTERS.seller);
+    const response = await productsService.getOrders(ORDER_FILTERS.seller);
     setOrders(response.data);
 
     const detailEntries = await Promise.all(

@@ -57,13 +57,11 @@ export default function SellerEditProductPage() {
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      const updated: IProduct = {
-        ...product!,
+      await productsService.updateProduct(productId, {
         Name: values.name,
         Price: values.price,
         Description: values.description,
-      };
-      await productsService.updateProduct(updated);
+      });
       toast.success("Product updated");
       router.push(`/seller/stores/${storeId}`);
     } catch {

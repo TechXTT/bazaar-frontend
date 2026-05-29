@@ -43,7 +43,7 @@ const productsService = {
     getProduct: _getProduct,
     getAllProducts: _getAllProducts,
     getProducts: _getProducts,
-    getOrders: _getOrders,
+    getOrders: (filter: string) => _getOrders(filter),
     createProduct: _createProduct,
     updateProduct: _updateProduct,
     deleteProduct: _deleteProduct,

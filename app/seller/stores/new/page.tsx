@@ -32,7 +32,7 @@ export default function SellerNewStorePage() {
   });
 
   const onSubmit = handleSubmit(async (values) => {
-    const response = await storesService.createStore(values, auth.jwt || "");
+    const response = await storesService.createStore(values.name);
     toast.success("Store created");
     router.push(`/seller/stores/${response.data.ID}`);
   });

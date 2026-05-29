@@ -110,12 +110,12 @@ export default function OrderPage() {
             <div className="flex justify-between text-sm">
               <span className="text-text-secondary">Unit price</span>
               <span className="font-medium">
-                ${order.Product?.Price?.toFixed(2)} {order.Product?.Unit}
+                {order.Product?.Price?.toFixed(4)} {order.Product?.Unit}
               </span>
             </div>
             <div className="border-t border-border-subtle pt-3 flex justify-between font-bold">
               <span>Total</span>
-              <span>${order.Total?.toFixed(2)}</span>
+              <span>{order.Total?.toFixed(4)}</span>
             </div>
             {createdAt && (
               <div className="flex justify-between text-sm">
@@ -125,7 +125,7 @@ export default function OrderPage() {
             )}
           </div>
 
-          <OpenDispute order={order} setDispute={() => {}} dispute={undefined} />
+          <OpenDispute order={order} />
         </div>
       </div>
     </div>

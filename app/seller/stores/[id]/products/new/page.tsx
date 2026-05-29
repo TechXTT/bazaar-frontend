@@ -6,14 +6,12 @@ import Card from "@/components/ui/card";
 import Field from "@/components/ui/field";
 import Input from "@/components/ui/input";
 import Textarea from "@/components/ui/textarea";
-import { RootState } from "@/redux/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { UUID } from "crypto";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -30,7 +28,6 @@ type FormValues = z.infer<typeof schema>;
 
 export default function SellerNewProductPage() {
   const { id } = useParams<{ id: string }>();
-  const auth = useSelector((state: RootState) => state.auth);
   const router = useRouter();
   const [preview, setPreview] = useState("");
   const {
@@ -58,16 +55,13 @@ export default function SellerNewProductPage() {
   }, [image]);
 
   const onSubmit = handleSubmit(async (values) => {
-    await productsService.createProduct(
-      {
-        Name: values.name,
-        Price: String(values.price),
-        Description: values.description,
-        Image: values.image,
-        StoreID: id as UUID,
-      },
-      auth.jwt || ""
-    );
+    await productsService.createProduct({
+      Name: values.name,
+      Price: String(values.price),
+      Description: values.description,
+      Image: values.image,
+      StoreID: id as UUID,
+    });
     toast.success("Product created");
     router.push(`/seller/stores/${id}`);
   });

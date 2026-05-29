@@ -1,53 +1,55 @@
 "use client";
 
-import backendAxiosInstance from "@/api";
+import { storesService } from "@/api";
 import { IStore } from "@/api/interfaces/stores";
 import { ScoreBadgeInline } from "@/app/stores/components/reputation";
-import useSWR from "swr";
+import Card from "@/components/ui/card";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
-type storesData = {
-  data: IStore[];
-};
+export default function StoresPage() {
+  const [stores, setStores] = useState<IStore[] | null>(null);
+  const [error, setError] = useState(false);
 
-const StoresPage = () => {
-  const { data: storesData, error: storesError } = useSWR<storesData, Error>(
-    "/api/stores",
-    backendAxiosInstance.get
-  );
-
-  const handleStorePress = (id: string) => {
-    window.location.href = `/stores/${id}`;
-  };
-
-  if (!storesData) return <div>Loading...</div>;
-  if (storesError) return <div>Failed to load</div>;
+  useEffect(() => {
+    storesService
+      .getStores()
+      .then((res) => setStores(res.data))
+      .catch(() => setError(true));
+  }, []);
 
   return (
-    <div className="flex w-full md:justify-center px-2 mx-auto md:h-screen py-28 px-10">
-      <div className="flex flex-col w-full rounded-lg shadow p-4 md:space-y-2 ">
-        <h1 className="text-2xl font-bold leading-tight tracking-tight md:text-2xl">
-          Stores
-        </h1>
+    <div className="mx-auto max-w-7xl px-4 py-32 sm:px-6 lg:px-8">
+      <h1 className="text-2xl font-bold mb-8">Stores</h1>
 
-        <div className="grid grid-auto-fit-lg ">
-          {storesData.data
-            ? storesData.data.map((store) => (
-                <div
-                  key={store.ID}
-                  className="flex flex-col w-72 justify-center p-2 m-2 bg-[#627C7F] rounded-lg shadow-md"
-                  onClick={() => handleStorePress(store.ID)}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <h2 className="text-xl font-bold text-left">{store.Name}</h2>
-                    <ScoreBadgeInline score={store.Reputation?.Score ?? null} />
-                  </div>
-                </div>
-              ))
-            : null}
+      {!stores && !error && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-20 rounded-xl bg-bg-secondary animate-pulse" />
+          ))}
         </div>
-      </div>
+      )}
+
+      {error && (
+        <p className="text-text-secondary">Failed to load stores. Try refreshing the page.</p>
+      )}
+
+      {stores && stores.length === 0 && (
+        <p className="text-text-secondary">No stores yet — be the first to open one.</p>
+      )}
+
+      {stores && stores.length > 0 && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {stores.map((store) => (
+            <Link key={store.ID} href={`/stores/${store.ID}`}>
+              <Card className="flex items-center justify-between gap-2 p-4 hover:border-primary transition-colors cursor-pointer">
+                <h2 className="font-semibold truncate">{store.Name}</h2>
+                <ScoreBadgeInline score={store.Reputation?.Score ?? null} />
+              </Card>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
-};
-
-export default StoresPage;
+}

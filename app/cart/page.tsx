@@ -54,7 +54,7 @@ const CartPage = () => {
               </p>
             </div>
             <span className="shrink-0 font-semibold">
-              ${((item.Price * (item.Quantity ?? 1))).toFixed(2)} {item.Unit}
+              {(item.Price * (item.Quantity ?? 1)).toFixed(2)} {item.Unit}
             </span>
             <button
               onClick={() => dispatch(removeItemFromCart(item.ID))}
@@ -74,7 +74,7 @@ const CartPage = () => {
         </div>
         <div className="flex justify-between font-bold text-lg">
           <span>Total</span>
-          <span>${cart.total.toFixed(2)}</span>
+          <span>{cart.total.toFixed(2)}</span>
         </div>
       </div>
 

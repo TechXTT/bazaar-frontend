@@ -119,7 +119,7 @@ const Navigation = (props: any) => {
   useEffect(() => {
     const auth = async () => {
       try {
-        const res = await usersService.getMe(props.auth.jwt);
+        const res = await usersService.getMe();
         if (res.status === 200) {
           setLinks(AUTH_LINKS);
           dispatch(setUser(res.data));

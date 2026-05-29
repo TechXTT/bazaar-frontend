@@ -16,7 +16,7 @@ export default function OrdersPage() {
 
   useEffect(() => {
     const load = async () => {
-      const response = await productsService.getOrders(auth.jwt || "", ORDER_FILTERS.buyer);
+      const response = await productsService.getOrders(ORDER_FILTERS.buyer);
       setOrders(response.data);
     };
 
