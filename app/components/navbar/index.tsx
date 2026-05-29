@@ -3,27 +3,62 @@
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "@/redux/store";
-import { clearCart, logout, setUser } from "@/redux/slices/auth-slice";
+import { logout, setUser } from "@/redux/slices/auth-slice";
 import { usersService } from "@/api";
 import { useSDK } from "@metamask/sdk-react";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { FiShoppingCart, FiUser, FiMenu, FiX, FiChevronDown } from "react-icons/fi";
+import {
+  FiShoppingCart,
+  FiMenu,
+  FiX,
+  FiChevronDown,
+  FiPackage,
+  FiShoppingBag,
+  FiUser,
+  FiLogOut,
+} from "react-icons/fi";
 
-const NavLink = ({ href, children }: { href: string; children: string }) => {
+const NAV_LINKS = [
+  { href: "/", label: "Home" },
+  { href: "/stores", label: "Stores" },
+];
+
+function NavLink({ href, label }: { href: string; label: string }) {
   const pathname = usePathname();
   const active = pathname === href;
   return (
     <Link
       href={href}
-      className={`text-sm font-medium transition-colors px-3 py-2 rounded-lg ${
-        active ? "text-white" : "text-text-secondary hover:text-white hover:bg-bg-secondary"
+      className={`relative text-sm font-medium transition-colors px-1 py-1.5 ${
+        active ? "text-white" : "text-text-secondary hover:text-white"
       }`}
     >
-      {children}
+      {label}
+      {active && (
+        <span className="absolute -bottom-px left-0 right-0 h-0.5 rounded-full bg-primary" />
+      )}
     </Link>
   );
-};
+}
+
+function UserAvatar({ name, size = 28 }: { name: string; size?: number }) {
+  const initials = name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase() || "?";
+  const hue = name.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0) % 360;
+  return (
+    <div
+      className="flex items-center justify-center rounded-lg text-white font-bold text-xs"
+      style={{
+        width: size,
+        height: size,
+        background: `hsl(${hue},55%,42%)`,
+        fontSize: size * 0.4,
+      }}
+    >
+      {initials}
+    </div>
+  );
+}
 
 export default function Navigation() {
   const auth = useSelector((state: RootState) => state.auth);
@@ -70,12 +105,18 @@ export default function Navigation() {
   }, []);
 
   const cartCount = auth.cart?.products?.length ?? 0;
+  const displayName = auth.user
+    ? `${auth.user.FirstName} ${auth.user.LastName}`.trim()
+    : "";
+  const walletShort = auth.user?.WalletAddress
+    ? `${auth.user.WalletAddress.slice(0, 6)}…${auth.user.WalletAddress.slice(-4)}`
+    : "";
 
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[#182628]/90 backdrop-blur-md border-b border-border-subtle shadow-lg"
+          ? "bg-[#0f1e20]/95 backdrop-blur-md border-b border-border-subtle shadow-lg shadow-black/20"
           : "bg-transparent"
       }`}
     >
@@ -83,62 +124,94 @@ export default function Navigation() {
         <div className="flex h-16 items-center justify-between gap-6">
 
           {/* Logo */}
-          <Link href="/" className="shrink-0 flex items-center gap-2">
-            <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="10" y="35" width="80" height="55" rx="6" stroke="white" strokeWidth="5" fill="none"/>
-              <path d="M34 35V28C34 18.6 41.6 11 51 11C60.4 11 68 18.6 68 28V35" stroke="white" strokeWidth="5" fill="none" strokeLinecap="round"/>
-              <line x1="51" y1="50" x2="51" y2="70" stroke="white" strokeWidth="5" strokeLinecap="round"/>
-              <line x1="40" y1="60" x2="62" y2="60" stroke="white" strokeWidth="5" strokeLinecap="round"/>
-            </svg>
-            <span className="font-bold text-base tracking-widest uppercase">The Bazaar</span>
+          <Link href="/" className="shrink-0 flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 border border-primary/30">
+              <svg width="16" height="16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="35" width="80" height="55" rx="6" stroke="currentColor" strokeWidth="7" fill="none" className="text-primary" style={{color: "var(--color-primary, #6366f1)"}} />
+                <path d="M34 35V28C34 18.6 41.6 11 51 11C60.4 11 68 18.6 68 28V35" stroke="currentColor" strokeWidth="7" fill="none" strokeLinecap="round" style={{color: "var(--color-primary, #6366f1)"}} />
+                <line x1="51" y1="50" x2="51" y2="70" stroke="currentColor" strokeWidth="7" strokeLinecap="round" style={{color: "var(--color-primary, #6366f1)"}} />
+                <line x1="40" y1="60" x2="62" y2="60" stroke="currentColor" strokeWidth="7" strokeLinecap="round" style={{color: "var(--color-primary, #6366f1)"}} />
+              </svg>
+            </div>
+            <span className="font-bold text-sm tracking-widest uppercase text-white">
+              The Bazaar
+            </span>
           </Link>
 
-          {/* Desktop nav links */}
-          <nav className="hidden md:flex items-center gap-1">
-            <NavLink href="/">Home</NavLink>
-            <NavLink href="/stores">Stores</NavLink>
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-6">
+            {NAV_LINKS.map((l) => <NavLink key={l.href} {...l} />)}
+            {auth.isLoggedIn && (
+              <NavLink href="/seller/stores" label="Seller" />
+            )}
           </nav>
 
           {/* Right actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {auth.isLoggedIn ? (
               <>
                 {/* Cart */}
                 <Link
                   href="/cart"
-                  className="relative p-2 rounded-lg text-text-secondary hover:text-white hover:bg-bg-secondary transition-colors"
+                  className="relative p-2 rounded-xl text-text-secondary hover:text-white hover:bg-bg-secondary transition-colors"
                   title="Cart"
                 >
-                  <FiShoppingCart size={20} />
+                  <FiShoppingCart size={19} />
                   {cartCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-primary text-[10px] font-bold flex items-center justify-center text-white">
+                    <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-white">
                       {cartCount > 9 ? "9+" : cartCount}
                     </span>
                   )}
                 </Link>
 
-                {/* User menu */}
+                {/* User dropdown */}
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setUserMenuOpen((v) => !v)}
-                    className="flex items-center gap-1.5 p-2 rounded-lg text-text-secondary hover:text-white hover:bg-bg-secondary transition-colors"
+                    className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-xl hover:bg-bg-secondary transition-colors"
                   >
-                    <FiUser size={20} />
-                    <FiChevronDown size={14} className={`transition-transform ${userMenuOpen ? "rotate-180" : ""}`} />
+                    {displayName ? (
+                      <UserAvatar name={displayName} size={28} />
+                    ) : (
+                      <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-bg-secondary border border-border-subtle">
+                        <FiUser size={15} className="text-text-muted" />
+                      </div>
+                    )}
+                    <span className="hidden sm:block text-sm font-medium text-text-secondary max-w-[90px] truncate">
+                      {auth.user?.FirstName || "Account"}
+                    </span>
+                    <FiChevronDown
+                      size={13}
+                      className={`text-text-muted transition-transform ${userMenuOpen ? "rotate-180" : ""}`}
+                    />
                   </button>
 
                   {userMenuOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-border-subtle bg-[#1a2e32] shadow-xl py-1 z-50">
-                      <DropdownItem href="/account">Account</DropdownItem>
-                      <DropdownItem href="/orders">My orders</DropdownItem>
-                      <DropdownItem href="/seller/stores">Seller dashboard</DropdownItem>
-                      <div className="my-1 border-t border-border-subtle" />
-                      <button
-                        onClick={() => { dispatch(logout()); window.location.href = "/"; }}
-                        className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-bg-secondary transition-colors"
-                      >
-                        Sign out
-                      </button>
+                    <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-border-subtle bg-[#141f22] shadow-2xl overflow-hidden z-50">
+                      {/* User info header */}
+                      {displayName && (
+                        <div className="px-4 py-3 border-b border-border-subtle">
+                          <p className="text-sm font-semibold text-white truncate">{displayName}</p>
+                          {walletShort && (
+                            <p className="text-xs text-text-muted font-mono mt-0.5">{walletShort}</p>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="py-1.5">
+                        <DropdownLink href="/account" Icon={FiUser} label="Account" />
+                        <DropdownLink href="/orders" Icon={FiPackage} label="My orders" />
+                        <DropdownLink href="/seller/stores" Icon={FiShoppingBag} label="Seller dashboard" />
+                      </div>
+
+                      <div className="border-t border-border-subtle py-1.5">
+                        <button
+                          onClick={() => { dispatch(logout()); window.location.href = "/"; }}
+                          className="flex w-full items-center gap-2.5 px-4 py-2 text-sm text-red-400 hover:bg-bg-secondary transition-colors"
+                        >
+                          <FiLogOut size={14} /> Sign out
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -146,7 +219,7 @@ export default function Navigation() {
             ) : (
               <Link
                 href="/auth/login"
-                className="bg-primary text-white text-sm font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+                className="bg-primary text-white text-sm font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20"
               >
                 Sign in
               </Link>
@@ -155,9 +228,9 @@ export default function Navigation() {
             {/* Mobile toggle */}
             <button
               onClick={() => setMobileOpen((v) => !v)}
-              className="md:hidden p-2 rounded-lg text-text-secondary hover:text-white hover:bg-bg-secondary transition-colors"
+              className="md:hidden p-2 rounded-xl text-text-secondary hover:text-white hover:bg-bg-secondary transition-colors ml-1"
             >
-              {mobileOpen ? <FiX size={20} /> : <FiMenu size={20} />}
+              {mobileOpen ? <FiX size={19} /> : <FiMenu size={19} />}
             </button>
           </div>
         </div>
@@ -165,39 +238,57 @@ export default function Navigation() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-[#182628] border-t border-border-subtle px-4 py-3 space-y-1">
-          <MobileLink href="/">Home</MobileLink>
-          <MobileLink href="/stores">Stores</MobileLink>
-          {auth.isLoggedIn ? (
-            <>
-              <MobileLink href="/cart">{`Cart${cartCount > 0 ? ` (${cartCount})` : ""}`}</MobileLink>
-              <MobileLink href="/account">Account</MobileLink>
-              <MobileLink href="/orders">My orders</MobileLink>
-              <MobileLink href="/seller/stores">Seller dashboard</MobileLink>
-              <button
-                onClick={() => { dispatch(logout()); window.location.href = "/"; }}
-                className="block w-full text-left px-3 py-2 text-sm font-medium text-red-400"
-              >
-                Sign out
-              </button>
-            </>
-          ) : (
-            <MobileLink href="/auth/login">Sign in</MobileLink>
-          )}
+        <div className="md:hidden bg-[#0f1e20]/98 backdrop-blur-md border-t border-border-subtle">
+          <div className="px-4 py-3 space-y-0.5">
+            {NAV_LINKS.map((l) => (
+              <MobileLink key={l.href} href={l.href}>{l.label}</MobileLink>
+            ))}
+            {auth.isLoggedIn ? (
+              <>
+                <MobileLink href="/seller/stores">Seller dashboard</MobileLink>
+                <div className="my-2 border-t border-border-subtle" />
+                <MobileLink href="/cart">
+                  Cart{cartCount > 0 ? ` (${cartCount})` : ""}
+                </MobileLink>
+                <MobileLink href="/account">Account</MobileLink>
+                <MobileLink href="/orders">My orders</MobileLink>
+                <div className="my-2 border-t border-border-subtle" />
+                <button
+                  onClick={() => { dispatch(logout()); window.location.href = "/"; }}
+                  className="block w-full text-left px-3 py-2.5 text-sm font-medium text-red-400 hover:bg-bg-secondary rounded-xl transition-colors"
+                >
+                  Sign out
+                </button>
+              </>
+            ) : (
+              <MobileLink href="/auth/login">Sign in</MobileLink>
+            )}
+          </div>
         </div>
       )}
     </header>
   );
 }
 
-const DropdownItem = ({ href, children }: { href: string; children: string }) => (
-  <Link href={href} className="block px-4 py-2 text-sm hover:bg-bg-secondary transition-colors">
-    {children}
-  </Link>
-);
+function DropdownLink({ href, Icon, label }: { href: string; Icon: React.ElementType; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="flex items-center gap-2.5 px-4 py-2 text-sm text-text-secondary hover:text-white hover:bg-bg-secondary transition-colors"
+    >
+      <Icon size={14} className="text-text-muted" />
+      {label}
+    </Link>
+  );
+}
 
-const MobileLink = ({ href, children }: { href: string; children: string }) => (
-  <Link href={href} className="block px-3 py-2 text-sm font-medium text-text-secondary hover:text-white rounded-lg hover:bg-bg-secondary transition-colors">
-    {children}
-  </Link>
-);
+function MobileLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="block px-3 py-2.5 text-sm font-medium text-text-secondary hover:text-white rounded-xl hover:bg-bg-secondary transition-colors"
+    >
+      {children}
+    </Link>
+  );
+}
