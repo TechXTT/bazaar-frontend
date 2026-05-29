@@ -2,18 +2,18 @@
 
 import { productsService } from "@/api";
 import { IProduct } from "@/api/interfaces/products";
-import Button from "@/components/ui/button";
-import Card from "@/components/ui/card";
 import Field from "@/components/ui/field";
 import Input from "@/components/ui/input";
 import Textarea from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { FiArrowLeft, FiCheck, FiImage } from "react-icons/fi";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required").max(120, "Name is too long"),
@@ -71,69 +71,110 @@ export default function SellerEditProductPage() {
 
   if (!product) {
     return (
-      <div className="flex items-center justify-center py-10">
-        <p className="text-text-secondary">Loading…</p>
+      <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
+        <div className="h-80 rounded-2xl bg-bg-secondary animate-pulse" />
+        <div className="h-64 rounded-2xl bg-bg-secondary animate-pulse" />
       </div>
     );
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
-      <Card className="p-6">
-        <h1 className="text-2xl font-semibold">Edit product</h1>
-        <form className="mt-6 space-y-4" onSubmit={onSubmit}>
-          <Field label="Name" htmlFor="name" error={errors.name?.message}>
-            <Input id="name" {...register("name")} error={errors.name?.message} />
-          </Field>
-          <Field label="Price" htmlFor="price" error={errors.price?.message}>
-            <Input id="price" type="number" step="0.0001" {...register("price")} error={errors.price?.message} />
-          </Field>
-          <Field label="Description" htmlFor="description" error={errors.description?.message}>
-            <Textarea id="description" {...register("description")} error={errors.description?.message} />
-          </Field>
-          <Field label="Replace image (optional)">
-            <Input
-              id="image"
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) setNewImage(file);
-              }}
-            />
-          </Field>
-          <div className="flex gap-3">
-            <Button type="submit" isLoading={isSubmitting}>
-              Save changes
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => router.push(`/seller/stores/${storeId}`)}
-            >
-              Cancel
-            </Button>
-          </div>
-        </form>
-      </Card>
+    <div>
+      <Link
+        href={`/seller/stores/${storeId}`}
+        className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-white transition-colors mb-8"
+      >
+        <FiArrowLeft size={14} /> Back to store
+      </Link>
 
-      <Card className="p-6">
-        <h2 className="text-lg font-semibold">Preview</h2>
-        {preview || product.ImageURL ? (
-          <Image
-            src={preview || product.ImageURL}
-            alt={product.Name}
-            width={320}
-            height={320}
-            className="mt-4 h-80 w-full rounded-md object-cover"
-            unoptimized
-          />
-        ) : (
-          <div className="mt-4 flex h-80 items-center justify-center rounded-md border border-dashed border-border-strong bg-surface-sunken text-sm text-text-secondary">
-            No image selected.
+      <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
+        <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-6 space-y-6">
+          <div>
+            <h1 className="text-xl font-bold">Edit product</h1>
+            <p className="text-sm text-text-secondary mt-1">Update the details for this listing.</p>
           </div>
-        )}
-      </Card>
+
+          <form className="space-y-5" onSubmit={onSubmit}>
+            <Field label="Name" htmlFor="name" error={errors.name?.message}>
+              <Input id="name" {...register("name")} error={errors.name?.message} />
+            </Field>
+            <Field label="Price (ETH)" htmlFor="price" error={errors.price?.message}>
+              <Input
+                id="price"
+                type="number"
+                step="0.0001"
+                {...register("price")}
+                error={errors.price?.message}
+              />
+            </Field>
+            <Field label="Description" htmlFor="description" error={errors.description?.message}>
+              <Textarea
+                id="description"
+                {...register("description")}
+                error={errors.description?.message}
+              />
+            </Field>
+            <Field label="Replace image (optional)">
+              <label className="flex items-center gap-3 rounded-xl border border-border-subtle px-4 py-3 cursor-pointer hover:border-primary transition-colors">
+                <FiImage size={16} className="text-text-muted shrink-0" />
+                <span className="text-sm text-text-secondary flex-1 truncate">
+                  {newImage ? newImage.name : "Choose a new image…"}
+                </span>
+                <input
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  className="sr-only"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) setNewImage(file);
+                  }}
+                />
+              </label>
+            </Field>
+            <div className="flex gap-3 pt-1">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              >
+                {isSubmitting ? (
+                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                ) : (
+                  <FiCheck size={14} />
+                )}
+                Save changes
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push(`/seller/stores/${storeId}`)}
+                className="inline-flex items-center gap-2 border border-border-subtle font-semibold px-5 py-2.5 rounded-xl hover:border-primary transition-all text-sm"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Image preview */}
+        <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-3 h-fit">
+          <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">Preview</p>
+          {preview || product.ImageURL ? (
+            <Image
+              src={preview || product.ImageURL}
+              alt={product.Name}
+              width={320}
+              height={320}
+              className="h-64 w-full rounded-xl object-cover"
+              unoptimized
+            />
+          ) : (
+            <div className="flex h-64 items-center justify-center rounded-xl border border-dashed border-border-subtle bg-surface-sunken text-sm text-text-muted">
+              No image selected
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

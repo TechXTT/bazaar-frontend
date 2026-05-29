@@ -2,41 +2,49 @@
 
 import { disputesService } from "@/api";
 import { IDispute } from "@/api/interfaces/disputes";
-import Card from "@/components/ui/card";
-import EmptyState from "@/components/ui/empty-state";
-import Skeleton from "@/components/ui/skeleton";
+import { CONFIG } from "@/config/config";
 import { RootState } from "@/redux/store";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import {
+  FiAlertCircle,
+  FiArrowRight,
+  FiCheckCircle,
+  FiClock,
+  FiExternalLink,
+  FiShield,
+} from "react-icons/fi";
 
-const statusLabel: Record<string, string> = {
-  fee_pending: "Awaiting arbitration fees",
-  arbitrating: "Under arbitration",
-  resolved: "Resolved",
-  timed_out: "Timed out",
+const STATUS_CONFIG: Record<string, { label: string; Icon: React.ElementType; className: string; border: string }> = {
+  fee_pending: { label: "Awaiting arbitration fee", Icon: FiClock,       className: "text-yellow-400", border: "border-yellow-500/20" },
+  arbitrating: { label: "Under arbitration",        Icon: FiAlertCircle, className: "text-orange-400", border: "border-orange-500/20" },
+  resolved:    { label: "Resolved",                 Icon: FiCheckCircle, className: "text-green-400",  border: "border-green-500/20" },
+  timed_out:   { label: "Timed out",                Icon: FiClock,       className: "text-text-muted", border: "border-border-subtle" },
+};
+
+const RULING_LABELS: Record<number, string> = {
+  0: "Refused — receiver wins by default",
+  1: "Buyer wins",
+  2: "Receiver wins",
 };
 
 export default function SellerDisputesPage() {
   const auth = useSelector((state: RootState) => state.auth);
   const [disputes, setDisputes] = useState<IDispute[] | null>(null);
 
-  const load = async () => {
-    const response = await disputesService.getDisputes();
-    setDisputes(response.data);
-  };
-
   useEffect(() => {
     if (auth.isLoggedIn) {
-      load();
+      disputesService.getDisputes().then((res) => setDisputes(res.data));
     }
   }, [auth.isLoggedIn]);
 
   if (!disputes) {
     return (
       <div className="space-y-3">
-        <Skeleton h={180} />
-        <Skeleton h={180} />
+        {[1, 2].map((i) => (
+          <div key={i} className="h-28 rounded-2xl bg-bg-secondary animate-pulse" />
+        ))}
       </div>
     );
   }
@@ -44,44 +52,78 @@ export default function SellerDisputesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Disputes</h1>
-        <p className="mt-2 text-sm text-text-secondary">
-          Disputes are resolved on-chain via arbitration. Use the dispute page to pay fees, submit evidence, or invoke a timeout.
+        <h1 className="text-2xl font-bold">Disputes</h1>
+        <p className="mt-1 text-sm text-text-secondary">
+          On-chain disputes resolved via Kleros arbitration.
         </p>
       </div>
 
       {disputes.length === 0 ? (
-        <EmptyState title="No disputes" description="On-chain disputes will appear here once raised." />
+        <div className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-border-subtle space-y-4">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-bg-secondary border border-border-subtle">
+            <FiShield size={24} className="text-text-muted" />
+          </div>
+          <div className="text-center space-y-1">
+            <p className="font-semibold text-white">No disputes</p>
+            <p className="text-sm text-text-secondary">On-chain disputes will appear here once raised.</p>
+          </div>
+        </div>
       ) : (
-        <div className="space-y-4">
-          {disputes.map((dispute) => (
-            <Card key={dispute.ID} className="space-y-3 p-4">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <h2 className="font-semibold">Order {String(dispute.OrderID).slice(0, 8)}…</h2>
-                  <p className="mt-1 text-sm text-text-secondary">
-                    {statusLabel[dispute.Status] ?? dispute.Status}
-                  </p>
-                  {dispute.Ruling !== null ? (
-                    <p className="mt-1 text-sm text-text-secondary">
-                      Ruling:{" "}
-                      {dispute.Ruling === 1
-                        ? "Buyer wins"
-                        : dispute.Ruling === 2
-                        ? "Receiver wins"
-                        : "Refused"}
+        <div className="space-y-3">
+          {disputes.map((dispute) => {
+            const cfg = STATUS_CONFIG[dispute.Status] ?? {
+              label: dispute.Status,
+              Icon: FiAlertCircle,
+              className: "text-text-secondary",
+              border: "border-border-subtle",
+            };
+            return (
+              <div
+                key={dispute.ID}
+                className={`rounded-2xl border bg-bg-secondary p-5 space-y-3 ${cfg.border}`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-2">
+                      <cfg.Icon size={15} className={cfg.className} />
+                      <span className={`text-sm font-semibold ${cfg.className}`}>{cfg.label}</span>
+                    </div>
+                    <p className="text-sm text-text-secondary">
+                      Order{" "}
+                      <span className="font-mono text-xs text-white">
+                        {String(dispute.OrderID).slice(0, 8)}…
+                      </span>
                     </p>
-                  ) : null}
+                    {dispute.ArbitratorDisputeID !== null && (
+                      <a
+                        href={`${CONFIG.KLEROS_COURT_URL}/cases/${dispute.ArbitratorDisputeID}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                      >
+                        Kleros #{dispute.ArbitratorDisputeID} <FiExternalLink size={10} />
+                      </a>
+                    )}
+                    {dispute.Ruling !== null && (
+                      <p className="text-xs text-text-muted">
+                        Ruling:{" "}
+                        <span className="text-white font-medium">
+                          {RULING_LABELS[dispute.Ruling] ?? "Unknown"}
+                        </span>
+                      </p>
+                    )}
+                  </div>
+
+                  <Link
+                    href={`/orders/${dispute.OrderID}/dispute`}
+                    className="inline-flex items-center gap-1.5 border border-border-subtle text-sm font-semibold px-3 py-2 rounded-xl hover:border-primary hover:text-primary transition-all shrink-0"
+                  >
+                    Manage <FiArrowRight size={13} />
+                  </Link>
                 </div>
-                <Link
-                  href={`/orders/${dispute.OrderID}/dispute`}
-                  className="shrink-0 rounded-md border border-border-subtle px-3 py-1.5 text-sm hover:bg-bg-secondary"
-                >
-                  View dispute
-                </Link>
               </div>
-            </Card>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
