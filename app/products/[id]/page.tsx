@@ -9,6 +9,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import AddCart from "../components/addCart";
+import { FiArrowLeft, FiEdit2, FiShield } from "react-icons/fi";
 
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
@@ -26,10 +27,13 @@ export default function ProductPage() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center py-10 space-y-4">
-        <p className="text-text-secondary">Product not found.</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <div className="text-center space-y-2">
+          <p className="font-semibold text-white">Product not found</p>
+          <p className="text-sm text-text-secondary">This product may have been removed.</p>
+        </div>
         <button onClick={() => router.back()} className="text-sm text-primary hover:underline">
-          Go back
+          ← Go back
         </button>
       </div>
     );
@@ -37,10 +41,21 @@ export default function ProductPage() {
 
   if (!product) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-10 animate-pulse space-y-4">
-        <div className="h-96 rounded-xl bg-bg-secondary" />
-        <div className="h-8 w-64 rounded bg-bg-secondary" />
-        <div className="h-5 w-40 rounded bg-bg-secondary" />
+      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="h-5 w-24 rounded bg-bg-secondary animate-pulse mb-8" />
+        <div className="grid lg:grid-cols-2 gap-8">
+          <div className="aspect-square rounded-2xl bg-bg-secondary animate-pulse" />
+          <div className="space-y-4 pt-2">
+            <div className="h-4 w-20 rounded bg-bg-secondary animate-pulse" />
+            <div className="h-8 w-3/4 rounded bg-bg-secondary animate-pulse" />
+            <div className="h-6 w-1/3 rounded bg-bg-secondary animate-pulse" />
+            <div className="space-y-2 pt-2">
+              <div className="h-3 w-full rounded bg-bg-secondary animate-pulse" />
+              <div className="h-3 w-5/6 rounded bg-bg-secondary animate-pulse" />
+              <div className="h-3 w-4/6 rounded bg-bg-secondary animate-pulse" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -48,46 +63,67 @@ export default function ProductPage() {
   const isOwner = auth.user?.ID === product.Store?.OwnerID;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10">
-      <div className="flex flex-col lg:flex-row gap-8 rounded-xl border border-border-subtle bg-bg-secondary p-6">
+    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+      {/* Back */}
+      <Link
+        href={`/stores/${product.StoreID}`}
+        className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-white transition-colors mb-8"
+      >
+        <FiArrowLeft size={14} /> {product.Store?.Name ?? "Store"}
+      </Link>
+
+      <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
         {/* Image */}
-        <div className="lg:w-1/2 shrink-0">
+        <div className="relative aspect-square rounded-2xl overflow-hidden border border-border-subtle">
           <BucketImage
             key={product.ID}
-            className="w-full h-80 lg:h-full object-cover rounded-lg"
+            className="h-full w-full"
             imageURL={product.ImageURL}
             name={product.Name}
           />
         </div>
 
         {/* Details */}
-        <div className="flex flex-col gap-4 flex-1">
-          <Link
-            href={`/stores/${product.StoreID}`}
-            className="text-sm text-primary hover:underline"
-          >
-            {product.Store?.Name}
-          </Link>
+        <div className="flex flex-col gap-6">
+          {/* Store link */}
+          <div>
+            <Link
+              href={`/stores/${product.StoreID}`}
+              className="inline-flex items-center gap-1.5 rounded-full border border-border-subtle bg-bg-secondary px-3 py-1 text-xs font-medium text-text-secondary hover:border-primary hover:text-primary transition-colors"
+            >
+              {product.Store?.Name}
+            </Link>
+          </div>
 
-          <h1 className="text-3xl font-bold">{product.Name}</h1>
+          {/* Name + price */}
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold leading-tight">{product.Name}</h1>
+            <p className="text-2xl font-semibold text-primary">
+              {product.Price} {product.Unit}
+            </p>
+          </div>
 
-          <p className="text-2xl font-semibold">
-            {product.Price} {product.Unit}
-          </p>
-
+          {/* Description */}
           {product.Description && (
-            <p className="text-text-secondary text-sm leading-relaxed">
+            <p className="text-sm text-text-secondary leading-relaxed border-t border-border-subtle pt-4">
               {product.Description}
             </p>
           )}
 
+          {/* Escrow trust indicator */}
+          <div className="flex items-center gap-2 text-xs text-text-muted">
+            <FiShield size={13} className="text-primary shrink-0" />
+            Escrowed payment — funds released on delivery confirmation
+          </div>
+
+          {/* CTA */}
           <div className="mt-auto">
             {isOwner ? (
               <Link
                 href={`/seller/stores/${product.StoreID}/products/${product.ID}/edit`}
-                className="inline-block bg-bg-secondary border border-border-subtle font-semibold px-5 py-2 rounded-lg hover:border-primary transition-colors text-sm"
+                className="inline-flex items-center gap-2 border border-border-subtle font-semibold px-5 py-2.5 rounded-xl hover:border-primary hover:bg-bg-secondary transition-all text-sm"
               >
-                Edit this product
+                <FiEdit2 size={14} /> Edit product
               </Link>
             ) : (
               <AddCart product={product} />

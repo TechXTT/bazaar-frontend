@@ -3,63 +3,93 @@
 import { IProduct } from "@/api/interfaces/products";
 import { addItemsToCart } from "@/redux/slices/auth-slice";
 import { useAppDispatch } from "@/redux/store";
+import Link from "next/link";
 import { useState } from "react";
-import { GrAdd, GrSubtract } from "react-icons/gr";
+import { FiMinus, FiPlus, FiShoppingCart, FiLock } from "react-icons/fi";
 import { useSelector } from "react-redux";
+import { toast } from "sonner";
 
 const AddToCart = ({ product }: { product: IProduct }) => {
   const dispatch = useAppDispatch();
   const auth = useSelector((state: any) => state.auth);
-  const [amount, setAmount] = useState<number>(1);
+  const [amount, setAmount] = useState(1);
 
   const handleAddToCart = () => {
-    if (!auth.isLoggedIn) return;
-
     const existing = (auth.cart.products as any[]) ?? [];
     const total = auth.cart.total + product.Price * amount;
     const idx = existing.findIndex((p: any) => p.ID === product.ID);
-
-    let products;
-    if (idx > -1) {
-      products = existing.map((p: any, i: number) =>
-        i === idx ? { ...p, Quantity: p.Quantity + amount } : p
-      );
-    } else {
-      products = [...existing, { ...product, Quantity: amount }];
-    }
-
+    const products =
+      idx > -1
+        ? existing.map((p: any, i: number) =>
+            i === idx ? { ...p, Quantity: p.Quantity + amount } : p
+          )
+        : [...existing, { ...product, Quantity: amount }];
     dispatch(addItemsToCart({ products, total }));
+    toast.success(`${amount} × ${product.Name} added to cart`);
   };
 
-  return (
-    <div className="flex flex-col h-full justify-self-end content-evenly w-1/3 rounded-lg shadow p-4 bg-bg-secondary">
-      <div className="flex flex-row justify-between">
-        <p className="text-3xl -mt-1 mb-8 font-bold text-left">Price: </p>
-        <p className="text-2xl mb-8 text-left">
-          {product.Price * amount} {product.Unit}
-        </p>
+  if (!auth.isLoggedIn) {
+    return (
+      <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-3">
+        <div className="flex items-center gap-2 text-sm text-text-secondary">
+          <FiLock size={14} />
+          Sign in to purchase this product.
+        </div>
+        <Link
+          href="/auth/login"
+          className="flex w-full items-center justify-center gap-2 bg-primary text-white font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity"
+        >
+          Sign in to buy
+        </Link>
       </div>
-      <div className="flex h-1/2 flex-row content-center space-x-2">
-        <p className="text-2xl font-bold -mt-1 text-left">Quantity: </p>
-        <div className="flex flex-row w-full justify-center space-x-8">
-          <div onClick={() => amount > 1 && setAmount(amount - 1)}>
-            <GrSubtract className="text-2xl cursor-pointer" />
-          </div>
-          <p className="text-2xl -mt-1">{amount}</p>
-          <div onClick={() => setAmount(amount + 1)}>
-            <GrAdd className="text-2xl cursor-pointer" />
-          </div>
+    );
+  }
+
+  const total = (product.Price * amount).toFixed(4);
+
+  return (
+    <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-5">
+      {/* Quantity */}
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium text-text-secondary">Quantity</span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setAmount((a) => Math.max(1, a - 1))}
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-border-subtle hover:border-primary hover:text-primary transition-colors"
+          >
+            <FiMinus size={14} />
+          </button>
+          <span className="w-6 text-center font-semibold">{amount}</span>
+          <button
+            onClick={() => setAmount((a) => a + 1)}
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-border-subtle hover:border-primary hover:text-primary transition-colors"
+          >
+            <FiPlus size={14} />
+          </button>
         </div>
       </div>
-      <div className="flex flex-row w-full">
-        <button
-          onClick={handleAddToCart}
-          className="bg-primary w-full text-xl text-white p-2 rounded-md disabled:opacity-50"
-          disabled={!auth.isLoggedIn}
-        >
-          Add to Cart
-        </button>
+
+      {/* Total */}
+      <div className="flex items-center justify-between border-t border-border-subtle pt-4">
+        <span className="text-sm text-text-secondary">Total</span>
+        <span className="text-lg font-bold text-white">
+          {total} {product.Unit}
+        </span>
       </div>
+
+      {/* Add to cart */}
+      <button
+        onClick={handleAddToCart}
+        className="flex w-full items-center justify-center gap-2 bg-primary text-white font-semibold py-3.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20"
+      >
+        <FiShoppingCart size={18} />
+        Add to cart
+      </button>
+
+      {/* Escrow note */}
+      <p className="text-center text-xs text-text-muted">
+        🔒 Protected by on-chain escrow
+      </p>
     </div>
   );
 };
