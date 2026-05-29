@@ -8,6 +8,7 @@ import { useAppDispatch } from "@/redux/store";
 import { useSDK } from "@metamask/sdk-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FiArrowRight } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
@@ -73,22 +74,14 @@ const Checkout = ({ paymentToken }: CheckoutProps) => {
         if (paymentToken === "USDC") {
           const amount = BigInt(Math.round(item.Price * quantity * 1e6));
           const { orderTx } = await createOrderERC20(
-            order.id,
-            item.ID,
-            order.owner_address,
-            releaseTime,
-            amount
+            order.id, item.ID, order.owner_address, releaseTime, amount
           );
           txs.push(orderTx.hash);
         } else {
           const { parseEther } = await import("ethers");
           const value = parseEther((item.Price * quantity).toString());
           const tx = await createOrder(
-            order.id,
-            item.ID,
-            order.owner_address,
-            releaseTime,
-            value
+            order.id, item.ID, order.owner_address, releaseTime, value
           );
           txs.push(tx.hash);
         }
@@ -97,10 +90,7 @@ const Checkout = ({ paymentToken }: CheckoutProps) => {
       sessionStorage.setItem(
         "bazaar.checkout.confirmation",
         JSON.stringify({
-          orders: cart.products.map((p: any) => ({
-            name: p.Name,
-            quantity: p.Quantity ?? 1,
-          })),
+          orders: cart.products.map((p: any) => ({ name: p.Name, quantity: p.Quantity ?? 1 })),
           timestamp: Date.now(),
           total: cart.total,
           txs,
@@ -125,11 +115,20 @@ const Checkout = ({ paymentToken }: CheckoutProps) => {
 
   return (
     <button
-      className="w-full bg-primary text-white font-bold py-3 px-6 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:opacity-90"
       onClick={handleCheckout}
       disabled={loading || cart.products.length === 0}
+      className="w-full flex items-center justify-center gap-2 bg-primary text-white font-semibold py-3.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      {loading ? "Processing…" : `Pay with ${paymentToken}`}
+      {loading ? (
+        <>
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+          Processing…
+        </>
+      ) : (
+        <>
+          Pay with {paymentToken} <FiArrowRight size={16} />
+        </>
+      )}
     </button>
   );
 };
