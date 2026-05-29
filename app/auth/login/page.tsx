@@ -65,7 +65,11 @@ const LoginPage = () => {
       dispatch(setUser(user));
       router.push("/");
     } catch (err: any) {
-      const msg = err?.response?.data ?? err?.message ?? "Sign-in failed";
+      const msg =
+        err?.response?.data?.error ??
+        err?.response?.data ??
+        err?.message ??
+        "Sign-in failed";
       toast.error(typeof msg === "string" ? msg : "Sign-in failed");
     } finally {
       setLoading(false);

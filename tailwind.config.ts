@@ -35,6 +35,12 @@ module.exports = {
       gradient:
         "linear-gradient(158.44deg, #68CBE9 7.17%, #7775B4 52.72%, #7B51A1 91.26%)",
       error: "#FF0000",
+      // design-system tokens
+      background: "#182628",
+      "bg-secondary": "#1f3135",
+      "surface-sunken": "#142024",
+      "border-subtle": "#2c4a4e",
+      "text-secondary": "#6b9099",
     },
     extend: {
       backgroundImage: () => ({

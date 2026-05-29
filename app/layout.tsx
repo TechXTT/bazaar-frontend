@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 import ReduxProvider from "./components/redux";
 import { MetaMaskProvider } from "@metamask/sdk-react";
 import { useEffect, useState } from "react";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -41,7 +42,7 @@ export default function RootLayout({
 					`}
         </Script>
       </head>
-      <body className="bg-[#182628]">
+      <body className="bg-background">
         <ReduxProvider>
           <MetaMaskProvider
             debug={true}
@@ -54,6 +55,7 @@ export default function RootLayout({
           >
             <Navigation />
             <div>{children}</div>
+            <Toaster position="bottom-right" richColors />
           </MetaMaskProvider>
         </ReduxProvider>
       </body>
