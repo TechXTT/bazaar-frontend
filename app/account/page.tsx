@@ -90,12 +90,16 @@ export default function AccountPage() {
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      const response = await usersService.updateUser({
+      await usersService.updateUser({
         ...values,
         Email: auth.user?.Email ?? "",
         WalletAddress: auth.user?.WalletAddress ?? "",
       });
-      dispatch(setUser(response.data));
+      const refreshed = await usersService.getMe();
+      if (refreshed.status === 200) {
+        dispatch(setUser(refreshed.data));
+        reset({ FirstName: refreshed.data.FirstName, LastName: refreshed.data.LastName });
+      }
       toast.success("Account updated");
     } catch {
       toast.error("Failed to save changes");
