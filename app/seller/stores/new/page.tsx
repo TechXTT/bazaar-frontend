@@ -32,9 +32,13 @@ export default function SellerNewStorePage() {
   });
 
   const onSubmit = handleSubmit(async (values) => {
-    const response = await storesService.createStore(values.name);
-    toast.success("Store created");
-    router.push(`/seller/stores/${response.data.ID}`);
+    try {
+      const response = await storesService.createStore(values.name);
+      toast.success("Store created");
+      router.push(`/seller/stores/${response.data.ID}`);
+    } catch {
+      toast.error("Failed to create store");
+    }
   });
 
   return (

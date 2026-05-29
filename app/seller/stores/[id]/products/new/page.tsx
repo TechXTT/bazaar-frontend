@@ -52,15 +52,19 @@ export default function SellerNewProductPage() {
   }, [image]);
 
   const onSubmit = handleSubmit(async (values) => {
-    await productsService.createProduct({
-      Name: values.name,
-      Price: String(values.price),
-      Description: values.description,
-      Image: values.image,
-      StoreID: id as UUID,
-    });
-    toast.success("Product created");
-    router.push(`/seller/stores/${id}`);
+    try {
+      await productsService.createProduct({
+        Name: values.name,
+        Price: String(values.price),
+        Description: values.description,
+        Image: values.image,
+        StoreID: id as UUID,
+      });
+      toast.success("Product created");
+      router.push(`/seller/stores/${id}`);
+    } catch {
+      toast.error("Failed to create product");
+    }
   });
 
   return (

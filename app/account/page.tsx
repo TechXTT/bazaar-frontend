@@ -78,19 +78,28 @@ export default function AccountPage() {
       router.replace("/auth/login?next=/account");
       return;
     }
-    if (auth.user) {
-      reset({ FirstName: auth.user.FirstName, LastName: auth.user.LastName });
-    }
-  }, [auth.isLoggedIn, auth.user, reset, router]);
+    usersService.getMe()
+      .then((res) => {
+        if (res.status === 200) {
+          dispatch(setUser(res.data));
+          reset({ FirstName: res.data.FirstName, LastName: res.data.LastName });
+        }
+      })
+      .catch(() => dispatch(logout()));
+  }, [auth.isLoggedIn]);
 
   const onSubmit = handleSubmit(async (values) => {
-    const response = await usersService.updateUser({
-      ...values,
-      Email: auth.user?.Email ?? "",
-      WalletAddress: auth.user?.WalletAddress ?? "",
-    });
-    dispatch(setUser(response.data));
-    toast.success("Account updated");
+    try {
+      const response = await usersService.updateUser({
+        ...values,
+        Email: auth.user?.Email ?? "",
+        WalletAddress: auth.user?.WalletAddress ?? "",
+      });
+      dispatch(setUser(response.data));
+      toast.success("Account updated");
+    } catch {
+      toast.error("Failed to save changes");
+    }
   });
 
   const initials =
