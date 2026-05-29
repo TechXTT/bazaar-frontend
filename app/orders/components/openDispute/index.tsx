@@ -8,12 +8,19 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { FiAlertCircle, FiArrowRight, FiCheckCircle, FiClock } from "react-icons/fi";
 
-const STATUS_LABELS: Record<string, string> = {
-  fee_pending: "Awaiting arbitration fee",
-  arbitrating: "Under arbitration",
-  resolved: "Resolved",
-  timed_out: "Timed out",
+const STATUS_CONFIG: Record<string, { label: string; Icon: React.ElementType; className: string }> = {
+  fee_pending: { label: "Awaiting arbitration fee", Icon: FiClock,        className: "text-yellow-400" },
+  arbitrating: { label: "Under arbitration",        Icon: FiAlertCircle,  className: "text-orange-400" },
+  resolved:    { label: "Resolved",                 Icon: FiCheckCircle,  className: "text-green-400" },
+  timed_out:   { label: "Timed out",                Icon: FiClock,        className: "text-text-muted" },
+};
+
+const RULING_LABELS: Record<number, string> = {
+  0: "Refused — receiver wins by default",
+  1: "Buyer wins",
+  2: "Seller wins",
 };
 
 const OpenDispute = ({ order }: { order: IOrder }) => {
@@ -29,47 +36,54 @@ const OpenDispute = ({ order }: { order: IOrder }) => {
     }
     disputesService
       .getDisputeByOrderID(order?.ID)
-      .then((res) => {
-        if (res.status === 200) setDispute(res.data);
-      })
+      .then((res) => { if (res.status === 200) setDispute(res.data); })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [order?.ID, auth.user]);
 
+  const cfg = dispute ? STATUS_CONFIG[dispute.Status] : null;
+
   return (
-    <div className="space-y-3">
+    <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-4">
+      <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">Dispute</p>
+
       {loading ? (
-        <p className="text-sm text-text-secondary">Loading dispute…</p>
+        <div className="h-4 w-32 rounded bg-surface-sunken animate-pulse" />
       ) : dispute ? (
-        <div className="rounded-lg border border-border-subtle bg-bg-secondary p-4 space-y-2">
-          <p className="text-sm font-semibold">
-            Dispute:{" "}
-            <span className="font-normal">{STATUS_LABELS[dispute.Status] ?? dispute.Status}</span>
-          </p>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            {cfg && <cfg.Icon size={15} className={cfg.className} />}
+            <span className="text-sm font-medium text-white">
+              {cfg?.label ?? dispute.Status}
+            </span>
+          </div>
           {dispute.Ruling !== null && (
             <p className="text-sm text-text-secondary">
               Ruling:{" "}
-              {dispute.Ruling === 1
-                ? "Buyer wins"
-                : dispute.Ruling === 2
-                ? "Seller wins"
-                : "Refused to arbitrate"}
+              <span className="text-white font-medium">
+                {RULING_LABELS[dispute.Ruling] ?? "Unknown"}
+              </span>
             </p>
           )}
           <Link
             href={`/orders/${order.ID}/dispute`}
-            className="inline-block mt-1 text-sm font-semibold text-primary hover:underline"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
           >
-            Manage dispute →
+            Manage dispute <FiArrowRight size={13} />
           </Link>
         </div>
       ) : (
-        <Link
-          href={`/orders/${order.ID}/dispute`}
-          className="inline-block text-sm font-semibold border border-border-subtle rounded-lg px-4 py-2 hover:border-primary transition-colors"
-        >
-          View / raise dispute
-        </Link>
+        <div className="space-y-3">
+          <p className="text-sm text-text-secondary">
+            No dispute has been raised for this order.
+          </p>
+          <Link
+            href={`/orders/${order.ID}/dispute`}
+            className="inline-flex items-center gap-2 text-sm font-semibold border border-border-subtle rounded-xl px-4 py-2.5 hover:border-primary transition-colors"
+          >
+            <FiAlertCircle size={14} /> Raise a dispute
+          </Link>
+        </div>
       )}
     </div>
   );

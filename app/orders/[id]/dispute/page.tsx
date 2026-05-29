@@ -3,8 +3,6 @@
 import { disputesService, usersService } from "@/api";
 import { IDispute, IDisputeEvidence } from "@/api/services/disputes";
 import { CONFIG } from "@/config/config";
-import Button from "@/components/ui/button";
-import Card from "@/components/ui/card";
 import {
   getArbitrationCost,
   getEscrowOrder,
@@ -16,10 +14,20 @@ import {
 } from "@/components/escrow";
 import { useWallet } from "@/hooks/useWallet";
 import { RootState } from "@/redux/store";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
+import {
+  FiAlertCircle,
+  FiArrowLeft,
+  FiCheckCircle,
+  FiClock,
+  FiExternalLink,
+  FiPaperclip,
+  FiUpload,
+} from "react-icons/fi";
 
 function resolveURI(uri: string): string {
   if (uri.startsWith("ipfs://")) {
@@ -27,6 +35,19 @@ function resolveURI(uri: string): string {
   }
   return uri;
 }
+
+const STATUS_CONFIG: Record<string, { label: string; Icon: React.ElementType; className: string; bg: string }> = {
+  fee_pending: { label: "Awaiting arbitration fee", Icon: FiClock,       className: "text-yellow-400", bg: "bg-yellow-500/10 border-yellow-500/20" },
+  arbitrating: { label: "Under arbitration",        Icon: FiAlertCircle, className: "text-orange-400", bg: "bg-orange-500/10 border-orange-500/20" },
+  resolved:    { label: "Resolved",                 Icon: FiCheckCircle, className: "text-green-400",  bg: "bg-green-500/10 border-green-500/20" },
+  timed_out:   { label: "Timed out",                Icon: FiClock,       className: "text-text-muted", bg: "bg-bg-secondary border-border-subtle" },
+};
+
+const RULING_LABELS: Record<number, string> = {
+  0: "Refused — receiver wins by default",
+  1: "Buyer wins — refunded",
+  2: "Receiver wins — funds released",
+};
 
 export default function DisputePage() {
   const params = useParams();
@@ -92,42 +113,28 @@ export default function DisputePage() {
 
   const handleRaiseDispute = () =>
     withPending(async () => {
-      if (isBuyer) {
-        await raiseDisputeBuyer(orderId, arbitrationCost);
-      } else if (isReceiver) {
-        await raiseDisputeReceiver(orderId, arbitrationCost);
-      }
+      if (isBuyer) await raiseDisputeBuyer(orderId, arbitrationCost);
+      else if (isReceiver) await raiseDisputeReceiver(orderId, arbitrationCost);
     });
 
   const handlePayArbFee = () =>
     withPending(async () => {
-      if (isBuyer) {
-        await raiseDisputeBuyer(orderId, arbitrationCost);
-      } else {
-        await raiseDisputeReceiver(orderId, arbitrationCost);
-      }
+      if (isBuyer) await raiseDisputeBuyer(orderId, arbitrationCost);
+      else await raiseDisputeReceiver(orderId, arbitrationCost);
     });
 
   const handleTimeout = () =>
     withPending(async () => {
-      if (isBuyer) {
-        await timeoutByBuyer(orderId);
-      } else {
-        await timeoutByReceiver(orderId);
-      }
+      if (isBuyer) await timeoutByBuyer(orderId);
+      else await timeoutByReceiver(orderId);
     });
 
   const handleSubmitEvidence = async () => {
-    if (!evidenceFile) {
-      toast.error("Select a file first");
-      return;
-    }
+    if (!evidenceFile) { toast.error("Select a file first"); return; }
 
     setIsPending(true);
     try {
       await wallet.ensureReady();
-
-      // Upload file to S3 via backend
       const formData = new FormData();
       formData.append("file", evidenceFile);
       const uploadRes = await fetch(`/api/upload`, {
@@ -137,7 +144,6 @@ export default function DisputePage() {
       });
       if (!uploadRes.ok) throw new Error("File upload failed");
       const { url } = await uploadRes.json();
-
       await submitEvidence(orderId, url);
       setEvidenceFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -152,136 +158,185 @@ export default function DisputePage() {
   const isParty = isBuyer || isReceiver;
   const hasDispute = dispute !== null;
   const isFeePending = dispute?.Status === "fee_pending";
-  const isArbitrating = dispute?.Status === "arbitrating";
   const isResolved = dispute?.Status === "resolved" || dispute?.Status === "timed_out";
-
-  const myFeeDeposit =
-    isBuyer
-      ? evidence.some((e) => e.Party === walletAddress)
-      : evidence.some((e) => e.Party === walletAddress);
+  const myFeeDeposit = evidence.some((e) => e.Party === walletAddress);
+  const arbCostETH = (Number(arbitrationCost) / 1e18).toFixed(4);
+  const cfg = dispute ? STATUS_CONFIG[dispute.Status] : null;
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 space-y-6">
-      <h1 className="text-2xl font-bold">Dispute — Order {orderId.slice(0, 8)}…</h1>
+    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+      {/* Back */}
+      <Link
+        href={`/orders/${orderId}`}
+        className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-white transition-colors mb-8"
+      >
+        <FiArrowLeft size={14} /> Order detail
+      </Link>
 
-      {!auth.isLoggedIn ? (
-        <Card className="p-4">
-          <p className="text-sm text-text-secondary">Sign in to manage disputes.</p>
-        </Card>
-      ) : null}
+      <div className="flex items-center gap-3 mb-8">
+        <h1 className="text-2xl font-bold">Dispute</h1>
+        <span className="font-mono text-sm text-text-muted bg-bg-secondary border border-border-subtle rounded-lg px-2.5 py-1">
+          {orderId.slice(0, 8)}…
+        </span>
+      </div>
 
-      {/* Dispute status */}
-      <Card className="p-4 space-y-3">
-        <h2 className="font-semibold">Status</h2>
-        {hasDispute ? (
-          <div className="space-y-1 text-sm">
-            <p>
-              <span className="text-text-secondary">On-chain status: </span>
-              <span className="capitalize font-medium">{dispute.Status.replace("_", " ")}</span>
-            </p>
-            {dispute.ArbitratorDisputeID !== null && (
-              <p>
-                <span className="text-text-secondary">Kleros dispute: </span>
-                <a
-                  href={`${CONFIG.KLEROS_COURT_URL}/cases/${dispute.ArbitratorDisputeID}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline text-blue-500"
-                >
-                  #{dispute.ArbitratorDisputeID} — View on Kleros
-                </a>
-              </p>
-            )}
-            {dispute.Ruling !== null && (
-              <p>
-                <span className="text-text-secondary">Ruling: </span>
-                <span className="font-medium">
-                  {dispute.Ruling === 0
-                    ? "Refused (receiver wins by default)"
-                    : dispute.Ruling === 1
-                    ? "Buyer wins — refunded"
-                    : "Receiver wins — funds released"}
-                </span>
-              </p>
-            )}
-          </div>
-        ) : (
-          <p className="text-sm text-text-secondary">No dispute raised yet for this order.</p>
-        )}
-      </Card>
-
-      {/* Actions */}
-      {isParty && !isResolved ? (
-        <Card className="p-4 space-y-3">
-          <h2 className="font-semibold">Actions</h2>
-          <div className="flex flex-wrap gap-2">
-            {!hasDispute ? (
-              <Button onClick={handleRaiseDispute} disabled={isPending} isLoading={isPending}>
-                Raise Dispute ({(Number(arbitrationCost) / 1e18).toFixed(4)} ETH)
-              </Button>
-            ) : null}
-
-            {hasDispute && isFeePending && !myFeeDeposit ? (
-              <Button onClick={handlePayArbFee} disabled={isPending} isLoading={isPending}>
-                Pay Arbitration Fee ({(Number(arbitrationCost) / 1e18).toFixed(4)} ETH)
-              </Button>
-            ) : null}
-
-            {hasDispute && isFeePending ? (
-              <Button variant="secondary" onClick={handleTimeout} disabled={isPending} isLoading={isPending}>
-                Claim Timeout
-              </Button>
-            ) : null}
-          </div>
-        </Card>
-      ) : null}
-
-      {/* Evidence submission */}
-      {isParty && hasDispute && !isResolved ? (
-        <Card className="p-4 space-y-3">
-          <h2 className="font-semibold">Submit Evidence</h2>
-          <p className="text-xs text-text-secondary">
-            Upload a file (image, PDF, etc.). The URL will be recorded on-chain.
+      {!auth.isLoggedIn && (
+        <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 mb-4">
+          <p className="text-sm text-text-secondary">
+            <Link href="/auth/login" className="text-primary hover:underline">Sign in</Link> to manage disputes.
           </p>
-          <input
-            ref={fileInputRef}
-            type="file"
-            onChange={(e) => setEvidenceFile(e.target.files?.[0] ?? null)}
-            className="text-sm"
-          />
-          <Button
-            onClick={handleSubmitEvidence}
-            disabled={isPending || !evidenceFile}
-            isLoading={isPending}
-          >
-            Submit Evidence
-          </Button>
-        </Card>
-      ) : null}
+        </div>
+      )}
 
-      {/* Evidence list */}
-      {evidence.length > 0 ? (
-        <Card className="p-4 space-y-3">
-          <h2 className="font-semibold">Evidence ({evidence.length})</h2>
-          <div className="space-y-2">
-            {evidence.map((ev) => (
-              <div key={ev.ID} className="rounded border border-border-subtle px-3 py-2 text-sm">
-                <p className="text-text-secondary">
-                  Party: <span className="font-mono text-xs">{ev.Party.slice(0, 10)}…</span>
-                </p>
-                <a
-                  href={resolveURI(ev.URI)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline break-all"
-                >
-                  {ev.URI}
-                </a>
+      <div className="space-y-4">
+        {/* Status */}
+        <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">Status</p>
+          {hasDispute && cfg ? (
+            <div className="space-y-3">
+              <div className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 ${cfg.bg}`}>
+                <cfg.Icon size={15} className={cfg.className} />
+                <span className={`text-sm font-semibold ${cfg.className}`}>{cfg.label}</span>
               </div>
-            ))}
+              {dispute.ArbitratorDisputeID !== null && (
+                <p className="text-sm text-text-secondary">
+                  Kleros dispute:{" "}
+                  <a
+                    href={`${CONFIG.KLEROS_COURT_URL}/cases/${dispute.ArbitratorDisputeID}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-primary hover:underline"
+                  >
+                    #{dispute.ArbitratorDisputeID} <FiExternalLink size={11} />
+                  </a>
+                </p>
+              )}
+              {dispute.Ruling !== null && (
+                <div className="rounded-xl border border-border-subtle bg-surface-sunken px-4 py-3">
+                  <p className="text-xs text-text-muted uppercase tracking-widest mb-1">Ruling</p>
+                  <p className="text-sm font-semibold text-white">
+                    {RULING_LABELS[dispute.Ruling] ?? "Unknown"}
+                  </p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="text-sm text-text-secondary">No dispute raised yet for this order.</p>
+          )}
+        </div>
+
+        {/* Actions */}
+        {isParty && !isResolved && (
+          <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">Actions</p>
+            <div className="flex flex-wrap gap-2">
+              {!hasDispute && (
+                <button
+                  onClick={handleRaiseDispute}
+                  disabled={isPending}
+                  className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                >
+                  {isPending ? (
+                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  ) : (
+                    <FiAlertCircle size={14} />
+                  )}
+                  Raise Dispute ({arbCostETH} ETH)
+                </button>
+              )}
+              {hasDispute && isFeePending && !myFeeDeposit && (
+                <button
+                  onClick={handlePayArbFee}
+                  disabled={isPending}
+                  className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                >
+                  {isPending && (
+                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  )}
+                  Pay Arbitration Fee ({arbCostETH} ETH)
+                </button>
+              )}
+              {hasDispute && isFeePending && (
+                <button
+                  onClick={handleTimeout}
+                  disabled={isPending}
+                  className="inline-flex items-center gap-2 border border-border-subtle font-semibold px-4 py-2.5 rounded-xl hover:border-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                >
+                  {isPending && (
+                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-border-subtle border-t-white" />
+                  )}
+                  <FiClock size={14} /> Claim Timeout
+                </button>
+              )}
+            </div>
           </div>
-        </Card>
-      ) : null}
+        )}
+
+        {/* Evidence submission */}
+        {isParty && hasDispute && !isResolved && (
+          <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">Submit Evidence</p>
+            <p className="text-xs text-text-secondary">
+              Upload a file (image, PDF, etc.). The URL will be recorded on-chain.
+            </p>
+            <label className="flex items-center gap-3 rounded-xl border border-border-subtle px-4 py-3 cursor-pointer hover:border-primary transition-colors">
+              <FiPaperclip size={16} className="text-text-muted shrink-0" />
+              <span className="text-sm text-text-secondary flex-1 truncate">
+                {evidenceFile ? evidenceFile.name : "Choose a file…"}
+              </span>
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="sr-only"
+                onChange={(e) => setEvidenceFile(e.target.files?.[0] ?? null)}
+              />
+            </label>
+            <button
+              onClick={handleSubmitEvidence}
+              disabled={isPending || !evidenceFile}
+              className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            >
+              {isPending ? (
+                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              ) : (
+                <FiUpload size={14} />
+              )}
+              Submit Evidence
+            </button>
+          </div>
+        )}
+
+        {/* Evidence list */}
+        {evidence.length > 0 && (
+          <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+              Evidence ({evidence.length})
+            </p>
+            <div className="space-y-2">
+              {evidence.map((ev) => (
+                <div
+                  key={ev.ID}
+                  className="rounded-xl border border-border-subtle bg-surface-sunken px-4 py-3 space-y-1"
+                >
+                  <p className="text-xs text-text-muted">
+                    Party:{" "}
+                    <span className="font-mono">{ev.Party.slice(0, 10)}…</span>
+                  </p>
+                  <a
+                    href={resolveURI(ev.URI)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline break-all"
+                  >
+                    <FiExternalLink size={11} className="shrink-0" />
+                    {ev.URI}
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

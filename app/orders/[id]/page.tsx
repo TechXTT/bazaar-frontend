@@ -7,14 +7,27 @@ import OpenDispute from "../components/openDispute";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { FiArrowLeft, FiCalendar, FiHash, FiPackage } from "react-icons/fi";
 
-const STATUS_STYLES: Record<string, string> = {
-  created: "bg-blue-500/20 text-blue-400",
-  completed: "bg-green-500/20 text-green-400",
-  released: "bg-green-500/20 text-green-400",
-  cancelled: "bg-red-500/20 text-red-400",
-  disputed: "bg-yellow-500/20 text-yellow-400",
+const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
+  created:   { label: "Pending",   className: "bg-blue-500/15 text-blue-400 border-blue-500/20" },
+  completed: { label: "Completed", className: "bg-green-500/15 text-green-400 border-green-500/20" },
+  released:  { label: "Released",  className: "bg-green-500/15 text-green-400 border-green-500/20" },
+  cancelled: { label: "Cancelled", className: "bg-red-500/15 text-red-400 border-red-500/20" },
+  disputed:  { label: "Disputed",  className: "bg-yellow-500/15 text-yellow-400 border-yellow-500/20" },
 };
+
+function StatusBadge({ status }: { status: string }) {
+  const cfg = STATUS_CONFIG[status?.toLowerCase()] ?? {
+    label: status,
+    className: "bg-bg-secondary text-text-secondary border-border-subtle",
+  };
+  return (
+    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${cfg.className}`}>
+      {cfg.label}
+    </span>
+  );
+}
 
 export default function OrderPage() {
   const { id } = useParams<{ id: string }>();
@@ -31,13 +44,13 @@ export default function OrderPage() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center py-10 space-y-4">
-        <p className="text-text-secondary">Could not load order.</p>
-        <button
-          onClick={() => router.back()}
-          className="text-sm text-primary hover:underline"
-        >
-          Go back
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <div className="text-center space-y-2">
+          <p className="font-semibold text-white">Order not found</p>
+          <p className="text-sm text-text-secondary">This order may no longer be available.</p>
+        </div>
+        <button onClick={() => router.back()} className="text-sm text-primary hover:underline">
+          ← Go back
         </button>
       </div>
     );
@@ -45,44 +58,58 @@ export default function OrderPage() {
 
   if (!order) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-10 space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded bg-bg-secondary" />
-        <div className="h-64 rounded-lg bg-bg-secondary" />
-        <div className="h-6 w-64 rounded bg-bg-secondary" />
-        <div className="h-6 w-40 rounded bg-bg-secondary" />
+      <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="h-5 w-24 rounded bg-bg-secondary animate-pulse mb-8" />
+        <div className="grid lg:grid-cols-[1fr_380px] gap-8">
+          <div className="aspect-[4/3] rounded-2xl bg-bg-secondary animate-pulse" />
+          <div className="space-y-4">
+            <div className="h-6 w-1/2 rounded bg-bg-secondary animate-pulse" />
+            <div className="h-40 rounded-2xl bg-bg-secondary animate-pulse" />
+          </div>
+        </div>
       </div>
     );
   }
 
-  const statusStyle = STATUS_STYLES[order.Status?.toLowerCase()] ?? "bg-bg-secondary text-text-secondary";
-  const createdAt = order.CreatedAt ? new Date(order.CreatedAt).toLocaleDateString() : null;
+  const createdAt = order.CreatedAt
+    ? new Date(order.CreatedAt).toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      })
+    : null;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
-      <div className="flex items-center gap-3">
+    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+      {/* Back */}
+      <Link
+        href="/orders"
+        className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-white transition-colors mb-8"
+      >
+        <FiArrowLeft size={14} /> My orders
+      </Link>
+
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-8">
         <h1 className="text-2xl font-bold">Order detail</h1>
-        {order.Status && (
-          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusStyle}`}>
-            {order.Status}
-          </span>
-        )}
+        {order.Status && <StatusBadge status={order.Status} />}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-        {/* Product info */}
-        <div className="rounded-xl border border-border-subtle bg-bg-secondary overflow-hidden">
-          {order.Product?.ImageURL && (
+      <div className="grid lg:grid-cols-[1fr_380px] gap-8 items-start">
+        {/* Product card */}
+        <div className="rounded-2xl border border-border-subtle bg-bg-secondary overflow-hidden">
+          <div className="aspect-[4/3] overflow-hidden">
             <BucketImage
               key={order.Product.ID}
               imageURL={order.Product.ImageURL}
               name={order.Product.Name}
-              className="w-full h-64 object-cover"
+              className="h-full w-full"
             />
-          )}
-          <div className="p-4 space-y-2">
+          </div>
+          <div className="p-5 space-y-2">
             <Link
               href={`/products/${order.Product?.ID}`}
-              className="text-xl font-bold hover:underline"
+              className="text-xl font-bold hover:text-primary transition-colors"
             >
               {order.Product?.Name}
             </Link>
@@ -91,40 +118,67 @@ export default function OrderPage() {
                 Sold by{" "}
                 <Link
                   href={`/stores/${order.Product.StoreID}`}
-                  className="hover:underline text-primary"
+                  className="text-primary hover:underline"
                 >
                   {order.Product.Store.Name}
                 </Link>
               </p>
             )}
+            {order.Product?.Description && (
+              <p className="text-sm text-text-muted leading-relaxed pt-3 border-t border-border-subtle">
+                {order.Product.Description}
+              </p>
+            )}
           </div>
         </div>
 
-        {/* Order metadata + dispute */}
+        {/* Right sidebar */}
         <div className="space-y-4">
-          <div className="rounded-xl border border-border-subtle bg-bg-secondary p-4 space-y-3">
-            <div className="flex justify-between text-sm">
-              <span className="text-text-secondary">Quantity</span>
-              <span className="font-medium">{order.Quantity}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-text-secondary">Unit price</span>
-              <span className="font-medium">
-                {order.Product?.Price?.toFixed(4)} {order.Product?.Unit}
-              </span>
-            </div>
-            <div className="border-t border-border-subtle pt-3 flex justify-between font-bold">
-              <span>Total</span>
-              <span>{order.Total?.toFixed(4)}</span>
-            </div>
-            {createdAt && (
+          {/* Order summary */}
+          <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+              Order summary
+            </p>
+
+            <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-text-secondary">Placed on</span>
-                <span>{createdAt}</span>
+                <span className="text-text-secondary flex items-center gap-1.5">
+                  <FiPackage size={13} /> Quantity
+                </span>
+                <span className="font-medium text-white">×{order.Quantity}</span>
               </div>
-            )}
+              <div className="flex justify-between text-sm">
+                <span className="text-text-secondary">Unit price</span>
+                <span className="font-medium text-white">
+                  {order.Product?.Price?.toFixed(4)} {order.Product?.Unit}
+                </span>
+              </div>
+              <div className="border-t border-border-subtle pt-3 flex justify-between">
+                <span className="font-semibold">Total</span>
+                <span className="font-bold text-white text-lg">
+                  {order.Total?.toFixed(4)} {order.Product?.Unit}
+                </span>
+              </div>
+              {createdAt && (
+                <div className="flex justify-between text-sm border-t border-border-subtle pt-3">
+                  <span className="text-text-secondary flex items-center gap-1.5">
+                    <FiCalendar size={13} /> Placed on
+                  </span>
+                  <span className="text-white">{createdAt}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-sm">
+                <span className="text-text-secondary flex items-center gap-1.5">
+                  <FiHash size={13} /> Order ID
+                </span>
+                <span className="font-mono text-xs text-text-muted">
+                  {String(order.ID).slice(0, 8)}…
+                </span>
+              </div>
+            </div>
           </div>
 
+          {/* Dispute */}
           <OpenDispute order={order} />
         </div>
       </div>

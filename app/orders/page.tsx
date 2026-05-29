@@ -1,72 +1,123 @@
 "use client";
 
 import { ORDER_FILTERS, productsService } from "@/api";
-import EmptyState from "@/components/ui/empty-state";
-import Skeleton from "@/components/ui/skeleton";
 import { IOrder } from "@/api/interfaces/products";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import Card from "@/components/ui/card";
+import { FiArrowRight, FiPackage } from "react-icons/fi";
+
+const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
+  created:   { label: "Pending",   className: "bg-blue-500/15 text-blue-400 border-blue-500/20" },
+  completed: { label: "Completed", className: "bg-green-500/15 text-green-400 border-green-500/20" },
+  released:  { label: "Released",  className: "bg-green-500/15 text-green-400 border-green-500/20" },
+  cancelled: { label: "Cancelled", className: "bg-red-500/15 text-red-400 border-red-500/20" },
+  disputed:  { label: "Disputed",  className: "bg-yellow-500/15 text-yellow-400 border-yellow-500/20" },
+};
+
+function StatusBadge({ status }: { status: string }) {
+  const cfg = STATUS_CONFIG[status?.toLowerCase()] ?? {
+    label: status,
+    className: "bg-bg-secondary text-text-secondary border-border-subtle",
+  };
+  return (
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${cfg.className}`}>
+      {cfg.label}
+    </span>
+  );
+}
 
 export default function OrdersPage() {
   const auth = useSelector((state: RootState) => state.auth);
   const [orders, setOrders] = useState<IOrder[] | null>(null);
 
   useEffect(() => {
-    const load = async () => {
-      const response = await productsService.getOrders(ORDER_FILTERS.buyer);
-      setOrders(response.data);
-    };
-
     if (auth.isLoggedIn) {
-      load();
+      productsService.getOrders(ORDER_FILTERS.buyer).then((res) => setOrders(res.data));
     }
   }, [auth.isLoggedIn, auth.jwt]);
 
   if (!orders) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+        <div className="h-8 w-40 rounded-lg bg-bg-secondary animate-pulse mb-8" />
         <div className="space-y-3">
-          <Skeleton h={92} />
-          <Skeleton h={92} />
-          <Skeleton h={92} />
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-20 rounded-2xl bg-bg-secondary animate-pulse" />
+          ))}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold">Your orders</h1>
-        <p className="mt-2 text-sm text-text-secondary">
-          Track purchases, disputes, and escrow release status.
-        </p>
+    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+      <div className="flex items-center gap-3 mb-8">
+        <h1 className="text-2xl font-bold">My Orders</h1>
+        {orders.length > 0 && (
+          <span className="text-sm font-medium text-text-muted bg-bg-secondary border border-border-subtle rounded-full px-2.5 py-0.5">
+            {orders.length}
+          </span>
+        )}
       </div>
 
       {orders.length === 0 ? (
-        <EmptyState
-          title="No orders yet"
-          description="Your paid orders will appear here after checkout."
-          action={<Link href="/stores" className="underline">Browse stores</Link>}
-        />
+        <div className="flex flex-col items-center justify-center py-24 space-y-5">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-bg-secondary border border-border-subtle">
+            <FiPackage size={28} className="text-text-muted" />
+          </div>
+          <div className="space-y-1 text-center">
+            <p className="font-semibold text-white">No orders yet</p>
+            <p className="text-sm text-text-secondary">
+              Your paid orders will appear here after checkout.
+            </p>
+          </div>
+          <Link
+            href="/stores"
+            className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20 text-sm"
+          >
+            Browse stores <FiArrowRight size={14} />
+          </Link>
+        </div>
       ) : (
         <div className="space-y-3">
-          {orders.map((order) => (
-            <Link key={order.ID} href={`/orders/${order.ID}`}>
-              <Card className="flex flex-col gap-3 transition hover:bg-bg-secondary sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="font-semibold">{order.Quantity} x {order.Product.Name}</p>
-                  <p className="text-sm text-text-secondary">
-                    Status: {order.Status} • Total: {order.Total} {order.Product.Unit}
+          {orders.map((order) => {
+            const date = order.CreatedAt
+              ? new Date(order.CreatedAt).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })
+              : null;
+            return (
+              <Link
+                key={order.ID}
+                href={`/orders/${order.ID}`}
+                className="flex items-center gap-4 rounded-2xl border border-border-subtle bg-bg-secondary p-4 hover:border-primary transition-all group"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-sunken border border-border-subtle">
+                  <FiPackage size={18} className="text-text-muted" />
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold truncate text-white">{order.Product.Name}</p>
+                  <p className="text-xs text-text-muted mt-0.5">
+                    Qty {order.Quantity} · {order.Total?.toFixed(4)} {order.Product.Unit}
+                    {date && ` · ${date}`}
                   </p>
                 </div>
-                <span className="text-sm text-text-secondary">View order</span>
-              </Card>
-            </Link>
-          ))}
+
+                <div className="flex items-center gap-3 shrink-0">
+                  <StatusBadge status={order.Status} />
+                  <FiArrowRight
+                    size={14}
+                    className="text-text-muted group-hover:text-primary transition-colors"
+                  />
+                </div>
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
