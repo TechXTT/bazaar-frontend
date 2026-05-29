@@ -1,26 +1,17 @@
 "use client";
-import Script from "next/script";
-import Navigation from "./components/navbar";
-import "./globals.css";
-import { Inter } from "next/font/google";
-import ReduxProvider from "./components/redux";
-import { MetaMaskProvider } from "@metamask/sdk-react";
-import { useEffect, useState } from "react";
-import { Toaster } from "sonner";
+
 import Link from "next/link";
 import { FiGithub, FiShield, FiZap } from "react-icons/fi";
 
-const inter = Inter({ subsets: ["latin"] });
-
-const FOOTER_LINKS = {
+const LINKS = {
   Marketplace: [
     { href: "/",       label: "Home" },
     { href: "/stores", label: "Browse stores" },
   ],
   Account: [
-    { href: "/auth/login",  label: "Sign in" },
-    { href: "/orders",      label: "My orders" },
-    { href: "/account",     label: "Account settings" },
+    { href: "/auth/login",    label: "Sign in" },
+    { href: "/orders",        label: "My orders" },
+    { href: "/account",       label: "Account settings" },
   ],
   Sellers: [
     { href: "/seller/stores",     label: "Dashboard" },
@@ -29,11 +20,13 @@ const FOOTER_LINKS = {
   ],
 };
 
-function Footer() {
+export default function Footer() {
   return (
     <footer className="border-t border-border-subtle bg-bg-secondary mt-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
+
+          {/* Brand */}
           <div className="space-y-4">
             <Link href="/" className="inline-flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 border border-primary/30">
@@ -44,11 +37,15 @@ function Footer() {
                   <line x1="40" y1="60" x2="62" y2="60" stroke="#6366f1" strokeWidth="7" strokeLinecap="round"/>
                 </svg>
               </div>
-              <span className="font-bold text-sm tracking-widest uppercase text-white">The Bazaar</span>
+              <span className="font-bold text-sm tracking-widest uppercase text-white">
+                The Bazaar
+              </span>
             </Link>
+
             <p className="text-sm text-text-secondary leading-relaxed max-w-[220px]">
               A permissionless marketplace where smart contracts hold funds and the community resolves disputes.
             </p>
+
             <div className="flex flex-wrap gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-border-subtle bg-surface-sunken px-3 py-1 text-xs text-text-muted">
                 <FiZap size={11} className="text-primary" /> Built on Ethereum
@@ -58,13 +55,20 @@ function Footer() {
               </span>
             </div>
           </div>
-          {Object.entries(FOOTER_LINKS).map(([title, items]) => (
+
+          {/* Link columns */}
+          {Object.entries(LINKS).map(([title, items]) => (
             <div key={title} className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">{title}</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+                {title}
+              </p>
               <ul className="space-y-2">
                 {items.map(({ href, label }) => (
                   <li key={href}>
-                    <Link href={href} className="text-sm text-text-secondary hover:text-white transition-colors">
+                    <Link
+                      href={href}
+                      className="text-sm text-text-secondary hover:text-white transition-colors"
+                    >
                       {label}
                     </Link>
                   </li>
@@ -73,6 +77,8 @@ function Footer() {
             </div>
           ))}
         </div>
+
+        {/* Bottom bar */}
         <div className="mt-12 flex flex-col gap-3 border-t border-border-subtle pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-text-muted">
             © {new Date().getFullYear()} The Bazaar. Decentralized commerce.
@@ -88,39 +94,5 @@ function Footer() {
         </div>
       </div>
     </footer>
-  );
-}
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const [location, setLocation] = useState<string>("");
-  useEffect(() => { setLocation(window.location.href); }, []);
-
-  return (
-    <html lang="en">
-      <head>
-        <Script src="https://www.googletagmanager.com/gtag/js?id=G-1H1H1CR559" strategy="afterInteractive" />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-1H1H1CR559');
-          `}
-        </Script>
-      </head>
-      <body className="bg-background">
-        <ReduxProvider>
-          <MetaMaskProvider
-            debug={true}
-            sdkOptions={{ dappMetadata: { name: "The Bazaar", url: location } }}
-          >
-            <Navigation />
-            <div className="pt-16">{children}</div>
-            <Footer />
-            <Toaster position="bottom-right" richColors />
-          </MetaMaskProvider>
-        </ReduxProvider>
-      </body>
-    </html>
   );
 }
