@@ -127,7 +127,9 @@ const CartPage = () => {
             <div className="border-t border-border-subtle pt-3 flex justify-between">
               <span className="font-semibold">Total</span>
               <span className="font-bold text-lg text-white">
-                {cart.total.toFixed(4)} ETH
+                {paymentToken === "USDC"
+                  ? `${cart.total.toFixed(2)} USDC`
+                  : `${cart.total.toFixed(4)} ETH`}
               </span>
             </div>
           </div>

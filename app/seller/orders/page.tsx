@@ -12,6 +12,7 @@ import { FiAlertCircle, FiArrowRight, FiClock, FiDollarSign, FiPackage } from "r
 type EscrowMeta = { claimable: boolean; releaseTime: bigint };
 
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
+  pending:   { label: "Pending",   className: "bg-blue-500/15 text-blue-400 border-blue-500/20" },
   created:   { label: "Pending",   className: "bg-blue-500/15 text-blue-400 border-blue-500/20" },
   completed: { label: "Completed", className: "bg-green-500/15 text-green-400 border-green-500/20" },
   released:  { label: "Released",  className: "bg-green-500/15 text-green-400 border-green-500/20" },

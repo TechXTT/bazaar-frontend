@@ -4,8 +4,8 @@ import backendAxiosInstance from "..";
 
 export const ORDER_FILTERS = {
   all: "all",
-  buyer: "buyer",
-  seller: "seller",
+  buyer: "receiving",
+  seller: "sending",
 } as const;
 
 export const _getOrder = async (id: string): Promise<AxiosResponse<IOrder>> =>
