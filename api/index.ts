@@ -22,6 +22,16 @@ backendAxiosInstance.interceptors.request.use((config) => {
     return config;
 });
 
+backendAxiosInstance.interceptors.response.use(
+    (res) => res,
+    (err) => {
+        if (err?.response?.status === 401) {
+            store.dispatch({ type: "auth/logout" });
+        }
+        return Promise.reject(err);
+    }
+);
+
 // Users Endpoints
 import { _getMe, _updateUser, _getNonce, _verifySIWE, _refreshToken, _loginUser, _registerUser } from "./services/users";
 import { ORDER_FILTERS, _getOrder, _getProduct, _getAllProducts, _getOrders, _getProducts, _createProduct, _updateProduct, _deleteProduct, _createOrders } from "./services/products";
