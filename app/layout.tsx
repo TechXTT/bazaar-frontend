@@ -108,7 +108,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           `}
         </Script>
       </head>
-      <body className="bg-background">
+      <body className="bg-background" style={{ background: "radial-gradient(ellipse 100% 50% at 70% -5%, #1e3540 0%, #182628 45%)" }}>
         <ReduxProvider>
           <MetaMaskProvider
             debug={true}

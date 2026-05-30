@@ -42,8 +42,9 @@ export default function StoresPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="relative overflow-hidden py-16">
-        <div className="pointer-events-none absolute -top-20 left-1/2 -translate-x-1/2 h-[300px] w-[600px] rounded-full bg-primary/8 blur-[100px]" />
+      <div className="relative overflow-hidden py-20">
+        <div className="pointer-events-none absolute -top-20 left-1/2 -translate-x-1/2 h-[400px] w-[700px] rounded-full bg-primary/18 blur-[120px]" />
+        <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-[200px] w-[400px] rounded-full bg-violet-500/12 blur-[80px]" />
         <div className="relative text-center space-y-5">
           <div className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-bg-secondary px-3 py-1 text-xs text-text-secondary">
             <FiShoppingBag size={12} />
@@ -87,17 +88,23 @@ export default function StoresPage() {
       {/* Empty */}
       {stores && stores.length === 0 && (
         <div className="pb-24">
-          <div className="rounded-2xl border border-border-subtle bg-bg-secondary px-6 py-20 text-center space-y-4">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 text-primary">
-              <FiShoppingBag size={24} />
+          <div className="relative rounded-2xl border border-dashed border-border-subtle overflow-hidden px-6 py-24 text-center space-y-5">
+            {/* Dot grid texture */}
+            <div className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(circle, #a5b4fc 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
+            {/* Center glow */}
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <div className="h-56 w-56 rounded-full bg-primary/12 blur-[70px]" />
             </div>
-            <div>
-              <p className="font-semibold text-white">No stores yet</p>
-              <p className="mt-1.5 text-sm text-text-secondary">Be the first to open one and start selling.</p>
+            <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 text-primary shadow-lg shadow-primary/10">
+              <FiShoppingBag size={28} />
+            </div>
+            <div className="relative">
+              <p className="font-semibold text-white text-lg">No stores yet</p>
+              <p className="mt-2 text-sm text-text-secondary max-w-xs mx-auto">Be the first to open one and start selling to the world with zero fees.</p>
             </div>
             <Link
               href="/seller/stores"
-              className="inline-flex items-center gap-2 bg-primary text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity"
+              className="relative inline-flex items-center gap-2 bg-primary text-white text-sm font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/30"
             >
               Open a store <FiArrowRight size={14} />
             </Link>

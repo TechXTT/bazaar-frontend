@@ -44,6 +44,17 @@ module.exports = {
       "text-muted": "#4a6b70",
     },
     extend: {
+      animation: {
+        float: "float 6s ease-in-out infinite",
+        "float-delayed": "float 6s ease-in-out 1.5s infinite",
+        "pulse-slow": "pulse 4s ease-in-out infinite",
+      },
+      keyframes: {
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-12px)" },
+        },
+      },
       backgroundImage: () => ({
         gradient:
           "linear-gradient(158.44deg, #68CBE9 7.17%, #7775B4 52.72%, #7B51A1 91.26%)",
