@@ -107,12 +107,16 @@ export default function SellerOrdersPage() {
       </div>
 
       {orders.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-border-subtle space-y-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-bg-secondary border border-border-subtle">
-            <FiPackage size={24} className="text-text-muted" />
+        <div className="relative flex flex-col items-center justify-center py-24 space-y-5 rounded-2xl border border-dashed border-border-subtle overflow-hidden text-center">
+          <div className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(circle, #a5b4fc 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="h-56 w-56 rounded-full bg-primary/18 blur-[70px]" />
           </div>
-          <div className="text-center space-y-1">
-            <p className="font-semibold text-white">No orders received</p>
+          <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 text-primary shadow-lg shadow-primary/10">
+            <FiPackage size={28} />
+          </div>
+          <div className="relative text-center space-y-1">
+            <p className="font-semibold text-white text-lg">No orders received</p>
             <p className="text-sm text-text-secondary">Paid orders for your stores will appear here.</p>
           </div>
         </div>

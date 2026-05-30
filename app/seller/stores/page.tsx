@@ -59,19 +59,25 @@ export default function SellerStoresPage() {
       </div>
 
       {stores.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 space-y-5 rounded-2xl border border-dashed border-border-subtle">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-bg-secondary border border-border-subtle">
-            <FiShoppingBag size={24} className="text-text-muted" />
+        <div className="relative flex flex-col items-center justify-center py-24 space-y-5 rounded-2xl border border-dashed border-border-subtle overflow-hidden text-center">
+          {/* Dot grid */}
+          <div className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(circle, #a5b4fc 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
+          {/* Center glow */}
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="h-56 w-56 rounded-full bg-primary/15 blur-[70px]" />
           </div>
-          <div className="text-center space-y-1">
-            <p className="font-semibold text-white">No stores yet</p>
-            <p className="text-sm text-text-secondary">
+          <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 text-primary shadow-lg shadow-primary/10">
+            <FiShoppingBag size={28} />
+          </div>
+          <div className="relative">
+            <p className="font-semibold text-white text-lg">No stores yet</p>
+            <p className="mt-2 text-sm text-text-secondary max-w-xs mx-auto">
               Create your first store to start listing products.
             </p>
           </div>
           <Link
             href="/seller/stores/new"
-            className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20 text-sm"
+            className="relative inline-flex items-center gap-2 bg-primary text-white font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/30 text-sm"
           >
             <FiPlus size={14} /> Create store
           </Link>

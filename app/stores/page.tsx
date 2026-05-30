@@ -42,9 +42,13 @@ export default function StoresPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="relative overflow-hidden py-20">
-        <div className="pointer-events-none absolute -top-20 left-1/2 -translate-x-1/2 h-[400px] w-[700px] rounded-full bg-primary/18 blur-[120px]" />
-        <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-[200px] w-[400px] rounded-full bg-violet-500/12 blur-[80px]" />
+      <div className="relative py-20">
+        {/* Blobs isolated so they don't clip the text */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full bg-primary/30 blur-[130px]" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[300px] w-[500px] rounded-full bg-violet-500/20 blur-[90px]" />
+          <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(circle, #a5b4fc 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
+        </div>
         <div className="relative text-center space-y-5">
           <div className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-bg-secondary px-3 py-1 text-xs text-text-secondary">
             <FiShoppingBag size={12} />
@@ -93,7 +97,7 @@ export default function StoresPage() {
             <div className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(circle, #a5b4fc 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
             {/* Center glow */}
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-              <div className="h-56 w-56 rounded-full bg-primary/12 blur-[70px]" />
+              <div className="h-56 w-56 rounded-full bg-primary/22 blur-[70px]" />
             </div>
             <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 text-primary shadow-lg shadow-primary/10">
               <FiShoppingBag size={28} />

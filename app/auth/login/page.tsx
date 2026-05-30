@@ -92,16 +92,16 @@ const LoginPage = () => {
       {/* Left panel */}
       <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-between p-12 overflow-hidden bg-[#0f1e21]">
         {/* Background glows */}
-        <div className="pointer-events-none absolute -top-32 -left-32 h-[500px] w-[500px] rounded-full bg-primary/20 blur-[120px]" />
-        <div className="pointer-events-none absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-indigo-500/10 blur-[100px]" />
+        <div className="pointer-events-none absolute -top-32 -left-32 h-[600px] w-[600px] rounded-full bg-primary/30 blur-[140px]" />
+        <div className="pointer-events-none absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-violet-600/20 blur-[120px]" />
+        <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[300px] w-[300px] rounded-full bg-indigo-500/15 blur-[90px]" />
 
-        {/* Grid overlay */}
+        {/* Dot grid overlay */}
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.04]"
+          className="pointer-events-none absolute inset-0 opacity-[0.07]"
           style={{
-            backgroundImage:
-              "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
+            backgroundImage: "radial-gradient(circle, #a5b4fc 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
           }}
         />
 
@@ -137,10 +137,10 @@ const LoginPage = () => {
             {features.map((f) => (
               <div
                 key={f.label}
-                className="rounded-xl border border-border-subtle bg-bg-secondary/50 px-4 py-2.5"
+                className="rounded-xl border border-primary/20 bg-primary/10 backdrop-blur-sm px-4 py-2.5"
               >
                 <p className="text-xs font-semibold text-white">{f.label}</p>
-                <p className="text-xs text-text-muted">{f.desc}</p>
+                <p className="text-xs text-text-secondary">{f.desc}</p>
               </div>
             ))}
           </div>
@@ -156,7 +156,7 @@ const LoginPage = () => {
       <div className="relative flex w-full lg:w-1/2 flex-col items-center justify-center px-6 py-12 bg-[#142024]">
         {/* Subtle glow */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="h-[300px] w-[300px] rounded-full bg-primary/8 blur-[80px]" />
+          <div className="h-[400px] w-[400px] rounded-full bg-primary/15 blur-[100px]" />
         </div>
 
         <div className="relative w-full max-w-sm space-y-8">
