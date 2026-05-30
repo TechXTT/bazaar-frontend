@@ -1,7 +1,7 @@
 "use client";
 
 import { clearCart, removeItemFromCart } from "@/redux/slices/auth-slice";
-import { useAppDispatch } from "@/redux/store";
+import { RootState, useAppDispatch } from "@/redux/store";
 import Link from "next/link";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -13,7 +13,7 @@ type PaymentToken = "ETH" | "USDC";
 
 const CartPage = () => {
   const dispatch = useAppDispatch();
-  const cart = useSelector((state: any) => state.auth.cart);
+  const cart = useSelector((state: RootState) => state.auth.cart);
   const [paymentToken, setPaymentToken] = useState<PaymentToken>("ETH");
 
   if (!cart.products || cart.products.length === 0) {
@@ -52,7 +52,7 @@ const CartPage = () => {
       <div className="grid lg:grid-cols-[1fr_340px] gap-8 items-start">
         {/* Left: items */}
         <div className="space-y-3">
-          {cart.products.map((item: any) => (
+          {cart.products.map((item) => (
             <div
               key={item.ID}
               className="flex items-center gap-4 rounded-2xl border border-border-subtle bg-bg-secondary p-4"
@@ -112,7 +112,7 @@ const CartPage = () => {
             </p>
 
             <div className="space-y-2">
-              {cart.products.map((item: any) => (
+              {cart.products.map((item) => (
                 <div key={item.ID} className="flex justify-between text-sm">
                   <span className="text-text-secondary truncate mr-3 max-w-[160px]">
                     {item.Name} ×{item.Quantity ?? 1}

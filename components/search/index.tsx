@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { InstantSearch, useSearchBox, useHits } from "react-instantsearch";
 import { algoliasearch } from "algoliasearch";
@@ -93,9 +93,17 @@ function SearchBox({ onClose }: { onClose: () => void }) {
 }
 
 export default function ProductSearch() {
-  if (!CONFIG.ALGOLIA_APP_ID) return null;
+  // Memoize the client so it isn't recreated on every render, which would
+  // otherwise force react-instantsearch to remount and drop the current query.
+  const searchClient = useMemo(
+    () =>
+      CONFIG.ALGOLIA_APP_ID
+        ? algoliasearch(CONFIG.ALGOLIA_APP_ID, CONFIG.ALGOLIA_SEARCH_KEY)
+        : null,
+    []
+  );
 
-  const searchClient = algoliasearch(CONFIG.ALGOLIA_APP_ID, CONFIG.ALGOLIA_SEARCH_KEY);
+  if (!searchClient) return null;
 
   return (
     <InstantSearch searchClient={searchClient} indexName={CONFIG.ALGOLIA_INDEX}>

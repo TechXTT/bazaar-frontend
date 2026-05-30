@@ -1,10 +1,11 @@
 "use client";
 
 import { productsService } from "@/api";
+import { OrderResponse } from "@/api/interfaces/products";
 import { CONFIG } from "@/config/config";
 import { createOrder, createOrderERC20 } from "@/components/escrow";
 import { clearCart } from "@/redux/slices/auth-slice";
-import { useAppDispatch } from "@/redux/store";
+import { RootState, useAppDispatch } from "@/redux/store";
 import { useSDK } from "@metamask/sdk-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -19,7 +20,7 @@ interface CheckoutProps {
 const Checkout = ({ paymentToken }: CheckoutProps) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const cart = useSelector((state: any) => state.auth.cart);
+  const cart = useSelector((state: RootState) => state.auth.cart);
   const { sdk, connected } = useSDK();
   const [loading, setLoading] = useState(false);
 
@@ -80,7 +81,7 @@ const Checkout = ({ paymentToken }: CheckoutProps) => {
     setLoading(true);
     try {
       const createdAt = new Date().toISOString();
-      const orderReqs = cart.products.map((p: any) => ({
+      const orderReqs = cart.products.map((p) => ({
         CreatedAt: createdAt,
         ProductID: p.ID,
         Quantity: p.Quantity ?? 1,
@@ -93,7 +94,7 @@ const Checkout = ({ paymentToken }: CheckoutProps) => {
         return;
       }
 
-      const orderResponses: { id: string; owner_address: string }[] = response.data;
+      const orderResponses: OrderResponse[] = response.data;
       const releaseTime = CONFIG.ESCROW_RELEASE_DAYS * 24 * 60 * 60;
       const txs: string[] = [];
 
@@ -121,7 +122,7 @@ const Checkout = ({ paymentToken }: CheckoutProps) => {
       sessionStorage.setItem(
         "bazaar.checkout.confirmation",
         JSON.stringify({
-          orders: cart.products.map((p: any) => ({ name: p.Name, quantity: p.Quantity ?? 1 })),
+          orders: cart.products.map((p) => ({ name: p.Name, quantity: p.Quantity ?? 1 })),
           timestamp: Date.now(),
           total: cart.total,
           txs,

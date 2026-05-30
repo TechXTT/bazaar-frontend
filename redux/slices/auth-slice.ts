@@ -33,10 +33,8 @@ export const authSlice = createSlice({
       state.cart = { products: [], total: 0 };
     },
     removeItemFromCart: (state: AuthState, action: PayloadAction<string>) => {
-      const products = (state.cart.products as any[]).filter(
-        (p: any) => p.ID !== action.payload
-      );
-      const total = products.reduce((sum: number, p: any) => sum + p.Price * (p.Quantity ?? 1), 0);
+      const products = state.cart.products.filter((p) => p.ID !== action.payload);
+      const total = products.reduce((sum, p) => sum + p.Price * (p.Quantity ?? 1), 0);
       state.cart = { products, total };
     },
   },

@@ -1,8 +1,8 @@
 "use client";
 
-import { IProduct } from "@/api/interfaces/products";
+import { ICartItem, IProduct } from "@/api/interfaces/products";
 import { addItemsToCart } from "@/redux/slices/auth-slice";
-import { useAppDispatch } from "@/redux/store";
+import { RootState, useAppDispatch } from "@/redux/store";
 import Link from "next/link";
 import { useState } from "react";
 import { FiMinus, FiPlus, FiShoppingCart, FiLock } from "react-icons/fi";
@@ -11,16 +11,16 @@ import { toast } from "sonner";
 
 const AddToCart = ({ product }: { product: IProduct }) => {
   const dispatch = useAppDispatch();
-  const auth = useSelector((state: any) => state.auth);
+  const auth = useSelector((state: RootState) => state.auth);
   const [amount, setAmount] = useState(1);
 
   const handleAddToCart = () => {
-    const existing = (auth.cart.products as any[]) ?? [];
+    const existing = auth.cart.products;
     const total = auth.cart.total + product.Price * amount;
-    const idx = existing.findIndex((p: any) => p.ID === product.ID);
-    const products =
+    const idx = existing.findIndex((p) => p.ID === product.ID);
+    const products: ICartItem[] =
       idx > -1
-        ? existing.map((p: any, i: number) =>
+        ? existing.map((p, i) =>
             i === idx ? { ...p, Quantity: p.Quantity + amount } : p
           )
         : [...existing, { ...product, Quantity: amount }];

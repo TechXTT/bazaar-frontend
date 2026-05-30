@@ -23,6 +23,11 @@ export interface ProductReq {
     Image: File | null;
 }
 
+/** A product flattened into the cart with the chosen quantity. */
+export interface ICartItem extends IProduct {
+    Quantity: number;
+}
+
 export interface IOrder {
     CreatedAt: string;
     UpdatedAt: string;
@@ -39,6 +44,12 @@ export interface IOrder {
 export interface OrderReq {
     CreatedAt: string;
     ProductID: UUID;
-    Quantity: string;
+    Quantity: number;
     BuyerAddress: string;
+}
+
+/** Shape returned by POST /api/products/orders for each created order. */
+export interface OrderResponse {
+    id: string;
+    owner_address: string;
 }

@@ -1,5 +1,5 @@
 import { UUID } from "crypto";
-import { IProduct } from "./products";
+import { ICartItem } from "./products";
 
 export interface IUser {
     CreatedAt: string;
@@ -32,9 +32,6 @@ export interface ILoginUser {
 }
 
 export interface ICart {
-    products: {
-        product: IProduct;
-        quantity: number;
-    }[];
+    products: ICartItem[];
     total: number;
 }

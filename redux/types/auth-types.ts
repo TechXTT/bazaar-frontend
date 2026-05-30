@@ -1,3 +1,4 @@
+import { PayloadAction } from "@reduxjs/toolkit";
 import { ICart, IUser } from "@/api/interfaces/users";
 
 export interface AuthState {
@@ -7,16 +8,6 @@ export interface AuthState {
   jwt: string | null;
 }
 
-export type IUserPayload = {
-  payload: IUser | null;
-};
+export type IUserPayload = PayloadAction<IUser | null>;
 
-export type ICartPayload = {
-  payload: {
-    products: {
-      product: any;
-      quantity: number;
-    }[];
-    total: number;
-  };
-};
+export type ICartPayload = PayloadAction<ICart>;
