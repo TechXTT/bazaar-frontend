@@ -35,7 +35,10 @@ export default function OrdersPage() {
 
   useEffect(() => {
     if (auth.isLoggedIn) {
-      productsService.getOrders(ORDER_FILTERS.buyer).then((res) => setOrders(res.data));
+      productsService
+        .getOrders(ORDER_FILTERS.buyer)
+        .then((res) => setOrders(res.data))
+        .catch(() => setOrders([]));
     }
   }, [auth.isLoggedIn, auth.jwt]);
 

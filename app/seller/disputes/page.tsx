@@ -35,7 +35,10 @@ export default function SellerDisputesPage() {
 
   useEffect(() => {
     if (auth.isLoggedIn) {
-      disputesService.getDisputes().then((res) => setDisputes(res.data));
+      disputesService
+        .getDisputes()
+        .then((res) => setDisputes(res.data))
+        .catch(() => setDisputes([]));
     }
   }, [auth.isLoggedIn]);
 

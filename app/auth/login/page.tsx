@@ -77,7 +77,12 @@ const LoginPage = () => {
 
       dispatch(login(token));
       dispatch(setUser(user));
-      router.push("/");
+
+      // Honour ?next= set by protected routes (e.g. the seller layout), but only
+      // allow internal absolute paths to avoid open-redirects.
+      const next = new URLSearchParams(window.location.search).get("next");
+      const dest = next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
+      router.push(dest);
     } catch (err: any) {
       const msg =
         err?.response?.data?.error ??
