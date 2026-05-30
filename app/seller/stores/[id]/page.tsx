@@ -16,12 +16,11 @@ export default function SellerStoreDetailPage() {
   const [products, setProducts] = useState<IProduct[] | null>(null);
 
   useEffect(() => {
-    Promise.all([storesService.getStore(id), productsService.getProducts(id, "")]).then(
-      ([storeRes, productsRes]) => {
-        setStore(storeRes.data);
-        setProducts(productsRes.data);
-      }
-    );
+    storesService.getStore(id).then((res) => setStore(res.data));
+    productsService
+      .getProducts(id, "")
+      .then((res) => setProducts(res.data))
+      .catch(() => setProducts([]));
   }, [id]);
 
   const handleDelete = async (productId: string) => {
