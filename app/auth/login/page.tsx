@@ -53,6 +53,11 @@ const LoginPage = () => {
     setLoading(true);
     setErrorMsg(null);
     try {
+      // Force MetaMask to show account picker so user can switch accounts
+      await window.ethereum!.request({
+        method: "wallet_requestPermissions",
+        params: [{ eth_accounts: {} }],
+      });
       const accounts = await sdk?.connect();
       const walletAddress = (accounts as string[])?.[0];
       if (!walletAddress) throw new Error("No wallet connected");
