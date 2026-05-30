@@ -81,21 +81,20 @@ export default function DisputePage() {
   useEffect(() => {
     if (!auth.isLoggedIn) return;
 
-    usersService.getMe().then((res) => {
-      setWalletAddress(res.data.WalletAddress.toLowerCase());
-    });
-
     getArbitrationCost().then(setArbitrationCost).catch(() => {});
-
-    getEscrowOrder(orderId)
-      .then((order) => {
-        const me = wallet.account?.toLowerCase() ?? "";
-        setIsBuyer(order.buyer.toLowerCase() === me);
-        setIsReceiver(order.receiver.toLowerCase() === me);
-      })
-      .catch(() => {});
-
     load();
+
+    usersService.getMe().then((res) => {
+      const myAddress = res.data.WalletAddress.toLowerCase();
+      setWalletAddress(myAddress);
+
+      getEscrowOrder(orderId)
+        .then((escrowOrder) => {
+          setIsBuyer(escrowOrder.buyer.toLowerCase() === myAddress);
+          setIsReceiver(escrowOrder.receiver.toLowerCase() === myAddress);
+        })
+        .catch(() => {});
+    });
   }, [auth.isLoggedIn, orderId]);
 
   const withPending = async (fn: () => Promise<void>) => {

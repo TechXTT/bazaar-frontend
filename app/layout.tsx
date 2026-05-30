@@ -117,7 +117,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Navigation />
             <div className="pt-16">{children}</div>
             <Footer />
-            <Toaster position="bottom-right" richColors />
+            <Toaster position="bottom-right" richColors theme="dark" />
           </MetaMaskProvider>
         </ReduxProvider>
       </body>

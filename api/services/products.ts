@@ -29,7 +29,7 @@ export const _getProducts = async (
   });
 
 export const _getOrders = async (filter: string): Promise<AxiosResponse<IOrder[]>> =>
-  backendAxiosInstance.get(`/api/orders?filter=${filter}`);
+  backendAxiosInstance.get(`/api/products/orders?filter=${filter}`);
 
 export const _createProduct = async (data: ProductReq): Promise<AxiosResponse<IProduct>> => {
   const form = new FormData();

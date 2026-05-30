@@ -52,25 +52,31 @@ export async function createOrder(
   value: bigint
 ): Promise<ethers.TransactionResponse> {
   const contract = await getEscrowContract();
-  const txPromise: Promise<ethers.TransactionResponse> = (async () => {
-    const tx = await contract.createOrder(
-      messageToBytes32(orderId),
-      messageToBytes32(productId),
-      receiver,
-      releaseTime,
-      { value }
-    );
-    await tx.wait();
-    return tx;
-  })();
 
-  toast.promise(txPromise, {
-    loading: "Waiting for MetaMask",
-    success: "Order paid",
-    error: "Checkout failed",
+  const submitPromise = contract.createOrder(
+    messageToBytes32(orderId),
+    messageToBytes32(productId),
+    receiver,
+    releaseTime,
+    { value }
+  ) as Promise<ethers.TransactionResponse>;
+
+  toast.promise(submitPromise, {
+    loading: "Waiting for MetaMask…",
+    success: "Transaction submitted",
+    error: "Transaction rejected",
   });
 
-  return txPromise;
+  const tx = await submitPromise;
+
+  // Mine in background — don't block the checkout flow
+  tx.wait().then(() => {
+    toast.success("Order confirmed on-chain");
+  }).catch(() => {
+    toast.error("Order transaction failed on-chain");
+  });
+
+  return tx;
 }
 
 export async function createOrderERC20(
@@ -103,77 +109,70 @@ export async function createOrderERC20(
 
   const approveTx = await approvePromise;
 
-  const orderPromise: Promise<ethers.TransactionResponse> = (async () => {
-    const tx = await escrow.createOrderERC20(
-      messageToBytes32(orderId),
-      messageToBytes32(productId),
-      receiver,
-      releaseTime,
-      amount
-    );
-    await tx.wait();
-    return tx;
-  })();
+  const orderSubmitPromise = escrow.createOrderERC20(
+    messageToBytes32(orderId),
+    messageToBytes32(productId),
+    receiver,
+    releaseTime,
+    amount
+  ) as Promise<ethers.TransactionResponse>;
 
-  toast.promise(orderPromise, {
-    loading: "Confirming order…",
-    success: "Order placed",
+  toast.promise(orderSubmitPromise, {
+    loading: "Waiting for MetaMask…",
+    success: "Transaction submitted",
     error: "Order failed",
   });
 
-  const orderTx = await orderPromise;
+  const orderTx = await orderSubmitPromise;
+
+  orderTx.wait().then(() => {
+    toast.success("Order confirmed on-chain");
+  }).catch(() => {
+    toast.error("Order transaction failed on-chain");
+  });
+
   return { approveTx, orderTx };
+}
+
+async function sendTx(
+  txFn: () => Promise<ethers.TransactionResponse>,
+  labels: { loading: string; submitted: string; error: string; confirmed: string }
+): Promise<ethers.TransactionResponse> {
+  const submitPromise = txFn();
+  toast.promise(submitPromise, {
+    loading: labels.loading,
+    success: labels.submitted,
+    error: labels.error,
+  });
+  const tx = await submitPromise;
+  tx.wait()
+    .then(() => toast.success(labels.confirmed))
+    .catch(() => toast.error(labels.error));
+  return tx;
 }
 
 export async function refundOrder(orderId: string): Promise<ethers.TransactionResponse> {
   const contract = await getEscrowContract();
-  const txPromise: Promise<ethers.TransactionResponse> = (async () => {
-    const tx = await contract.refundOrder(messageToBytes32(orderId));
-    await tx.wait();
-    return tx;
-  })();
-
-  toast.promise(txPromise, {
-    loading: "Waiting for MetaMask",
-    success: "Buyer refunded",
-    error: "Refund failed",
-  });
-
-  return txPromise;
+  return sendTx(
+    () => contract.refundOrder(messageToBytes32(orderId)),
+    { loading: "Waiting for MetaMask…", submitted: "Refund submitted", confirmed: "Buyer refunded", error: "Refund failed" }
+  );
 }
 
 export async function claimOrder(orderId: string): Promise<ethers.TransactionResponse> {
   const contract = await getEscrowContract();
-  const txPromise: Promise<ethers.TransactionResponse> = (async () => {
-    const tx = await contract.claimOrder(messageToBytes32(orderId));
-    await tx.wait();
-    return tx;
-  })();
-
-  toast.promise(txPromise, {
-    loading: "Waiting for MetaMask",
-    success: "Funds claimed",
-    error: "Claim failed",
-  });
-
-  return txPromise;
+  return sendTx(
+    () => contract.claimOrder(messageToBytes32(orderId)),
+    { loading: "Waiting for MetaMask…", submitted: "Claim submitted", confirmed: "Funds claimed", error: "Claim failed" }
+  );
 }
 
 export async function claimOrders(orderIds: string[]): Promise<ethers.TransactionResponse> {
   const contract = await getEscrowContract();
-  const txPromise: Promise<ethers.TransactionResponse> = (async () => {
-    const tx = await contract.claimOrders(orderIds.map((id) => messageToBytes32(id)));
-    await tx.wait();
-    return tx;
-  })();
-
-  toast.promise(txPromise, {
-    loading: "Waiting for MetaMask",
-    success: "Funds claimed",
-    error: "Claim failed",
-  });
-
-  return txPromise;
+  return sendTx(
+    () => contract.claimOrders(orderIds.map((id) => messageToBytes32(id))),
+    { loading: "Waiting for MetaMask…", submitted: "Claim submitted", confirmed: "Funds claimed", error: "Claim failed" }
+  );
 }
 
 export async function raiseDisputeBuyer(
@@ -181,19 +180,10 @@ export async function raiseDisputeBuyer(
   arbitrationFee: bigint
 ): Promise<ethers.TransactionResponse> {
   const contract = await getEscrowContract();
-  const txPromise: Promise<ethers.TransactionResponse> = (async () => {
-    const tx = await contract.raiseDisputeBuyer(messageToBytes32(orderId), { value: arbitrationFee });
-    await tx.wait();
-    return tx;
-  })();
-
-  toast.promise(txPromise, {
-    loading: "Raising dispute…",
-    success: "Dispute raised",
-    error: "Failed to raise dispute",
-  });
-
-  return txPromise;
+  return sendTx(
+    () => contract.raiseDisputeBuyer(messageToBytes32(orderId), { value: arbitrationFee }),
+    { loading: "Raising dispute…", submitted: "Dispute submitted", confirmed: "Dispute raised", error: "Failed to raise dispute" }
+  );
 }
 
 export async function raiseDisputeReceiver(
@@ -201,53 +191,26 @@ export async function raiseDisputeReceiver(
   arbitrationFee: bigint
 ): Promise<ethers.TransactionResponse> {
   const contract = await getEscrowContract();
-  const txPromise: Promise<ethers.TransactionResponse> = (async () => {
-    const tx = await contract.raiseDisputeReceiver(messageToBytes32(orderId), { value: arbitrationFee });
-    await tx.wait();
-    return tx;
-  })();
-
-  toast.promise(txPromise, {
-    loading: "Paying arbitration fee…",
-    success: "Arbitration fee paid",
-    error: "Failed to pay arbitration fee",
-  });
-
-  return txPromise;
+  return sendTx(
+    () => contract.raiseDisputeReceiver(messageToBytes32(orderId), { value: arbitrationFee }),
+    { loading: "Paying arbitration fee…", submitted: "Fee submitted", confirmed: "Arbitration fee paid", error: "Failed to pay arbitration fee" }
+  );
 }
 
 export async function timeoutByBuyer(orderId: string): Promise<ethers.TransactionResponse> {
   const contract = await getEscrowContract();
-  const txPromise: Promise<ethers.TransactionResponse> = (async () => {
-    const tx = await contract.timeoutByBuyer(messageToBytes32(orderId));
-    await tx.wait();
-    return tx;
-  })();
-
-  toast.promise(txPromise, {
-    loading: "Claiming timeout…",
-    success: "Timeout executed — funds returned",
-    error: "Timeout failed",
-  });
-
-  return txPromise;
+  return sendTx(
+    () => contract.timeoutByBuyer(messageToBytes32(orderId)),
+    { loading: "Waiting for MetaMask…", submitted: "Timeout submitted", confirmed: "Timeout executed — funds returned", error: "Timeout failed" }
+  );
 }
 
 export async function timeoutByReceiver(orderId: string): Promise<ethers.TransactionResponse> {
   const contract = await getEscrowContract();
-  const txPromise: Promise<ethers.TransactionResponse> = (async () => {
-    const tx = await contract.timeoutByReceiver(messageToBytes32(orderId));
-    await tx.wait();
-    return tx;
-  })();
-
-  toast.promise(txPromise, {
-    loading: "Claiming timeout…",
-    success: "Timeout executed — funds released",
-    error: "Timeout failed",
-  });
-
-  return txPromise;
+  return sendTx(
+    () => contract.timeoutByReceiver(messageToBytes32(orderId)),
+    { loading: "Waiting for MetaMask…", submitted: "Timeout submitted", confirmed: "Timeout executed — funds released", error: "Timeout failed" }
+  );
 }
 
 export async function submitEvidence(
@@ -255,19 +218,10 @@ export async function submitEvidence(
   evidenceURI: string
 ): Promise<ethers.TransactionResponse> {
   const contract = await getEscrowContract();
-  const txPromise: Promise<ethers.TransactionResponse> = (async () => {
-    const tx = await contract.submitEvidence(messageToBytes32(orderId), evidenceURI);
-    await tx.wait();
-    return tx;
-  })();
-
-  toast.promise(txPromise, {
-    loading: "Submitting evidence…",
-    success: "Evidence submitted on-chain",
-    error: "Evidence submission failed",
-  });
-
-  return txPromise;
+  return sendTx(
+    () => contract.submitEvidence(messageToBytes32(orderId), evidenceURI),
+    { loading: "Submitting evidence…", submitted: "Evidence submitted", confirmed: "Evidence confirmed on-chain", error: "Evidence submission failed" }
+  );
 }
 
 export async function getArbitrationCost(): Promise<bigint> {

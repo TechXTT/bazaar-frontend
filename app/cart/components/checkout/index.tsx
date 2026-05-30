@@ -46,6 +46,37 @@ const Checkout = ({ paymentToken }: CheckoutProps) => {
       return;
     }
 
+    // Ensure MetaMask is on the correct network before proceeding
+    try {
+      const currentChainId = await window.ethereum!.request({ method: "eth_chainId" });
+      if (currentChainId !== CONFIG.CHAIN_ID) {
+        try {
+          await window.ethereum!.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: CONFIG.CHAIN_ID }],
+          });
+        } catch (switchErr: any) {
+          if (switchErr.code === 4902) {
+            await window.ethereum!.request({
+              method: "wallet_addEthereumChain",
+              params: [{
+                chainId: CONFIG.CHAIN_ID,
+                chainName: CONFIG.CHAIN_NAME,
+                rpcUrls: [CONFIG.RPC_URL],
+                nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+              }],
+            });
+          } else {
+            toast.error("Please switch to " + CONFIG.CHAIN_NAME + " in MetaMask");
+            return;
+          }
+        }
+      }
+    } catch {
+      toast.error("Could not verify network");
+      return;
+    }
+
     setLoading(true);
     try {
       const createdAt = new Date().toISOString();
