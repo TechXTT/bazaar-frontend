@@ -14,9 +14,11 @@ export default function SellerStoreDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [store, setStore] = useState<IStore | null>(null);
   const [products, setProducts] = useState<IProduct[] | null>(null);
+  const [error, setError] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
-    storesService.getStore(id).then((res) => setStore(res.data));
+    storesService.getStore(id).then((res) => setStore(res.data)).catch(() => setError(true));
     productsService
       .getProducts(id, "")
       .then((res) => setProducts(res.data))
@@ -24,14 +26,30 @@ export default function SellerStoreDetailPage() {
   }, [id]);
 
   const handleDelete = async (productId: string) => {
+    if (!window.confirm("Delete this product? This cannot be undone.")) return;
+    setDeletingId(productId);
     try {
       await productsService.deleteProduct(productId);
       setProducts((prev) => prev?.filter((p) => p.ID !== productId) ?? []);
       toast.success("Product deleted");
     } catch {
       toast.error("Failed to delete product");
+    } finally {
+      setDeletingId(null);
     }
   };
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 space-y-4 text-center">
+        <p className="font-semibold text-white">Store not found</p>
+        <p className="text-sm text-text-secondary">This store may have been removed.</p>
+        <Link href="/seller/stores" className="text-sm text-primary hover:underline">
+          ← Back to my stores
+        </Link>
+      </div>
+    );
+  }
 
   if (!store || !products) {
     return (
@@ -127,10 +145,15 @@ export default function SellerStoreDetailPage() {
                   </Link>
                   <button
                     onClick={() => handleDelete(product.ID)}
-                    className="flex items-center justify-center gap-1.5 border border-border-subtle text-sm font-semibold px-3 py-2 rounded-xl hover:border-red-400 hover:text-red-400 transition-all"
+                    disabled={deletingId === product.ID}
+                    className="flex items-center justify-center gap-1.5 border border-border-subtle text-sm font-semibold px-3 py-2 rounded-xl hover:border-red-400 hover:text-red-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Delete product"
                   >
-                    <FiTrash2 size={13} />
+                    {deletingId === product.ID ? (
+                      <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-border-subtle border-t-red-400" />
+                    ) : (
+                      <FiTrash2 size={13} />
+                    )}
                   </button>
                 </div>
               </div>

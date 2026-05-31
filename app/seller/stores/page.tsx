@@ -27,7 +27,10 @@ export default function SellerStoresPage() {
 
   useEffect(() => {
     if (auth.isLoggedIn) {
-      storesService.getUserStores().then((res) => setStores(res.data));
+      storesService
+        .getUserStores()
+        .then((res) => setStores(res.data))
+        .catch(() => setStores([]));
     }
   }, [auth.isLoggedIn, auth.jwt]);
 

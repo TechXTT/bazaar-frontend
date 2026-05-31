@@ -4,6 +4,7 @@ import { ICartItem, IProduct } from "@/api/interfaces/products";
 import { addItemsToCart } from "@/redux/slices/auth-slice";
 import { RootState, useAppDispatch } from "@/redux/store";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { FiMinus, FiPlus, FiShoppingCart, FiLock } from "react-icons/fi";
 import { useSelector } from "react-redux";
@@ -12,6 +13,7 @@ import { toast } from "sonner";
 const AddToCart = ({ product }: { product: IProduct }) => {
   const dispatch = useAppDispatch();
   const auth = useSelector((state: RootState) => state.auth);
+  const pathname = usePathname();
   const [amount, setAmount] = useState(1);
 
   const handleAddToCart = () => {
@@ -36,7 +38,7 @@ const AddToCart = ({ product }: { product: IProduct }) => {
           Sign in to purchase this product.
         </div>
         <Link
-          href="/auth/login"
+          href={`/auth/login?next=${encodeURIComponent(pathname)}`}
           className="flex w-full items-center justify-center gap-2 bg-primary text-white font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity"
         >
           Sign in to buy
@@ -54,13 +56,18 @@ const AddToCart = ({ product }: { product: IProduct }) => {
         <span className="text-sm font-medium text-text-secondary">Quantity</span>
         <div className="flex items-center gap-3">
           <button
+            type="button"
+            aria-label="Decrease quantity"
             onClick={() => setAmount((a) => Math.max(1, a - 1))}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-border-subtle hover:border-primary hover:text-primary transition-colors"
+            disabled={amount <= 1}
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-border-subtle hover:border-primary hover:text-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-border-subtle disabled:hover:text-current"
           >
             <FiMinus size={14} />
           </button>
-          <span className="w-6 text-center font-semibold">{amount}</span>
+          <span className="w-6 text-center font-semibold" aria-live="polite">{amount}</span>
           <button
+            type="button"
+            aria-label="Increase quantity"
             onClick={() => setAmount((a) => a + 1)}
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-border-subtle hover:border-primary hover:text-primary transition-colors"
           >

@@ -20,7 +20,7 @@ export default function SellerLayout({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     if (!auth.isLoggedIn) {
-      router.replace(`/auth/login?next=${pathname}`);
+      router.replace(`/auth/login?next=${encodeURIComponent(pathname)}`);
     }
   }, [auth.isLoggedIn, pathname, router]);
 

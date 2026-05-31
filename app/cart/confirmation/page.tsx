@@ -24,7 +24,12 @@ export default function CartConfirmationPage() {
   useEffect(() => {
     const raw = window.sessionStorage.getItem(STORAGE_KEY);
     if (!raw) { router.replace("/orders"); return; }
-    setPayload(JSON.parse(raw));
+    try {
+      setPayload(JSON.parse(raw) as ConfirmationPayload);
+    } catch {
+      router.replace("/orders");
+      return;
+    }
     return () => { window.sessionStorage.removeItem(STORAGE_KEY); };
   }, [router]);
 
