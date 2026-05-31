@@ -8,20 +8,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { FiAlertCircle, FiArrowRight, FiCheckCircle, FiClock } from "react-icons/fi";
-
-const STATUS_CONFIG: Record<string, { label: string; Icon: React.ElementType; className: string }> = {
-  fee_pending: { label: "Awaiting arbitration fee", Icon: FiClock,        className: "text-yellow-400" },
-  arbitrating: { label: "Under arbitration",        Icon: FiAlertCircle,  className: "text-orange-400" },
-  resolved:    { label: "Resolved",                 Icon: FiCheckCircle,  className: "text-green-400" },
-  timed_out:   { label: "Timed out",                Icon: FiClock,        className: "text-text-muted" },
-};
-
-const RULING_LABELS: Record<number, string> = {
-  0: "Refused — receiver wins by default",
-  1: "Buyer wins",
-  2: "Seller wins",
-};
+import { FiAlertCircle, FiArrowRight } from "react-icons/fi";
+import { DISPUTE_STATUS_CONFIG, rulingLabel } from "@/utils/disputes";
 
 const OpenDispute = ({ order }: { order: IOrder }) => {
   const auth = useSelector((state: RootState) => state.auth);
@@ -41,7 +29,7 @@ const OpenDispute = ({ order }: { order: IOrder }) => {
       .finally(() => setLoading(false));
   }, [order?.ID, auth.user]);
 
-  const cfg = dispute ? STATUS_CONFIG[dispute.Status] : null;
+  const cfg = dispute ? DISPUTE_STATUS_CONFIG[dispute.Status] : null;
 
   return (
     <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-4">
@@ -61,7 +49,7 @@ const OpenDispute = ({ order }: { order: IOrder }) => {
             <p className="text-sm text-text-secondary">
               Ruling:{" "}
               <span className="text-white font-medium">
-                {RULING_LABELS[dispute.Ruling] ?? "Unknown"}
+                {rulingLabel(dispute.Ruling)}
               </span>
             </p>
           )}

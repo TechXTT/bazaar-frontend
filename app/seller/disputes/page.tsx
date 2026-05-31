@@ -8,25 +8,18 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
-  FiAlertCircle,
   FiArrowRight,
-  FiCheckCircle,
-  FiClock,
   FiExternalLink,
   FiShield,
 } from "react-icons/fi";
+import { disputeStatusConfig, rulingLabel } from "@/utils/disputes";
 
-const STATUS_CONFIG: Record<string, { label: string; Icon: React.ElementType; className: string; border: string }> = {
-  fee_pending: { label: "Awaiting arbitration fee", Icon: FiClock,       className: "text-yellow-400", border: "border-yellow-500/20" },
-  arbitrating: { label: "Under arbitration",        Icon: FiAlertCircle, className: "text-orange-400", border: "border-orange-500/20" },
-  resolved:    { label: "Resolved",                 Icon: FiCheckCircle, className: "text-green-400",  border: "border-green-500/20" },
-  timed_out:   { label: "Timed out",                Icon: FiClock,       className: "text-text-muted", border: "border-border-subtle" },
-};
-
-const RULING_LABELS: Record<number, string> = {
-  0: "Refused — receiver wins by default",
-  1: "Buyer wins",
-  2: "Receiver wins",
+/** Per-status card border styling specific to this page. */
+const STATUS_BORDER: Record<string, string> = {
+  fee_pending: "border-yellow-500/20",
+  arbitrating: "border-orange-500/20",
+  resolved:    "border-green-500/20",
+  timed_out:   "border-border-subtle",
 };
 
 export default function SellerDisputesPage() {
@@ -74,16 +67,12 @@ export default function SellerDisputesPage() {
       ) : (
         <div className="space-y-3">
           {disputes.map((dispute) => {
-            const cfg = STATUS_CONFIG[dispute.Status] ?? {
-              label: dispute.Status,
-              Icon: FiAlertCircle,
-              className: "text-text-secondary",
-              border: "border-border-subtle",
-            };
+            const cfg = disputeStatusConfig(dispute.Status);
+            const border = STATUS_BORDER[dispute.Status] ?? "border-border-subtle";
             return (
               <div
                 key={dispute.ID}
-                className={`rounded-2xl border bg-bg-secondary p-5 space-y-3 ${cfg.border}`}
+                className={`rounded-2xl border bg-bg-secondary p-5 space-y-3 ${border}`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1.5">
@@ -111,7 +100,7 @@ export default function SellerDisputesPage() {
                       <p className="text-xs text-text-muted">
                         Ruling:{" "}
                         <span className="text-white font-medium">
-                          {RULING_LABELS[dispute.Ruling] ?? "Unknown"}
+                          {rulingLabel(dispute.Ruling)}
                         </span>
                       </p>
                     )}

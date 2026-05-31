@@ -22,12 +22,12 @@ import { toast } from "sonner";
 import {
   FiAlertCircle,
   FiArrowLeft,
-  FiCheckCircle,
   FiClock,
   FiExternalLink,
   FiPaperclip,
   FiUpload,
 } from "react-icons/fi";
+import { DISPUTE_STATUS_CONFIG, rulingLabel } from "@/utils/disputes";
 
 function resolveURI(uri: string): string {
   if (uri.startsWith("ipfs://")) {
@@ -36,17 +36,12 @@ function resolveURI(uri: string): string {
   return uri;
 }
 
-const STATUS_CONFIG: Record<string, { label: string; Icon: React.ElementType; className: string; bg: string }> = {
-  fee_pending: { label: "Awaiting arbitration fee", Icon: FiClock,       className: "text-yellow-400", bg: "bg-yellow-500/10 border-yellow-500/20" },
-  arbitrating: { label: "Under arbitration",        Icon: FiAlertCircle, className: "text-orange-400", bg: "bg-orange-500/10 border-orange-500/20" },
-  resolved:    { label: "Resolved",                 Icon: FiCheckCircle, className: "text-green-400",  bg: "bg-green-500/10 border-green-500/20" },
-  timed_out:   { label: "Timed out",                Icon: FiClock,       className: "text-text-muted", bg: "bg-bg-secondary border-border-subtle" },
-};
-
-const RULING_LABELS: Record<number, string> = {
-  0: "Refused — receiver wins by default",
-  1: "Buyer wins — refunded",
-  2: "Receiver wins — funds released",
+/** Per-status background/border styling specific to this page's status pill. */
+const STATUS_BG: Record<string, string> = {
+  fee_pending: "bg-yellow-500/10 border-yellow-500/20",
+  arbitrating: "bg-orange-500/10 border-orange-500/20",
+  resolved:    "bg-green-500/10 border-green-500/20",
+  timed_out:   "bg-bg-secondary border-border-subtle",
 };
 
 export default function DisputePage() {
@@ -160,7 +155,8 @@ export default function DisputePage() {
   const isResolved = dispute?.Status === "resolved" || dispute?.Status === "timed_out";
   const myFeeDeposit = evidence.some((e) => e.Party === walletAddress);
   const arbCostETH = (Number(arbitrationCost) / 1e18).toFixed(4);
-  const cfg = dispute ? STATUS_CONFIG[dispute.Status] : null;
+  const cfg = dispute ? DISPUTE_STATUS_CONFIG[dispute.Status] : null;
+  const statusBg = dispute ? STATUS_BG[dispute.Status] ?? "bg-bg-secondary border-border-subtle" : "";
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
@@ -193,7 +189,7 @@ export default function DisputePage() {
           <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">Status</p>
           {hasDispute && cfg ? (
             <div className="space-y-3">
-              <div className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 ${cfg.bg}`}>
+              <div className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 ${statusBg}`}>
                 <cfg.Icon size={15} className={cfg.className} />
                 <span className={`text-sm font-semibold ${cfg.className}`}>{cfg.label}</span>
               </div>
@@ -214,7 +210,7 @@ export default function DisputePage() {
                 <div className="rounded-xl border border-border-subtle bg-surface-sunken px-4 py-3">
                   <p className="text-xs text-text-muted uppercase tracking-widest mb-1">Ruling</p>
                   <p className="text-sm font-semibold text-white">
-                    {RULING_LABELS[dispute.Ruling] ?? "Unknown"}
+                    {rulingLabel(dispute.Ruling)}
                   </p>
                 </div>
               )}
