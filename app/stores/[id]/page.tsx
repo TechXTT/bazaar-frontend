@@ -11,6 +11,27 @@ import { useEffect, useState } from "react";
 import { IProduct } from "@/api/interfaces/products";
 import { FiArrowLeft, FiPackage } from "react-icons/fi";
 
+/**
+ * The backend's `next-cursor` header is a Go time string, e.g.
+ * "2026-05-31 12:34:56.789 +0000 UTC". Parse it into a timezone-correct ISO
+ * string to send back as the next cursor. We anchor on the explicit numeric
+ * offset (e.g. "+0000") so the viewer's local timezone never skews the value —
+ * this replaces an earlier hack that hard-coded a +2h shift.
+ */
+function parseCursorTimestamp(raw: string): string | null {
+  const match = raw.match(
+    /^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2}(?:\.\d+)?)\s*([+-]\d{2})(\d{2})/
+  );
+  if (match) {
+    const [, date, time, offH, offM] = match;
+    const ms = Date.parse(`${date}T${time}${offH}:${offM}`);
+    if (!Number.isNaN(ms)) return new Date(ms).toISOString();
+  }
+  // Fallback: let Date attempt to parse it directly (handles ISO-8601 cursors).
+  const ms = Date.parse(raw);
+  return Number.isNaN(ms) ? null : new Date(ms).toISOString();
+}
+
 function StoreAvatar({ name, size = "lg" }: { name: string; size?: "lg" | "sm" }) {
   const letter = name?.trim()?.[0]?.toUpperCase() ?? "?";
   const hue = (name.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0) % 6) * 60;
@@ -48,11 +69,13 @@ const StorePage = () => {
       }
       const raw = response.headers["next-cursor"];
       if (raw) {
-        const date = new Date(raw.split(" ")[0] + " " + raw.split(" ")[1]).getTime();
-        setCursor(new Date(date + 2 * 60 * 60 * 1000).toISOString());
+        const next = parseCursorTimestamp(raw);
+        if (next) setCursor(next);
+        else setEnableScroll(false);
       }
-    } catch (error: any) {
-      if (error?.response?.status === 404 || error?.response?.status === 500) {
+    } catch (error: unknown) {
+      const status = (error as { response?: { status?: number } })?.response?.status;
+      if (status === 404 || status === 500) {
         setEnableScroll(false);
       }
     }

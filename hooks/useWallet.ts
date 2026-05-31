@@ -6,6 +6,7 @@ import { RootState, useAppDispatch } from "@/redux/store";
 import { useSDK } from "@metamask/sdk-react";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
+import { getErrorMessage } from "@/utils/helpers";
 
 type EthereumProvider = {
   selectedAddress?: string | null;
@@ -46,8 +47,8 @@ export function useWallet() {
       dispatch(walletActions.setAccount(selected));
       dispatch(walletActions.setStatus(selected ? "connected" : "idle"));
       return selected;
-    } catch (err: any) {
-      const message = err?.message || "Wallet connection was rejected";
+    } catch (err: unknown) {
+      const message = getErrorMessage(err, "Wallet connection was rejected");
       dispatch(walletActions.setError(message));
       throw err;
     }
@@ -65,8 +66,8 @@ export function useWallet() {
         method: "wallet_switchEthereumChain",
         params: [{ chainId: CONFIG.CHAIN_ID }],
       });
-    } catch (err: any) {
-      if (err?.code === 4902) {
+    } catch (err: unknown) {
+      if ((err as { code?: number })?.code === 4902) {
         await ethereum.request({
           method: "wallet_addEthereumChain",
           params: [
@@ -85,7 +86,7 @@ export function useWallet() {
         return;
       }
 
-      const message = err?.message || "Network switch was rejected";
+      const message = getErrorMessage(err, "Network switch was rejected");
       dispatch(walletActions.setError(message));
       throw err;
     }

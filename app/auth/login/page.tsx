@@ -4,6 +4,7 @@ import { usersService } from "@/api";
 import { CONFIG } from "@/config/config";
 import { login, setUser } from "@/redux/slices/auth-slice";
 import { useAppDispatch } from "@/redux/store";
+import { getErrorMessage } from "@/utils/helpers";
 import { useSDK } from "@metamask/sdk-react";
 import { getAddress } from "ethers";
 import { useRouter } from "next/navigation";
@@ -83,13 +84,8 @@ const LoginPage = () => {
       const next = new URLSearchParams(window.location.search).get("next");
       const dest = next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
       router.push(dest);
-    } catch (err: any) {
-      const msg =
-        err?.response?.data?.error ??
-        err?.response?.data ??
-        err?.message ??
-        "Sign-in failed";
-      const text = typeof msg === "string" ? msg : "Sign-in failed";
+    } catch (err: unknown) {
+      const text = getErrorMessage(err, "Sign-in failed");
       setErrorMsg(text);
       toast.error(text);
     } finally {

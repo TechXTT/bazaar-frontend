@@ -28,6 +28,7 @@ import {
   FiUpload,
 } from "react-icons/fi";
 import { DISPUTE_STATUS_CONFIG, rulingLabel } from "@/utils/disputes";
+import { getErrorMessage } from "@/utils/helpers";
 
 function resolveURI(uri: string): string {
   if (uri.startsWith("ipfs://")) {
@@ -98,8 +99,8 @@ export default function DisputePage() {
       await wallet.ensureReady();
       await fn();
       await load();
-    } catch (err: any) {
-      toast.error(err?.reason ?? err?.message ?? "Transaction failed");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Transaction failed"));
     } finally {
       setIsPending(false);
     }
@@ -142,8 +143,8 @@ export default function DisputePage() {
       setEvidenceFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
       await load();
-    } catch (err: any) {
-      toast.error(err?.reason ?? err?.message ?? "Evidence submission failed");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Evidence submission failed"));
     } finally {
       setIsPending(false);
     }

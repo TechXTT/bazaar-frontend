@@ -12,6 +12,7 @@ import { useState } from "react";
 import { FiArrowRight } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/utils/helpers";
 
 interface CheckoutProps {
   paymentToken: "ETH" | "USDC";
@@ -56,8 +57,8 @@ const Checkout = ({ paymentToken }: CheckoutProps) => {
             method: "wallet_switchEthereumChain",
             params: [{ chainId: CONFIG.CHAIN_ID }],
           });
-        } catch (switchErr: any) {
-          if (switchErr.code === 4902) {
+        } catch (switchErr: unknown) {
+          if ((switchErr as { code?: number })?.code === 4902) {
             await window.ethereum!.request({
               method: "wallet_addEthereumChain",
               params: [{
@@ -132,8 +133,8 @@ const Checkout = ({ paymentToken }: CheckoutProps) => {
 
       dispatch(clearCart());
       router.push("/cart/confirmation");
-    } catch (err: any) {
-      const msg: string = err?.response?.data ?? err?.message ?? "Checkout failed";
+    } catch (err: unknown) {
+      const msg = getErrorMessage(err, "Checkout failed");
       if (msg.includes("owner and buyer cannot be the same")) {
         toast.error("You cannot buy your own product");
         dispatch(clearCart());
