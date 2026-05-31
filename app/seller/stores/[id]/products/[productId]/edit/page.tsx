@@ -5,12 +5,15 @@ import { IProduct } from "@/api/interfaces/products";
 import Field from "@/components/ui/field";
 import Input from "@/components/ui/input";
 import Textarea from "@/components/ui/textarea";
+import { RootState } from "@/redux/store";
+import { getErrorMessage } from "@/utils/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import { z } from "zod";
 import { FiArrowLeft, FiCheck, FiImage } from "react-icons/fi";
@@ -26,6 +29,7 @@ type FormValues = z.infer<typeof schema>;
 export default function SellerEditProductPage() {
   const { id: storeId, productId } = useParams<{ id: string; productId: string }>();
   const router = useRouter();
+  const jwt = useSelector((state: RootState) => state.auth.jwt);
   const [product, setProduct] = useState<IProduct | null>(null);
   const [newImage, setNewImage] = useState<File | undefined>();
   const [preview, setPreview] = useState("");
@@ -57,15 +61,31 @@ export default function SellerEditProductPage() {
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      await productsService.updateProduct(productId, {
+      const update: Partial<IProduct> = {
         Name: values.name,
         Price: values.price,
         Description: values.description,
-      });
+      };
+
+      // If the seller picked a new image, upload it first and persist the URL.
+      if (newImage) {
+        const formData = new FormData();
+        formData.append("file", newImage);
+        const uploadRes = await fetch("/api/upload", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${jwt}` },
+          body: formData,
+        });
+        if (!uploadRes.ok) throw new Error("Image upload failed");
+        const { url } = await uploadRes.json();
+        if (url) update.ImageURL = url;
+      }
+
+      await productsService.updateProduct(productId, update);
       toast.success("Product updated");
       router.push(`/seller/stores/${storeId}`);
-    } catch {
-      toast.error("Failed to update product");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Failed to update product"));
     }
   });
 

@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import { z } from "zod";
 import { FiArrowLeft, FiCheck, FiShoppingBag } from "react-icons/fi";
+import { getErrorMessage } from "@/utils/helpers";
 
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(60, "Name is too long"),
@@ -36,8 +37,8 @@ export default function SellerNewStorePage() {
       const response = await storesService.createStore(values.name);
       toast.success("Store created");
       router.push(`/seller/stores/${response.data.ID}`);
-    } catch {
-      toast.error("Failed to create store");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Failed to create store"));
     }
   });
 

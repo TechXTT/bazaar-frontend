@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { FiArrowLeft, FiCheck, FiImage } from "react-icons/fi";
+import { getErrorMessage } from "@/utils/helpers";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required").max(120, "Name is too long"),
@@ -62,8 +63,8 @@ export default function SellerNewProductPage() {
       });
       toast.success("Product created");
       router.push(`/seller/stores/${id}`);
-    } catch {
-      toast.error("Failed to create product");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Failed to create product"));
     }
   });
 
