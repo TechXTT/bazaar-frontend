@@ -48,7 +48,7 @@ export default function OrdersPage() {
 
       {orders.length === 0 ? (
         <div className="relative flex flex-col items-center justify-center py-24 space-y-5 rounded-2xl border border-dashed border-border-subtle overflow-hidden text-center">
-          <div className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(circle, #a5b4fc 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
+          <div className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(circle, #8b7dff 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <div className="h-56 w-56 rounded-full bg-primary/18 blur-[70px]" />
           </div>
