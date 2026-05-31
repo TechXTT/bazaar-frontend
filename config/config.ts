@@ -3,6 +3,10 @@ const CURRENT_URL: string = process.env.NEXT_PUBLIC_CURRENT_URL ? process.env.NE
 const PUBLIC_KEY: string = process.env.NEXT_PUBLIC_PUBLIC_KEY ? process.env.NEXT_PUBLIC_PUBLIC_KEY : '-----BEGIN PUBLIC KEY-----\n';
 const CONTRACT_ADDRESS: string = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS ? process.env.NEXT_PUBLIC_CONTRACT_ADDRESS : '0x0';
 const ESCROW_RELEASE_DAYS: number = process.env.NEXT_PUBLIC_ESCROW_RELEASE_DAYS ? Number(process.env.NEXT_PUBLIC_ESCROW_RELEASE_DAYS) : 14;
+// Protocol fee in basis points, charged on completed sales (mirrors the contract's
+// feeBps / the deploy's FEE_BPS). Display default 200 = 2%. The contract remains the
+// source of truth at claim time; this drives consistent UI copy.
+const PLATFORM_FEE_BPS: number = process.env.NEXT_PUBLIC_PLATFORM_FEE_BPS ? Number(process.env.NEXT_PUBLIC_PLATFORM_FEE_BPS) : 200;
 const CHAIN_ID: string = process.env.NEXT_PUBLIC_CHAIN_ID ? process.env.NEXT_PUBLIC_CHAIN_ID : '0xaa36a7';
 const CHAIN_NAME: string = process.env.NEXT_PUBLIC_CHAIN_NAME ? process.env.NEXT_PUBLIC_CHAIN_NAME : 'Sepolia';
 const RPC_URL: string = process.env.NEXT_PUBLIC_RPC_URL ? process.env.NEXT_PUBLIC_RPC_URL : 'http://localhost:8545';
@@ -22,6 +26,7 @@ export const CONFIG = {
     PUBLIC_KEY,
     CONTRACT_ADDRESS,
     ESCROW_RELEASE_DAYS,
+    PLATFORM_FEE_BPS,
     CHAIN_ID,
     CHAIN_NAME,
     RPC_URL,

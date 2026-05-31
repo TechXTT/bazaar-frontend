@@ -34,3 +34,12 @@ export const messageToBytes32 = (message: string): string => {
     const bytes32Uuid = bytes32({ input: cleanedUuid });
     return bytes32Uuid;
   };
+
+/** Format basis points as a percentage string, e.g. 200 -> "2%", 250 -> "2.5%". */
+export const formatFeeBps = (bps: number): string => {
+  const pct = bps / 100;
+  return `${Number.isInteger(pct) ? pct : pct.toFixed(2).replace(/\.?0+$/, "")}%`;
+};
+
+/** Net fraction a seller receives after the fee, e.g. 200 bps -> 0.98. */
+export const sellerNetFraction = (bps: number): number => (10_000 - bps) / 10_000;

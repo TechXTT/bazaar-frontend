@@ -3,9 +3,13 @@
 import { productsService } from "@/api";
 import { IProduct } from "@/api/interfaces/products";
 import ProductCard from "@/app/stores/components/product";
+import { CONFIG } from "@/config/config";
+import { formatFeeBps } from "@/utils/helpers";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FiShield, FiLock, FiUsers, FiArrowRight } from "react-icons/fi";
+
+const FEE_LABEL = formatFeeBps(CONFIG.PLATFORM_FEE_BPS);
 
 const HOW_IT_WORKS = [
   {
@@ -35,11 +39,11 @@ function HeroVisual() {
 
         {/* Main card — gradient border via wrapper */}
         <div className="relative rounded-2xl p-px bg-gradient-to-b from-primary/40 via-primary/10 to-transparent shadow-2xl shadow-black/50">
-          <div className="rounded-[15px] bg-[#1a2d31] overflow-hidden">
+          <div className="rounded-[15px] bg-[#161925] overflow-hidden">
             {/* Image area */}
-            <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-primary/25 via-[#1a2d31] to-surface-sunken">
+            <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-primary/25 via-[#161925] to-surface-sunken">
               {/* Faint grid backdrop */}
-              <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: "radial-gradient(circle, #a5b4fc 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
+              <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: "radial-gradient(circle, #8b7dff 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
               <div className="absolute inset-0 grid grid-cols-2 gap-4 p-5">
                 <div className="rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center backdrop-blur-sm">
                   <div className="h-10 w-10 rounded-lg bg-primary/40 shadow-inner shadow-primary/20" />
@@ -82,7 +86,7 @@ function HeroVisual() {
         </div>
 
         {/* Floating badge: Escrow protected */}
-        <div className="absolute -bottom-4 -left-8 rounded-xl border border-green-500/30 bg-[#182e22]/90 backdrop-blur-sm px-3 py-2 shadow-xl shadow-black/40 animate-float-delayed">
+        <div className="absolute -bottom-4 -left-8 rounded-xl border border-green-500/30 bg-green-950/90 backdrop-blur-sm px-3 py-2 shadow-xl shadow-black/40 animate-float-delayed">
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 relative">
               <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping" />
@@ -93,7 +97,7 @@ function HeroVisual() {
         </div>
 
         {/* Floating badge: On-chain */}
-        <div className="absolute -top-4 -right-6 rounded-xl border border-primary/30 bg-[#1c1a38]/90 backdrop-blur-sm px-3 py-2 shadow-xl shadow-black/40">
+        <div className="absolute -top-4 -right-6 rounded-xl border border-primary/30 bg-[#15132e]/90 backdrop-blur-sm px-3 py-2 shadow-xl shadow-black/40">
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 relative">
               <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping" style={{ animationDelay: "0.8s" }} />
@@ -133,7 +137,7 @@ export default function Home() {
           <div
             className="absolute inset-0 opacity-[0.07]"
             style={{
-              backgroundImage: "radial-gradient(circle, #a5b4fc 1px, transparent 1px)",
+              backgroundImage: "radial-gradient(circle, #8b7dff 1px, transparent 1px)",
               backgroundSize: "30px 30px",
             }}
           />
@@ -178,8 +182,8 @@ export default function Home() {
 
               <div className="flex flex-wrap gap-10 pt-4 border-t border-border-subtle">
                 {[
-                  { value: "0%", label: "Platform fees" },
-                  { value: "∞", label: "Censorship resistance" },
+                  { value: "0", label: "Listing fees" },
+                  { value: FEE_LABEL, label: "Flat fee per sale" },
                   { value: "24/7", label: "Always online" },
                 ].map((s) => (
                   <div key={s.label}>
@@ -268,7 +272,7 @@ export default function Home() {
         {!loading && !error && products.length === 0 && (
           <div className="relative rounded-2xl border border-dashed border-border-subtle overflow-hidden px-6 py-20 text-center space-y-4">
             {/* Background texture */}
-            <div className="pointer-events-none absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle, #a5b4fc 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
+            <div className="pointer-events-none absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle, #8b7dff 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <div className="h-48 w-48 rounded-full bg-primary/10 blur-[60px]" />
             </div>
@@ -324,7 +328,7 @@ export default function Home() {
                 Start selling in minutes, not days.
               </h2>
               <p className="text-white/70 leading-relaxed text-sm">
-                No application, no approval, no fees. Connect your wallet, create a store, and start earning crypto immediately.
+                No application, no approval, no listing fees — just a {FEE_LABEL} fee when you make a sale. Connect your wallet, create a store, and start earning crypto immediately.
               </p>
             </div>
             <div className="flex sm:justify-end gap-3 flex-wrap">

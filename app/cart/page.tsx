@@ -132,6 +132,10 @@ const CartPage = () => {
                   : `${cart.total.toFixed(4)} ETH`}
               </span>
             </div>
+            <p className="text-xs text-text-muted">
+              No buyer fees — you pay the listed price. Funds are held in escrow and
+              released to the seller on delivery.
+            </p>
           </div>
 
           {/* Payment token */}

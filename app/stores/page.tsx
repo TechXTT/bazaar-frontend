@@ -47,7 +47,7 @@ export default function StoresPage() {
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full bg-primary/30 blur-[130px]" />
           <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[300px] w-[500px] rounded-full bg-violet-500/20 blur-[90px]" />
-          <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(circle, #a5b4fc 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
+          <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(circle, #8b7dff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
         </div>
         <div className="relative text-center space-y-5">
           <div className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-bg-secondary px-3 py-1 text-xs text-text-secondary">
@@ -94,7 +94,7 @@ export default function StoresPage() {
         <div className="pb-24">
           <div className="relative rounded-2xl border border-dashed border-border-subtle overflow-hidden px-6 py-24 text-center space-y-5">
             {/* Dot grid texture */}
-            <div className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(circle, #a5b4fc 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
+            <div className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(circle, #8b7dff 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
             {/* Center glow */}
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <div className="h-56 w-56 rounded-full bg-primary/22 blur-[70px]" />
@@ -104,7 +104,7 @@ export default function StoresPage() {
             </div>
             <div className="relative">
               <p className="font-semibold text-white text-lg">No stores yet</p>
-              <p className="mt-2 text-sm text-text-secondary max-w-xs mx-auto">Be the first to open one and start selling to the world with zero fees.</p>
+              <p className="mt-2 text-sm text-text-secondary max-w-xs mx-auto">Be the first to open one and start selling to the world — no listing fees.</p>
             </div>
             <Link
               href="/seller/stores"
@@ -156,7 +156,7 @@ export default function StoresPage() {
           <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
             <div>
               <p className="font-semibold text-white">Want to sell on The Bazaar?</p>
-              <p className="mt-1 text-sm text-text-secondary">No fees, no approval — open a store in seconds.</p>
+              <p className="mt-1 text-sm text-text-secondary">No listing fees, no approval — open a store in seconds.</p>
             </div>
             <Link
               href="/seller/stores"
