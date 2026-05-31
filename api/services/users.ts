@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import { ILoginUser, IRegisterUser, IUser, UserReq } from "../interfaces/users";
+import { IUser, UserReq } from "../interfaces/users";
 import backendAxiosInstance from "..";
 
 export const _getMe = async (): Promise<AxiosResponse<IUser>> =>
@@ -19,9 +19,3 @@ export const _verifySIWE = async (
 
 export const _refreshToken = async (): Promise<AxiosResponse<{ token: string }>> =>
     backendAxiosInstance.post("/api/users/refresh");
-
-export const _registerUser = async (user: IRegisterUser): Promise<AxiosResponse<IUser>> =>
-    backendAxiosInstance.post("/api/users", user);
-
-export const _loginUser = async (user: ILoginUser): Promise<AxiosResponse<any>> =>
-    backendAxiosInstance.post("/api/users/login", user);
