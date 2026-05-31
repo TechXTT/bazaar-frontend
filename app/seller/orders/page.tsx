@@ -3,14 +3,19 @@
 import { ORDER_FILTERS, productsService } from "@/api";
 import { claimOrder, claimOrders, getEscrowOrder } from "@/components/escrow";
 import { IOrder } from "@/api/interfaces/products";
+import { CONFIG } from "@/config/config";
 import { RootState } from "@/redux/store";
+import { formatFeeBps, sellerNetFraction } from "@/utils/helpers";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { FiAlertCircle, FiClock, FiDollarSign, FiPackage } from "react-icons/fi";
 import OrderStatusBadge from "@/components/ui/order-status-badge";
 
-type EscrowMeta = { claimable: boolean; releaseTime: bigint };
+const FEE_LABEL = formatFeeBps(CONFIG.PLATFORM_FEE_BPS);
+const NET_FRACTION = sellerNetFraction(CONFIG.PLATFORM_FEE_BPS);
+
+type EscrowMeta = { claimable: boolean; onChain: boolean; releaseTime: bigint };
 
 function formatRemaining(releaseTime: bigint, now: number): string {
   const diffMs = Number(releaseTime) * 1000 - now;
@@ -35,11 +40,20 @@ export default function SellerOrdersPage() {
       response.data.map(async (order) => {
         try {
           const eo = await getEscrowOrder(order.ID);
+          // The contract's `orders` mapping returns an all-zero struct (no revert)
+          // for orders that were never created on-chain, which would otherwise read
+          // as releaseTime=0 → "past release" → falsely claimable. Only treat an
+          // order as on-chain (and thus potentially claimable) when it actually exists.
+          const onChain =
+            eo.receiver !== "0x0000000000000000000000000000000000000000" &&
+            Number(eo.releaseTime) > 0;
           const claimable =
-            !eo.completed && (eo.release || Number(eo.releaseTime) * 1000 <= Date.now());
-          return [order.ID, { claimable, releaseTime: eo.releaseTime }] as const;
+            onChain &&
+            !eo.completed &&
+            (eo.release || Number(eo.releaseTime) * 1000 <= Date.now());
+          return [order.ID, { claimable, onChain, releaseTime: eo.releaseTime }] as const;
         } catch {
-          return [order.ID, { claimable: false, releaseTime: BigInt(0) }] as const;
+          return [order.ID, { claimable: false, onChain: false, releaseTime: BigInt(0) }] as const;
         }
       })
     );
@@ -75,7 +89,9 @@ export default function SellerOrdersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Orders received</h1>
-          <p className="mt-1 text-sm text-text-secondary">Payout and dispute management.</p>
+          <p className="mt-1 text-sm text-text-secondary">
+            Payout and dispute management. A {FEE_LABEL} protocol fee is deducted from each payout.
+          </p>
         </div>
         {claimableIds.length > 1 && (
           <button
@@ -100,7 +116,7 @@ export default function SellerOrdersPage() {
 
       {orders.length === 0 ? (
         <div className="relative flex flex-col items-center justify-center py-24 space-y-5 rounded-2xl border border-dashed border-border-subtle overflow-hidden text-center">
-          <div className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(circle, #a5b4fc 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
+          <div className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(circle, #8b7dff 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <div className="h-56 w-56 rounded-full bg-primary/18 blur-[70px]" />
           </div>
@@ -138,6 +154,15 @@ export default function SellerOrdersPage() {
                     Qty {order.Quantity} · {order.Total?.toFixed(4)} {order.Product.Unit}
                     {date && ` · ${date}`}
                   </p>
+                  {canClaim && order.Total != null && (
+                    <p className="mt-0.5 text-xs text-text-secondary">
+                      You receive{" "}
+                      <span className="font-medium text-white">
+                        {(order.Total * NET_FRACTION).toFixed(4)} {order.Product.Unit}
+                      </span>{" "}
+                      after the {FEE_LABEL} fee
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
@@ -169,13 +194,17 @@ export default function SellerOrdersPage() {
                       >
                         <FiAlertCircle size={12} /> Resolve
                       </Link>
-                    ) : orderMeta ? (
+                    ) : !orderMeta ? (
+                      <span className="text-xs text-text-muted">Checking…</span>
+                    ) : !orderMeta.onChain ? (
+                      <span className="inline-flex items-center gap-1 text-xs text-text-muted">
+                        <FiClock size={11} /> Awaiting payment
+                      </span>
+                    ) : (
                       <span className="inline-flex items-center gap-1 text-xs text-text-muted">
                         <FiClock size={11} />
                         {formatRemaining(orderMeta.releaseTime, now)}
                       </span>
-                    ) : (
-                      <span className="text-xs text-text-muted">Checking…</span>
                     )
                   )}
                 </div>
