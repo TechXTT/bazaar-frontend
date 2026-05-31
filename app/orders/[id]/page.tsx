@@ -8,27 +8,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FiArrowLeft, FiCalendar, FiHash, FiPackage } from "react-icons/fi";
-
-const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  pending:   { label: "Pending",   className: "bg-blue-500/15 text-blue-400 border-blue-500/20" },
-  created:   { label: "Pending",   className: "bg-blue-500/15 text-blue-400 border-blue-500/20" },
-  completed: { label: "Completed", className: "bg-green-500/15 text-green-400 border-green-500/20" },
-  released:  { label: "Released",  className: "bg-green-500/15 text-green-400 border-green-500/20" },
-  cancelled: { label: "Cancelled", className: "bg-red-500/15 text-red-400 border-red-500/20" },
-  disputed:  { label: "Disputed",  className: "bg-yellow-500/15 text-yellow-400 border-yellow-500/20" },
-};
-
-function StatusBadge({ status }: { status: string }) {
-  const cfg = STATUS_CONFIG[status?.toLowerCase()] ?? {
-    label: status,
-    className: "bg-bg-secondary text-text-secondary border-border-subtle",
-  };
-  return (
-    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${cfg.className}`}>
-      {cfg.label}
-    </span>
-  );
-}
+import OrderStatusBadge from "@/components/ui/order-status-badge";
 
 export default function OrderPage() {
   const { id } = useParams<{ id: string }>();
@@ -93,7 +73,7 @@ export default function OrderPage() {
       {/* Header */}
       <div className="flex items-center gap-3 mb-8">
         <h1 className="text-2xl font-bold">Order detail</h1>
-        {order.Status && <StatusBadge status={order.Status} />}
+        {order.Status && <OrderStatusBadge status={order.Status} size="md" />}
       </div>
 
       <div className="grid lg:grid-cols-[1fr_380px] gap-8 items-start">

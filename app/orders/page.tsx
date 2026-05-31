@@ -7,27 +7,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { FiArrowRight, FiPackage } from "react-icons/fi";
-
-const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  pending:   { label: "Pending",   className: "bg-blue-500/15 text-blue-400 border-blue-500/20" },
-  created:   { label: "Pending",   className: "bg-blue-500/15 text-blue-400 border-blue-500/20" },
-  completed: { label: "Completed", className: "bg-green-500/15 text-green-400 border-green-500/20" },
-  released:  { label: "Released",  className: "bg-green-500/15 text-green-400 border-green-500/20" },
-  cancelled: { label: "Cancelled", className: "bg-red-500/15 text-red-400 border-red-500/20" },
-  disputed:  { label: "Disputed",  className: "bg-yellow-500/15 text-yellow-400 border-yellow-500/20" },
-};
-
-function StatusBadge({ status }: { status: string }) {
-  const cfg = STATUS_CONFIG[status?.toLowerCase()] ?? {
-    label: status,
-    className: "bg-bg-secondary text-text-secondary border-border-subtle",
-  };
-  return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${cfg.className}`}>
-      {cfg.label}
-    </span>
-  );
-}
+import OrderStatusBadge from "@/components/ui/order-status-badge";
 
 export default function OrdersPage() {
   const auth = useSelector((state: RootState) => state.auth);
@@ -117,7 +97,7 @@ export default function OrdersPage() {
                 </div>
 
                 <div className="flex items-center gap-3 shrink-0">
-                  <StatusBadge status={order.Status} />
+                  <OrderStatusBadge status={order.Status} />
                   <FiArrowRight
                     size={14}
                     className="text-text-muted group-hover:text-primary transition-colors"

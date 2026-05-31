@@ -7,18 +7,10 @@ import { RootState } from "@/redux/store";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { FiAlertCircle, FiArrowRight, FiClock, FiDollarSign, FiPackage } from "react-icons/fi";
+import { FiAlertCircle, FiClock, FiDollarSign, FiPackage } from "react-icons/fi";
+import OrderStatusBadge from "@/components/ui/order-status-badge";
 
 type EscrowMeta = { claimable: boolean; releaseTime: bigint };
-
-const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  pending:   { label: "Pending",   className: "bg-blue-500/15 text-blue-400 border-blue-500/20" },
-  created:   { label: "Pending",   className: "bg-blue-500/15 text-blue-400 border-blue-500/20" },
-  completed: { label: "Completed", className: "bg-green-500/15 text-green-400 border-green-500/20" },
-  released:  { label: "Released",  className: "bg-green-500/15 text-green-400 border-green-500/20" },
-  cancelled: { label: "Cancelled", className: "bg-red-500/15 text-red-400 border-red-500/20" },
-  disputed:  { label: "Disputed",  className: "bg-yellow-500/15 text-yellow-400 border-yellow-500/20" },
-};
 
 function formatRemaining(releaseTime: bigint, now: number): string {
   const diffMs = Number(releaseTime) * 1000 - now;
@@ -125,10 +117,6 @@ export default function SellerOrdersPage() {
           {orders.map((order) => {
             const orderMeta = meta[order.ID];
             const canClaim = orderMeta?.claimable;
-            const statusCfg = STATUS_CONFIG[order.Status?.toLowerCase()] ?? {
-              label: order.Status,
-              className: "bg-bg-secondary text-text-secondary border-border-subtle",
-            };
             const date = order.CreatedAt
               ? new Date(order.CreatedAt).toLocaleDateString("en-US", {
                   month: "short", day: "numeric", year: "numeric",
@@ -153,11 +141,7 @@ export default function SellerOrdersPage() {
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${statusCfg.className}`}
-                  >
-                    {statusCfg.label}
-                  </span>
+                  <OrderStatusBadge status={order.Status} />
 
                   {order.Status !== "cancelled" && (
                     canClaim ? (
