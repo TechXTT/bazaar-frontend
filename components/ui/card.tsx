@@ -9,7 +9,7 @@ export default function Card({ className, variant = "panel", ...props }: CardPro
   return (
     <div
       className={clsx(
-        "rounded-md border p-4 shadow-sm",
+        "rounded-2xl border p-5 shadow-sm",
         variant === "panel"
           ? "border-border-subtle bg-surface-panel"
           : "border-border-subtle bg-surface-sunken",

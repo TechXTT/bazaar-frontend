@@ -14,9 +14,9 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-surface-accent text-white hover:bg-surface-accentHover disabled:bg-surface-accent/60",
+    "bg-surface-accent text-white shadow-primary hover:bg-surface-accentHover hover:scale-[1.01] active:scale-[0.99] disabled:bg-surface-accent/50 disabled:shadow-none",
   secondary:
-    "border border-border-strong bg-surface-panel text-text-primary hover:bg-surface-hover",
+    "border border-border-strong bg-surface-panel text-text-primary hover:bg-surface-hover hover:border-primary/40",
   ghost: "text-text-secondary hover:bg-white/10 hover:text-white",
   danger: "bg-status-danger text-white hover:opacity-90",
 };
@@ -41,7 +41,7 @@ export default function Button({
   return (
     <button
       className={clsx(
-        "inline-flex items-center justify-center gap-2 rounded-md font-semibold transition focus:outline-none focus:ring-2 focus:ring-surface-accent focus:ring-offset-2 focus:ring-offset-surface-base disabled:cursor-not-allowed disabled:opacity-60",
+        "inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-surface-accent focus:ring-offset-2 focus:ring-offset-surface-base disabled:cursor-not-allowed disabled:opacity-60",
         variantClasses[variant],
         sizeClasses[size],
         className

@@ -109,7 +109,7 @@ export default function Navigation() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[#0f1e20]/95 backdrop-blur-md border-b border-border-subtle shadow-lg shadow-black/20"
+          ? "bg-[#0d0f17]/95 backdrop-blur-md border-b border-border-subtle shadow-lg shadow-black/20"
           : "bg-transparent"
       }`}
     >
@@ -120,10 +120,10 @@ export default function Navigation() {
           <Link href="/" className="shrink-0 flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 border border-primary/30">
               <svg width="16" height="16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="10" y="35" width="80" height="55" rx="6" stroke="currentColor" strokeWidth="7" fill="none" className="text-primary" style={{color: "var(--color-primary, #6366f1)"}} />
-                <path d="M34 35V28C34 18.6 41.6 11 51 11C60.4 11 68 18.6 68 28V35" stroke="currentColor" strokeWidth="7" fill="none" strokeLinecap="round" style={{color: "var(--color-primary, #6366f1)"}} />
-                <line x1="51" y1="50" x2="51" y2="70" stroke="currentColor" strokeWidth="7" strokeLinecap="round" style={{color: "var(--color-primary, #6366f1)"}} />
-                <line x1="40" y1="60" x2="62" y2="60" stroke="currentColor" strokeWidth="7" strokeLinecap="round" style={{color: "var(--color-primary, #6366f1)"}} />
+                <rect x="10" y="35" width="80" height="55" rx="6" stroke="currentColor" strokeWidth="7" fill="none" className="text-primary" style={{color: "var(--color-primary, #8b7dff)"}} />
+                <path d="M34 35V28C34 18.6 41.6 11 51 11C60.4 11 68 18.6 68 28V35" stroke="currentColor" strokeWidth="7" fill="none" strokeLinecap="round" style={{color: "var(--color-primary, #8b7dff)"}} />
+                <line x1="51" y1="50" x2="51" y2="70" stroke="currentColor" strokeWidth="7" strokeLinecap="round" style={{color: "var(--color-primary, #8b7dff)"}} />
+                <line x1="40" y1="60" x2="62" y2="60" stroke="currentColor" strokeWidth="7" strokeLinecap="round" style={{color: "var(--color-primary, #8b7dff)"}} />
               </svg>
             </div>
             <span className="font-bold text-sm tracking-widest uppercase text-white">
@@ -180,7 +180,7 @@ export default function Navigation() {
                   </button>
 
                   {userMenuOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-border-subtle bg-[#141f22] shadow-2xl overflow-hidden z-50">
+                    <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-border-subtle bg-[#161925] shadow-2xl overflow-hidden z-50">
                       {/* User info header */}
                       {displayName && (
                         <div className="px-4 py-3 border-b border-border-subtle">
@@ -231,7 +231,7 @@ export default function Navigation() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-[#0f1e20]/98 backdrop-blur-md border-t border-border-subtle">
+        <div className="md:hidden bg-[#0d0f17]/98 backdrop-blur-md border-t border-border-subtle">
           <div className="px-4 py-3 space-y-0.5">
             {NAV_LINKS.map((l) => (
               <MobileLink key={l.href} href={l.href}>{l.label}</MobileLink>

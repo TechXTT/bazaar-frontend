@@ -34,7 +34,7 @@ body {
 
 	* {
 		@apply font-inter;
-		color: #ececec;
+		color: #e6e8ee;
 	}
 
 	input[type='number']::-webkit-outer-spin-button,

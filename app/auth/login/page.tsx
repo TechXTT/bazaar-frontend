@@ -96,7 +96,7 @@ const LoginPage = () => {
   return (
     <div className="flex min-h-[calc(100vh-64px)]">
       {/* Left panel */}
-      <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-between p-12 overflow-hidden bg-[#0f1e21]">
+      <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-between p-12 overflow-hidden bg-[#0b0d14]">
         {/* Background glows */}
         <div className="pointer-events-none absolute -top-32 -left-32 h-[600px] w-[600px] rounded-full bg-primary/30 blur-[140px]" />
         <div className="pointer-events-none absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-violet-600/20 blur-[120px]" />
@@ -106,7 +106,7 @@ const LoginPage = () => {
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.07]"
           style={{
-            backgroundImage: "radial-gradient(circle, #a5b4fc 1px, transparent 1px)",
+            backgroundImage: "radial-gradient(circle, #8b7dff 1px, transparent 1px)",
             backgroundSize: "28px 28px",
           }}
         />
@@ -159,7 +159,7 @@ const LoginPage = () => {
       </div>
 
       {/* Right panel */}
-      <div className="relative flex w-full lg:w-1/2 flex-col items-center justify-center px-6 py-12 bg-[#142024]">
+      <div className="relative flex w-full lg:w-1/2 flex-col items-center justify-center px-6 py-12 bg-[#0d0f17]">
         {/* Subtle glow */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div className="h-[400px] w-[400px] rounded-full bg-primary/15 blur-[100px]" />

@@ -31,10 +31,10 @@ export default function Footer() {
             <Link href="/" className="inline-flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 border border-primary/30">
                 <svg width="16" height="16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="10" y="35" width="80" height="55" rx="6" stroke="#6366f1" strokeWidth="7" fill="none"/>
-                  <path d="M34 35V28C34 18.6 41.6 11 51 11C60.4 11 68 18.6 68 28V35" stroke="#6366f1" strokeWidth="7" fill="none" strokeLinecap="round"/>
-                  <line x1="51" y1="50" x2="51" y2="70" stroke="#6366f1" strokeWidth="7" strokeLinecap="round"/>
-                  <line x1="40" y1="60" x2="62" y2="60" stroke="#6366f1" strokeWidth="7" strokeLinecap="round"/>
+                  <rect x="10" y="35" width="80" height="55" rx="6" stroke="#8b7dff" strokeWidth="7" fill="none"/>
+                  <path d="M34 35V28C34 18.6 41.6 11 51 11C60.4 11 68 18.6 68 28V35" stroke="#8b7dff" strokeWidth="7" fill="none" strokeLinecap="round"/>
+                  <line x1="51" y1="50" x2="51" y2="70" stroke="#8b7dff" strokeWidth="7" strokeLinecap="round"/>
+                  <line x1="40" y1="60" x2="62" y2="60" stroke="#8b7dff" strokeWidth="7" strokeLinecap="round"/>
                 </svg>
               </div>
               <span className="font-bold text-sm tracking-widest uppercase text-white">
@@ -84,7 +84,7 @@ export default function Footer() {
             © {new Date().getFullYear()} The Bazaar. Decentralized commerce.
           </p>
           <a
-            href="https://github.com"
+            href="https://github.com/TechXTT/The-Bazaar"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-xs text-text-muted hover:text-white transition-colors"
