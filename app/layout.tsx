@@ -4,6 +4,8 @@ import Navigation from "./components/navbar";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import ReduxProvider from "./components/redux";
+import WalletSubscriber from "./components/wallet-subscriber";
+import NetworkBanner from "./components/network-banner";
 import { MetaMaskProvider } from "@metamask/sdk-react";
 import { useEffect, useState } from "react";
 import { Toaster } from "sonner";
@@ -114,7 +116,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             debug={true}
             sdkOptions={{ dappMetadata: { name: "The Bazaar", url: location } }}
           >
+            <WalletSubscriber />
             <Navigation />
+            <NetworkBanner />
             <div className="pt-16">{children}</div>
             <Footer />
             <Toaster position="bottom-right" richColors theme="dark" />

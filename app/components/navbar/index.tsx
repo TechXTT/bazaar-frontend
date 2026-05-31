@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "@/redux/store";
 import { logout, setUser } from "@/redux/slices/auth-slice";
 import { usersService } from "@/api";
-import { useSDK } from "@metamask/sdk-react";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
@@ -63,7 +62,6 @@ function UserAvatar({ name, size = 28 }: { name: string; size?: number }) {
 export default function Navigation() {
   const auth = useSelector((state: RootState) => state.auth);
   const dispatch = useAppDispatch();
-  const { chainId } = useSDK();
   const pathname = usePathname();
 
   const [scrolled, setScrolled] = useState(false);
@@ -79,13 +77,8 @@ export default function Navigation() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    if (chainId && chainId !== "0xaa36a7" && window.ethereum) {
-      window.ethereum
-        .request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0xaa36a7" }] })
-        .catch(() => {});
-    }
-  }, [chainId]);
+  // Network mismatches are surfaced (with a switch button) by <NetworkBanner />,
+  // which is driven by CONFIG.CHAIN_ID. We intentionally do not auto-switch here.
 
   useEffect(() => {
     if (!auth.isLoggedIn || !auth.jwt) { dispatch(logout()); return; }
