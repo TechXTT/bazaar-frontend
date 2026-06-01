@@ -132,7 +132,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ReduxProvider>
           <MetaMaskProvider
             debug={true}
-            sdkOptions={{ dappMetadata: { name: "The Bazaar", url: location } }}
+            sdkOptions={{
+              dappMetadata: { name: "The Bazaar", url: location },
+              // Under e2e tests an injected window.ethereum shim is provided; force the
+              // SDK to adopt it instead of starting a remote (QR/socket) connection that
+              // can't complete headlessly. No effect in normal use.
+              ...(process.env.NEXT_PUBLIC_E2E === "true"
+                ? { extensionOnly: true, checkInstallationImmediately: false }
+                : {}),
+            }}
           >
             <WalletSubscriber />
             <Navigation />

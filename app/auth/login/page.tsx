@@ -59,7 +59,12 @@ const LoginPage = () => {
         method: "wallet_requestPermissions",
         params: [{ eth_accounts: {} }],
       });
-      const accounts = await sdk?.connect();
+      // Under e2e the SDK's remote connect() can't complete headlessly; ask the
+      // injected provider for accounts directly (equivalent result, no SDK round-trip).
+      const accounts =
+        process.env.NEXT_PUBLIC_E2E === "true"
+          ? await window.ethereum!.request({ method: "eth_requestAccounts" })
+          : await sdk?.connect();
       const walletAddress = (accounts as string[])?.[0];
       if (!walletAddress) throw new Error("No wallet connected");
 
