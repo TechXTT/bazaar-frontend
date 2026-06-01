@@ -30,7 +30,12 @@ const Checkout = ({ paymentToken }: CheckoutProps) => {
 
     if (!connected || !buyerAddress) {
       try {
-        const accounts = await sdk?.connect();
+        // Under e2e the SDK's remote connect() can't complete headlessly; ask the
+        // injected provider for accounts directly (same result, no SDK round-trip).
+        const accounts =
+          process.env.NEXT_PUBLIC_E2E === "true"
+            ? await window.ethereum!.request({ method: "eth_requestAccounts" })
+            : await sdk?.connect();
         buyerAddress = (accounts as string[])?.[0] ?? "";
       } catch {
         toast.error("Failed to connect wallet");
