@@ -275,6 +275,19 @@ export async function login(page: Page) {
   await page.waitForTimeout(1500);
   await page.getByRole("button", { name: /sign in with metamask/i }).click();
   await expect(page).not.toHaveURL(/\/auth\/login/, { timeout: 30_000 });
+  await expectAuthed(page);
+}
+
+/**
+ * Wait until the app considers the session authenticated. The axios interceptor
+ * reads `auth.jwt` from the redux-persist store, which rehydrates asynchronously on
+ * every fresh page load — on slow runners a form can submit before the token is
+ * attached (a 401, no redirect). The navbar only renders the "Seller" link when
+ * `auth.isLoggedIn` is true, so it's a reliable "token is live" signal. Call this
+ * after any full navigation before performing an authenticated action.
+ */
+export async function expectAuthed(page: Page) {
+  await expect(page.getByRole("link", { name: /^Seller$/ })).toBeVisible({ timeout: 30_000 });
 }
 
 /** Mine `seconds` of chain time so escrow release windows can elapse in-test. */

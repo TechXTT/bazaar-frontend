@@ -2,6 +2,7 @@ import { test, expect, BrowserContext, Page } from "@playwright/test";
 import {
   installWallet,
   login,
+  expectAuthed,
   increaseTime,
   readOrder,
   escrowAs,
@@ -71,6 +72,7 @@ test("full ETH order lifecycle: list → buy → escrow → claim", async () => 
     await login(sellerPage);
 
     await sellerPage.goto("/seller/stores/new", { waitUntil: "networkidle" });
+    await expectAuthed(sellerPage); // JWT must be rehydrated before the create POST
     await sellerPage.getByLabel("Store name").fill(STORE_NAME);
     await sellerPage.getByRole("button", { name: /create store/i }).click();
     await expect(sellerPage).toHaveURL(/\/seller\/stores\/[0-9a-f-]+$/i, { timeout: 30_000 });
@@ -109,12 +111,14 @@ test("full ETH order lifecycle: list → buy → escrow → claim", async () => 
 
     await buyerPage.getByRole("button", { name: /add to cart/i }).click();
     await buyerPage.goto("/cart", { waitUntil: "networkidle" });
+    await expectAuthed(buyerPage); // JWT live before the order-create POST
     await expect(buyerPage.getByText(PRODUCT_NAME).first()).toBeVisible();
 
     await buyerPage.getByRole("button", { name: /pay with eth/i }).click();
     await expect(buyerPage).toHaveURL(/\/cart\/confirmation|\/orders/, { timeout: 90_000 });
 
     await buyerPage.goto("/orders", { waitUntil: "networkidle" });
+    await expectAuthed(buyerPage);
     const orderCard = buyerPage
       .locator('a[href^="/orders/"]')
       .filter({ hasText: PRODUCT_NAME });
