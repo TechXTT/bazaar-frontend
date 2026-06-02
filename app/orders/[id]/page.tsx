@@ -4,24 +4,88 @@ import { productsService } from "@/api";
 import { IOrder } from "@/api/interfaces/products";
 import BucketImage from "@/app/components/image";
 import OpenDispute from "../components/openDispute";
+import { buyerReclaim, confirmReceipt, getEscrowOrder } from "@/components/escrow";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FiArrowLeft, FiCalendar, FiHash, FiPackage } from "react-icons/fi";
+import { FiArrowLeft, FiCalendar, FiCheckCircle, FiHash, FiPackage, FiRotateCcw } from "react-icons/fi";
 import OrderStatusBadge from "@/components/ui/order-status-badge";
+
+type BuyerEscrowMeta = { onChain: boolean; shipped: boolean; completed: boolean; shippingDeadline: bigint };
 
 export default function OrderPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [order, setOrder] = useState<IOrder | null>(null);
   const [error, setError] = useState(false);
+  const [escrow, setEscrow] = useState<BuyerEscrowMeta | null>(null);
+  const [pending, setPending] = useState(false);
+  const [now, setNow] = useState(Date.now());
 
-  useEffect(() => {
+  const loadOrder = () =>
     productsService
       .getOrder(id)
       .then((res) => setOrder(res.data))
       .catch(() => setError(true));
+
+  useEffect(() => {
+    loadOrder();
   }, [id]);
+
+  useEffect(() => {
+    let active = true;
+    getEscrowOrder(id)
+      .then((eo) => {
+        if (!active) return;
+        const onChain =
+          eo.receiver !== "0x0000000000000000000000000000000000000000" &&
+          Number(eo.releaseTime) > 0;
+        setEscrow({
+          onChain,
+          shipped: eo.shipped,
+          completed: eo.completed,
+          shippingDeadline: eo.shippingDeadline,
+        });
+      })
+      .catch(() => {
+        if (active) setEscrow(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [id]);
+
+  useEffect(() => {
+    const t = window.setInterval(() => setNow(Date.now()), 60_000);
+    return () => window.clearInterval(t);
+  }, []);
+
+  const reload = async () => {
+    await loadOrder();
+    try {
+      const eo = await getEscrowOrder(id);
+      const onChain =
+        eo.receiver !== "0x0000000000000000000000000000000000000000" &&
+        Number(eo.releaseTime) > 0;
+      setEscrow({
+        onChain,
+        shipped: eo.shipped,
+        completed: eo.completed,
+        shippingDeadline: eo.shippingDeadline,
+      });
+    } catch {
+      setEscrow(null);
+    }
+  };
+
+  const canConfirm = !!escrow && escrow.onChain && escrow.shipped && !escrow.completed;
+  const canReclaim =
+    !!escrow &&
+    escrow.onChain &&
+    !escrow.shipped &&
+    !escrow.completed &&
+    Number(escrow.shippingDeadline) > 0 &&
+    Number(escrow.shippingDeadline) * 1000 <= now;
 
   if (error) {
     return (
@@ -158,6 +222,70 @@ export default function OrderPage() {
               </div>
             </div>
           </div>
+
+          {/* Shipment actions */}
+          {(canConfirm || canReclaim) && (
+            <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+                Shipment
+              </p>
+              {canConfirm ? (
+                <div className="space-y-3">
+                  <p className="text-sm text-text-secondary">
+                    The seller marked this order as shipped. Confirm receipt to release
+                    the escrowed funds.
+                  </p>
+                  <button
+                    disabled={pending}
+                    onClick={async () => {
+                      setPending(true);
+                      try {
+                        await confirmReceipt(order.ID);
+                        await reload();
+                      } finally {
+                        setPending(false);
+                      }
+                    }}
+                    className="inline-flex w-full items-center justify-center gap-2 bg-primary text-white font-semibold text-sm px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
+                  >
+                    {pending ? (
+                      <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    ) : (
+                      <FiCheckCircle size={14} />
+                    )}
+                    Confirm receipt
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-sm text-text-secondary">
+                    The seller didn&apos;t ship before the deadline. You can reclaim your
+                    full payment.
+                  </p>
+                  <button
+                    disabled={pending}
+                    onClick={async () => {
+                      setPending(true);
+                      try {
+                        await buyerReclaim(order.ID);
+                        await reload();
+                      } finally {
+                        setPending(false);
+                      }
+                    }}
+                    className="inline-flex w-full items-center justify-center gap-2 bg-primary text-white font-semibold text-sm px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
+                  >
+                    {pending ? (
+                      <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    ) : (
+                      <FiRotateCcw size={14} />
+                    )}
+                    Reclaim funds
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Dispute */}
           <OpenDispute order={order} />

@@ -1,7 +1,8 @@
 "use client";
 
+import { keccak256, toUtf8Bytes } from "ethers";
 import { ORDER_FILTERS, productsService } from "@/api";
-import { claimOrder, claimOrders, getEscrowOrder } from "@/components/escrow";
+import { claimOrder, claimOrders, getEscrowOrder, markShipped } from "@/components/escrow";
 import { IOrder } from "@/api/interfaces/products";
 import { CONFIG } from "@/config/config";
 import { RootState } from "@/redux/store";
@@ -9,13 +10,13 @@ import { formatFeeBps, sellerNetFraction } from "@/utils/helpers";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { FiAlertCircle, FiClock, FiDollarSign, FiPackage } from "react-icons/fi";
+import { FiAlertCircle, FiClock, FiDollarSign, FiPackage, FiTruck } from "react-icons/fi";
 import OrderStatusBadge from "@/components/ui/order-status-badge";
 
 const FEE_LABEL = formatFeeBps(CONFIG.PLATFORM_FEE_BPS);
 const NET_FRACTION = sellerNetFraction(CONFIG.PLATFORM_FEE_BPS);
 
-type EscrowMeta = { claimable: boolean; onChain: boolean; releaseTime: bigint };
+type EscrowMeta = { claimable: boolean; onChain: boolean; shipped: boolean; releaseTime: bigint };
 
 function formatRemaining(releaseTime: bigint, now: number): string {
   const diffMs = Number(releaseTime) * 1000 - now;
@@ -51,9 +52,9 @@ export default function SellerOrdersPage() {
             onChain &&
             !eo.completed &&
             (eo.release || Number(eo.releaseTime) * 1000 <= Date.now());
-          return [order.ID, { claimable, onChain, releaseTime: eo.releaseTime }] as const;
+          return [order.ID, { claimable, onChain, shipped: eo.shipped, releaseTime: eo.releaseTime }] as const;
         } catch {
-          return [order.ID, { claimable: false, onChain: false, releaseTime: BigInt(0) }] as const;
+          return [order.ID, { claimable: false, onChain: false, shipped: false, releaseTime: BigInt(0) }] as const;
         }
       })
     );
@@ -133,6 +134,13 @@ export default function SellerOrdersPage() {
           {orders.map((order) => {
             const orderMeta = meta[order.ID];
             const canClaim = orderMeta?.claimable;
+            const canShip =
+              orderMeta?.onChain &&
+              !orderMeta.shipped &&
+              !orderMeta.claimable &&
+              order.Status !== "completed" &&
+              order.Status !== "cancelled" &&
+              order.Status !== "disputed";
             const date = order.CreatedAt
               ? new Date(order.CreatedAt).toLocaleDateString("en-US", {
                   month: "short", day: "numeric", year: "numeric",
@@ -186,6 +194,32 @@ export default function SellerOrdersPage() {
                           <FiDollarSign size={12} />
                         )}
                         Claim
+                      </button>
+                    ) : canShip ? (
+                      <button
+                        disabled={pendingId === order.ID}
+                        onClick={async () => {
+                          const tracking = window.prompt(
+                            "Enter a tracking reference (optional):",
+                            ""
+                          );
+                          if (tracking === null) return;
+                          const trackingHash = tracking.trim()
+                            ? keccak256(toUtf8Bytes(tracking.trim()))
+                            : undefined;
+                          setPendingId(order.ID);
+                          await markShipped(order.ID, trackingHash);
+                          setPendingId("");
+                          await load();
+                        }}
+                        className="inline-flex items-center gap-1.5 bg-primary text-white font-semibold text-xs px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+                      >
+                        {pendingId === order.ID ? (
+                          <span className="h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                        ) : (
+                          <FiTruck size={12} />
+                        )}
+                        Mark as shipped
                       </button>
                     ) : order.Status === "disputed" ? (
                       <Link

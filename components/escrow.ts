@@ -14,7 +14,10 @@ export type EscrowOrderState = {
   productId: string;
   completed: boolean;
   release: boolean;
+  shipped: boolean;
   releaseTime: bigint;
+  shippingDeadline: bigint;
+  deliveryWindow: bigint;
 };
 
 const ERC20_ABI = [
@@ -36,11 +39,14 @@ export async function getEscrowOrder(orderId: string): Promise<EscrowOrderState>
     buyer: result.buyer,
     receiver: result.receiver,
     token: result.token,
-    productId: result.productId,
     amount: result.amount,
     releaseTime: result.releaseTime,
+    shippingDeadline: result.shippingDeadline,
+    deliveryWindow: result.deliveryWindow,
+    shipped: result.shipped,
     release: result.release,
     completed: result.completed,
+    productId: result.productId,
   };
 }
 
@@ -172,6 +178,33 @@ export async function claimOrders(orderIds: string[]): Promise<ethers.Transactio
   return sendTx(
     () => contract.claimOrders(orderIds.map((id) => messageToBytes32(id))),
     { loading: "Waiting for MetaMask…", submitted: "Claim submitted", confirmed: "Funds claimed", error: "Claim failed" }
+  );
+}
+
+export async function markShipped(
+  orderId: string,
+  trackingHash?: string
+): Promise<ethers.TransactionResponse> {
+  const contract = await getEscrowContract();
+  return sendTx(
+    () => contract.markShipped(messageToBytes32(orderId), trackingHash ?? ethers.ZeroHash),
+    { loading: "Waiting for MetaMask…", submitted: "Shipment submitted", confirmed: "Order marked as shipped", error: "Failed to mark as shipped" }
+  );
+}
+
+export async function confirmReceipt(orderId: string): Promise<ethers.TransactionResponse> {
+  const contract = await getEscrowContract();
+  return sendTx(
+    () => contract.releaseOrder(messageToBytes32(orderId)),
+    { loading: "Waiting for MetaMask…", submitted: "Confirmation submitted", confirmed: "Receipt confirmed — funds released", error: "Failed to confirm receipt" }
+  );
+}
+
+export async function buyerReclaim(orderId: string): Promise<ethers.TransactionResponse> {
+  const contract = await getEscrowContract();
+  return sendTx(
+    () => contract.buyerReclaim(messageToBytes32(orderId)),
+    { loading: "Waiting for MetaMask…", submitted: "Reclaim submitted", confirmed: "Funds reclaimed", error: "Failed to reclaim funds" }
   );
 }
 

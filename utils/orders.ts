@@ -10,6 +10,7 @@ export interface OrderStatusConfig {
 export const ORDER_STATUS_CONFIG: Record<string, OrderStatusConfig> = {
   pending:   { label: "Pending",   className: "bg-blue-500/15 text-blue-400 border-blue-500/20" },
   created:   { label: "Pending",   className: "bg-blue-500/15 text-blue-400 border-blue-500/20" },
+  shipped:   { label: "Shipped",   className: "bg-violet-500/15 text-violet-400 border-violet-500/20" },
   completed: { label: "Completed", className: "bg-green-500/15 text-green-400 border-green-500/20" },
   released:  { label: "Released",  className: "bg-green-500/15 text-green-400 border-green-500/20" },
   cancelled: { label: "Cancelled", className: "bg-red-500/15 text-red-400 border-red-500/20" },
