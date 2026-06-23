@@ -4,7 +4,7 @@ import { productsService } from "@/api";
 import { OrderResponse } from "@/api/interfaces/products";
 import { CONFIG } from "@/config/config";
 import { createOrder, createOrderERC20 } from "@/components/escrow";
-import { clearCart } from "@/redux/slices/auth-slice";
+import { removeItemFromCart } from "@/redux/slices/auth-slice";
 import { RootState, useAppDispatch } from "@/redux/store";
 import { useSDK } from "@metamask/sdk-react";
 import { useRouter } from "next/navigation";
@@ -103,7 +103,14 @@ const Checkout = ({ paymentToken, disabled = false }: CheckoutProps) => {
 
       const orderResponses: OrderResponse[] = response.data;
       const releaseTime = CONFIG.ESCROW_RELEASE_DAYS * 24 * 60 * 60;
-      const txs: string[] = [];
+
+      // FE-1: escrow txs are submitted one-by-one and any one can revert or be
+      // rejected. Track per-item progress so that, on failure, we keep what already
+      // succeeded, remove those items from the cart (a retry can't re-charge them),
+      // and tell the buyer exactly how many of N were paid + what's left to retry.
+      const paid: Array<{ id: string; name: string; quantity: number; txHash: string }> = [];
+      const total = orderResponses.length;
+      let failure: unknown = null;
 
       for (let i = 0; i < orderResponses.length; i++) {
         const order = orderResponses[i];
@@ -115,7 +122,8 @@ const Checkout = ({ paymentToken, disabled = false }: CheckoutProps) => {
           ? cart.products.find((p) => p.ID === order.product_id)
           : cart.products[i];
         if (!item) {
-          throw new Error("Could not match an escrow order to a cart item");
+          failure = new Error("Could not match an escrow order to a cart item");
+          break;
         }
         const quantity = item.Quantity ?? 1;
 
@@ -124,44 +132,68 @@ const Checkout = ({ paymentToken, disabled = false }: CheckoutProps) => {
         // never picks a token the price isn't denominated in.
         const currency = settlementCurrencyFromUnit(item.Unit);
 
-        if (currency === "USDC") {
-          const { parseUnits } = await import("ethers");
-          const amount = parseUnits((item.Price * quantity).toString(), 6);
-          const { orderTx } = await createOrderERC20(
-            order.id, item.ID, order.owner_address, releaseTime, amount
-          );
-          txs.push(orderTx.hash);
-        } else {
-          const { parseEther } = await import("ethers");
-          const value = parseEther((item.Price * quantity).toString());
-          const tx = await createOrder(
-            order.id, item.ID, order.owner_address, releaseTime, value
-          );
-          txs.push(tx.hash);
+        try {
+          let txHash: string;
+          if (currency === "USDC") {
+            const { parseUnits } = await import("ethers");
+            const amount = parseUnits((item.Price * quantity).toString(), 6);
+            const { orderTx } = await createOrderERC20(
+              order.id, item.ID, order.owner_address, releaseTime, amount
+            );
+            txHash = orderTx.hash;
+          } else {
+            const { parseEther } = await import("ethers");
+            const value = parseEther((item.Price * quantity).toString());
+            const tx = await createOrder(
+              order.id, item.ID, order.owner_address, releaseTime, value
+            );
+            txHash = tx.hash;
+          }
+          paid.push({ id: item.ID, name: item.Name, quantity, txHash });
+        } catch (itemErr: unknown) {
+          // Stop at the first failure; everything already escrowed is in `paid`.
+          failure = itemErr;
+          break;
         }
       }
 
+      // Remove the items we successfully escrowed from the cart so a retry only
+      // re-submits the remaining (still-unpaid) items — never re-charging a paid one.
+      for (const p of paid) dispatch(removeItemFromCart(p.id));
+
+      if (failure) {
+        const msg = getErrorMessage(failure, "Checkout failed");
+        if (msg.includes("owner and buyer cannot be the same")) {
+          // The first item is the buyer's own product — drop it and surface why.
+          const offending = cart.products.find((p) => !paid.some((q) => q.id === p.ID));
+          if (offending) dispatch(removeItemFromCart(offending.ID));
+          toast.error("You cannot buy your own product");
+        } else if (paid.length > 0) {
+          toast.error(
+            `${paid.length} of ${total} paid — the rest failed and remain in your cart. Retry to finish them.`
+          );
+        } else {
+          toast.error(msg);
+        }
+        return;
+      }
+
+      // All items escrowed — record the confirmation for the receipt screen.
       sessionStorage.setItem(
         "bazaar.checkout.confirmation",
         JSON.stringify({
-          orders: cart.products.map((p) => ({ name: p.Name, quantity: p.Quantity ?? 1 })),
+          orders: paid.map((p) => ({ name: p.name, quantity: p.quantity })),
           timestamp: Date.now(),
           total: cart.total,
-          txs,
+          txs: paid.map((p) => p.txHash),
           token: paymentToken,
         })
       );
 
-      dispatch(clearCart());
       router.push("/cart/confirmation");
     } catch (err: unknown) {
-      const msg = getErrorMessage(err, "Checkout failed");
-      if (msg.includes("owner and buyer cannot be the same")) {
-        toast.error("You cannot buy your own product");
-        dispatch(clearCart());
-      } else {
-        toast.error(msg);
-      }
+      // Reaches here only for pre-escrow failures (order creation, network switch).
+      toast.error(getErrorMessage(err, "Checkout failed"));
     } finally {
       setLoading(false);
     }
