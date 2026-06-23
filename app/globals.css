@@ -15,6 +15,61 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Vault design tokens (dark). Authoritative source: Figma Design System node 1:2.
+ * Figma MCP was not reachable headlessly in this environment, so values are taken
+ * from the token quick-reference in CLAUDE_CODE_PROMPT.md (kept in sync with Figma).
+ * Exposed as CSS variables so they can be referenced from both Tailwind and raw CSS.
+ */
+:root {
+	/* Surfaces */
+	--vault-bg: #0b0e14;
+	--vault-surface: #121724;
+	--vault-surface-2: #1a2030;
+	--vault-surface-3: #222a3d;
+	--vault-inset: #0e121b;
+
+	/* Borders */
+	--vault-border: #222a39;
+	--vault-border-strong: #313c50;
+	--vault-border-accent: #3b3fb0;
+
+	/* Text */
+	--vault-text: #e8edf6;
+	--vault-text-secondary: #a6b2c4;
+	--vault-text-tertiary: #6c7689;
+	--vault-text-on-accent: #ffffff;
+
+	/* Accent */
+	--vault-accent: #6366f1;
+	--vault-violet: #8b5cf6;
+	--vault-accent-soft: #191b36;
+
+	/* Status */
+	--vault-success: #10b981;
+	--vault-success-soft: #0e2a22;
+	--vault-warning: #f59e0b;
+	--vault-warning-soft: #2c2410;
+	--vault-danger: #f85149;
+	--vault-danger-soft: #2c1719;
+	--vault-info: #38bdf8;
+
+	/* Radii */
+	--vault-radius-sm: 6px;
+	--vault-radius: 8px;
+	--vault-radius-md: 12px;
+	--vault-radius-lg: 16px;
+	--vault-radius-xl: 20px;
+	--vault-radius-2xl: 28px;
+	--vault-radius-full: 999px;
+
+	/* Effects */
+	--vault-shadow-card: 0 8px 24px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.30);
+	--vault-shadow-popover: 0 16px 40px rgba(0, 0, 0, 0.45);
+	--vault-glow-accent: 0 0 28px rgba(99, 102, 241, 0.45);
+	--vault-glow-success: 0 0 24px rgba(16, 185, 129, 0.40);
+}
+
 * {
 	box-sizing: border-box;
 	padding: 0;
