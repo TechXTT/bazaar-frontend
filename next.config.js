@@ -7,17 +7,26 @@ const cdnBase =
   process.env.NEXT_PUBLIC_CDN_BASE_URL ||
   "https://bucket-for-bazaar.fra1.cdn.digitaloceanspaces.com";
 
-let cdnHost;
+// Derive protocol + host + port from the CDN base so the pattern matches the
+// ACTUAL URL — including http://localhost:8000 in local-storage dev (previously
+// hardcoded https with no port, so next/image rejected dev images and the page
+// that rendered them crashed).
+let cdnPattern;
 try {
-  cdnHost = new URL(cdnBase).hostname;
+  const u = new URL(cdnBase);
+  cdnPattern = {
+    protocol: u.protocol.replace(":", ""),
+    hostname: u.hostname,
+    ...(u.port ? { port: u.port } : {}),
+  };
 } catch {
-  cdnHost = "bucket-for-bazaar.fra1.cdn.digitaloceanspaces.com";
+  cdnPattern = { protocol: "https", hostname: "bucket-for-bazaar.fra1.cdn.digitaloceanspaces.com" };
 }
 
 const nextConfig = {
   images: {
     remotePatterns: [
-      { protocol: "https", hostname: cdnHost },
+      cdnPattern,
       // DigitalOcean Spaces direct (non-CDN) origin, just in case.
       { protocol: "https", hostname: "*.digitaloceanspaces.com" },
       { protocol: "https", hostname: "avatars.githubusercontent.com" },

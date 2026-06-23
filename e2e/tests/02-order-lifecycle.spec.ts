@@ -6,6 +6,7 @@ import {
   increaseTime,
   readOrder,
   escrowAs,
+  markShipped,
   orderIdToBytes32,
   provider,
   ACCOUNTS,
@@ -154,6 +155,9 @@ test("full ETH order lifecycle: list → buy → escrow → claim", async () => 
 
     const pre = await readOrder(orderId);
     if (!pre.completed) {
+      // Ship-gated claim (SC-1 + shipment escrow): the receiver must mark the order
+      // shipped before it can be claimed after the release window.
+      if (!pre.shipped) await markShipped(ACCOUNTS.seller, orderId);
       await increaseTime(RELEASE_WINDOW_SECONDS + 60);
 
       const treasury: string = await escrow.treasury();

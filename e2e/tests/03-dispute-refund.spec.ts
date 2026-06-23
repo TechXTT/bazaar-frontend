@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import {
   createEscrowOrder,
   escrowAs,
+  markShipped,
   readOrder,
   readDispute,
   arbitrationCost,
@@ -63,6 +64,10 @@ test("buyer raising a dispute flips the order to disputed and records a dispute 
     receiver: ACCOUNTS.seller,
     amountWei: amount,
   });
+
+  // SC-1: disputes are only allowed after shipment (pre-shipment the buyer's remedy
+  // is buyerReclaim). The receiver ships, then the buyer can dispute.
+  await markShipped(ACCOUNTS.seller, orderId);
 
   // Buyer escrows their share of the arbitration fee to open the dispute.
   const cost = await arbitrationCost();

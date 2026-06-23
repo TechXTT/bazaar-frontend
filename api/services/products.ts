@@ -21,12 +21,10 @@ export const _getProducts = async (
   id: string,
   cursor: string
 ): Promise<AxiosResponse<IProduct[]>> =>
-  backendAxiosInstance.get(`/api/products/store/${id}?cursor=${cursor}&limit=10`, {
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Expose-Headers": "next-cursor",
-    },
-  });
+  // FE-15: no client-set Access-Control-* headers. `next-cursor` is a RESPONSE
+  // header the backend already exposes via CORS; setting it as a request header
+  // only added a non-allowlisted header that fails the credentialed preflight.
+  backendAxiosInstance.get(`/api/products/store/${id}?cursor=${cursor}&limit=10`);
 
 export const _getOrders = async (filter: string): Promise<AxiosResponse<IOrder[]>> =>
   backendAxiosInstance.get(`/api/products/orders?filter=${filter}`);

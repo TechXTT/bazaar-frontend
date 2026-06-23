@@ -26,6 +26,7 @@ export const ESCROW_ABI = [
   "function createOrder(bytes32 orderId, bytes32 productId, address receiver, uint256 releaseTime) payable",
   "function releaseOrder(bytes32 orderId)",
   "function claimOrder(bytes32 orderId)",
+  "function markShipped(bytes32 orderId, bytes32 trackingHash)",
   "function refundOrder(bytes32 orderId)",
   "function raiseDisputeBuyer(bytes32 orderId) payable",
   "function raiseDisputeReceiver(bytes32 orderId) payable",
@@ -137,6 +138,19 @@ export function escrowAs(account: TestAccount) {
   return new ethers.Contract(ESCROW_ADDRESS, ESCROW_ABI, signerFor(account));
 }
 
+/**
+ * Receiver marks an order shipped. The contract is ship-gated (SC-1 + shipment
+ * escrow): claim/release and dispute are only allowed AFTER shipment, so the
+ * lifecycle/dispute specs must ship first. `trackingHash` is opaque on-chain.
+ */
+export async function markShipped(receiver: TestAccount, orderId: string) {
+  const tx = await escrowAs(receiver).markShipped(
+    orderIdToBytes32(orderId),
+    ethers.id(`e2e-tracking-${orderId}`),
+  );
+  await tx.wait();
+}
+
 export const provider = new ethers.JsonRpcProvider(RPC_URL);
 
 export type TestAccount = { address: string; key: string };
@@ -224,9 +238,21 @@ export async function installWallet(context: BrowserContext, account: TestAccoun
         networkVersion: String(parseInt(chainId, 16)),
         selectedAddress: addr,
         isConnected: () => true,
-        request: (args: { method: string; params?: unknown[] }) =>
+        request: (args: { method: string; params?: unknown[] }) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (window as any).__walletRequest(args.method, args.params ?? []),
+          const w = window as any;
+          // E2E partial-failure: reject the Nth escrow send (1-based) so the
+          // checkout's per-item loop can be exercised. One-shot — cleared after it
+          // fires, so the retry attempt's sends go through.
+          if (args.method === "eth_sendTransaction") {
+            w.__e2eSendCount = (w.__e2eSendCount || 0) + 1;
+            if (w.__e2eRejectSendIndex && w.__e2eSendCount === w.__e2eRejectSendIndex) {
+              w.__e2eRejectSendIndex = undefined;
+              return Promise.reject({ code: 4001, message: "User rejected the request." });
+            }
+          }
+          return w.__walletRequest(args.method, args.params ?? []);
+        },
         enable: () =>
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (window as any).__walletRequest("eth_requestAccounts", []),

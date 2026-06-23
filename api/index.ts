@@ -22,18 +22,57 @@ backendAxiosInstance.interceptors.request.use((config) => {
     return config;
 });
 
+// Users Endpoints
+import { _getMe, _updateUser, _getNonce, _verifySIWE, _refreshToken, _logout } from "./services/users";
+
+// Single-flight token refresh: concurrent 401s share ONE /api/auth/refresh call
+// (no refresh stampede / burst-logout), and the failed request is retried once with
+// the fresh access token. A transient 401 — e.g. the in-memory JWT gap right after a
+// navigation, or an expired access token (BE-16, 1h TTL) — is recovered via the
+// httpOnly refresh cookie instead of dropping the session. We only log out if the
+// refresh itself fails.
+let refreshPromise: Promise<string | null> | null = null;
+
+function refreshAccessToken(): Promise<string | null> {
+    if (!refreshPromise) {
+        refreshPromise = _refreshToken()
+            .then((res) => res.data?.token ?? null)
+            .catch(() => null)
+            .finally(() => {
+                refreshPromise = null;
+            });
+    }
+    return refreshPromise;
+}
+
+// Pre-auth endpoints and the refresh/logout calls themselves must NOT trigger a
+// refresh-and-retry (retrying the refresh would recurse).
+const NO_REFRESH_RETRY = /\/api\/auth\/(nonce|verify|refresh|logout)/;
+
 backendAxiosInstance.interceptors.response.use(
     (res) => res,
-    (err) => {
-        if (err?.response?.status === 401) {
+    async (err) => {
+        const original = err?.config;
+        const status = err?.response?.status;
+        if (
+            status === 401 &&
+            original &&
+            !original._retry &&
+            !NO_REFRESH_RETRY.test(original.url ?? "")
+        ) {
+            original._retry = true;
+            const token = await refreshAccessToken();
+            if (token) {
+                store.dispatch(login(token));
+                original.headers = original.headers ?? {};
+                original.headers.Authorization = `Bearer ${token}`;
+                return backendAxiosInstance(original);
+            }
             store.dispatch(logoutAction());
         }
         return Promise.reject(err);
     }
 );
-
-// Users Endpoints
-import { _getMe, _updateUser, _getNonce, _verifySIWE, _refreshToken, _logout } from "./services/users";
 
 // FE-4: the JWT is held in memory only and is not persisted. After a reload a
 // previously-authenticated session rehydrates with `isLoggedIn: true` but no token,
@@ -44,13 +83,13 @@ export async function bootstrapAuth(): Promise<void> {
     const state = store.getState();
     try {
         if (state.auth?.isLoggedIn && !state.auth?.jwt) {
-            const res = await _refreshToken();
-            const token = res.data?.token;
+            // Share the interceptor's single-flight refresh: the refresh token is
+            // single-use/rotating (BE-16), so two concurrent refreshes would
+            // invalidate each other.
+            const token = await refreshAccessToken();
             if (token) store.dispatch(login(token));
             else store.dispatch(logoutAction());
         }
-    } catch {
-        store.dispatch(logoutAction());
     } finally {
         store.dispatch(setBootstrapped());
     }
