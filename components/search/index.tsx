@@ -89,14 +89,14 @@ function SearchBox({ onClose }: { onClose: () => void }) {
         onFocus={() => query.length > 0 && setOpen(true)}
         onKeyDown={onKeyDown}
         placeholder="Search products…"
-        className="w-full rounded-lg border border-border-subtle bg-bg-secondary px-4 py-2 text-sm outline-none focus:border-primary placeholder:text-text-secondary"
+        className="w-full rounded-lg border border-vault-border bg-vault-surface px-4 py-2 text-sm outline-none focus:border-vault-border-accent placeholder:text-vault-text-secondary"
       />
       {isOpen && (
         <ul
           id={LISTBOX_ID}
           role="listbox"
           aria-label="Product search results"
-          className="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-lg border border-border-subtle bg-bg-color shadow-lg"
+          className="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-lg border border-vault-border bg-vault-surface shadow-vault-popover"
         >
           {visibleHits.map((hit, i) => (
             <li
@@ -111,7 +111,7 @@ function SearchBox({ onClose }: { onClose: () => void }) {
                 select(hit);
               }}
               className={`flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left transition-colors ${
-                i === activeIndex ? "bg-bg-secondary" : "hover:bg-bg-secondary"
+                i === activeIndex ? "bg-vault-surface-2" : "hover:bg-vault-surface-2"
               }`}
             >
               {hit.ImageURL && (
@@ -124,7 +124,7 @@ function SearchBox({ onClose }: { onClose: () => void }) {
               )}
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{hit.Name}</p>
-                <p className="truncate text-xs text-text-secondary">{hit.StoreName}</p>
+                <p className="truncate text-xs text-vault-text-secondary">{hit.StoreName}</p>
               </div>
               <span className="shrink-0 text-sm font-semibold">
                 ${hit.Price.toFixed(2)}
