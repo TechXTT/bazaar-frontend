@@ -27,17 +27,18 @@ const CartPage = () => {
   if (!cart.products || cart.products.length === 0) {
     return (
       <div className="flex min-h-[calc(100vh-64px)] items-center justify-center px-4">
-        <div className="text-center space-y-5">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-bg-secondary border border-border-subtle">
-            <FiShoppingBag size={28} className="text-text-muted" />
+        <div className="relative space-y-5 overflow-hidden rounded-vault-xl border border-vault-border bg-vault-surface px-12 py-16 text-center">
+          <div className="pointer-events-none absolute -top-16 left-1/2 h-56 w-72 -translate-x-1/2 rounded-full bg-vault-accent/15 blur-[90px]" />
+          <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-vault-lg border border-vault-border-accent bg-vault-accent-soft text-vault-accent">
+            <FiShoppingBag size={28} />
           </div>
-          <div className="space-y-1">
-            <p className="font-semibold text-white text-lg">Your cart is empty</p>
-            <p className="text-sm text-text-secondary">Add something from a store to get started.</p>
+          <div className="relative space-y-1">
+            <p className="text-h3 text-vault-text">Your cart is empty</p>
+            <p className="text-body text-vault-text-secondary">Add something from a store to get started.</p>
           </div>
           <Link
             href="/stores"
-            className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20"
+            className="relative inline-flex items-center gap-2 rounded-vault-md bg-vault-accent px-6 py-3 text-body-strong text-vault-on-accent shadow-vault-glow transition hover:opacity-90"
           >
             Browse stores <FiArrowRight size={16} />
           </Link>
@@ -63,9 +64,9 @@ const CartPage = () => {
           {cart.products.map((item) => (
             <div
               key={item.ID}
-              className="flex items-center gap-4 rounded-2xl border border-border-subtle bg-bg-secondary p-4"
+              className="flex items-center gap-4 rounded-vault-lg border border-vault-border bg-vault-surface p-4"
             >
-              <div className="h-16 w-16 shrink-0 rounded-xl overflow-hidden">
+              <div className="h-16 w-16 shrink-0 rounded-vault-md overflow-hidden">
                 <BucketImage
                   key={item.ID}
                   imageURL={item.ImageURL}
@@ -114,8 +115,8 @@ const CartPage = () => {
         {/* Right: summary + checkout */}
         <div className="lg:sticky lg:top-24 space-y-4">
           {/* Order summary */}
-          <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+          <div className="rounded-vault-lg border border-vault-border bg-vault-surface p-5 space-y-4">
+            <p className="text-overline uppercase text-vault-text-tertiary">
               Order summary
             </p>
 
@@ -145,13 +146,13 @@ const CartPage = () => {
           </div>
 
           {/* Payment currency — fixed to the listing's denomination (FE-3) */}
-          <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+          <div className="rounded-vault-lg border border-vault-border bg-vault-surface p-5 space-y-2">
+            <p className="text-overline uppercase text-vault-text-tertiary">
               Pay with
             </p>
-            <div className="flex items-center justify-between rounded-xl border border-primary bg-primary/10 px-4 py-2.5">
-              <span className="text-sm font-semibold text-primary">{paymentToken}</span>
-              <span className="text-xs text-text-muted">Listing currency</span>
+            <div className="flex items-center justify-between rounded-vault-md border border-vault-border-accent bg-vault-accent-soft px-4 py-2.5">
+              <span className="text-body-strong text-vault-accent">{paymentToken}</span>
+              <span className="text-caption text-vault-text-tertiary">Listing currency</span>
             </div>
             {mixedCurrencies && (
               <p className="text-xs text-status-danger" role="alert">
