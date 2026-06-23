@@ -33,6 +33,21 @@ export default function SellerOrdersPage() {
   const [meta, setMeta] = useState<Record<string, EscrowMeta>>({});
   const [now, setNow] = useState(Date.now());
   const [pendingId, setPendingId] = useState("");
+  // FE-14: inline shipping form (replaces window.prompt). Holds the order whose
+  // tracking form is open and the current tracking-reference input.
+  const [shippingFor, setShippingFor] = useState<string | null>(null);
+  const [trackingInput, setTrackingInput] = useState("");
+
+  const submitShipment = async (orderId: string) => {
+    const trimmed = trackingInput.trim();
+    const trackingHash = trimmed ? keccak256(toUtf8Bytes(trimmed)) : undefined;
+    setShippingFor(null);
+    setTrackingInput("");
+    setPendingId(orderId);
+    await markShipped(orderId, trackingHash);
+    setPendingId("");
+    await load();
+  };
 
   const load = async () => {
     const response = await productsService.getOrders(ORDER_FILTERS.seller);
@@ -196,31 +211,65 @@ export default function SellerOrdersPage() {
                         Claim
                       </button>
                     ) : canShip ? (
-                      <button
-                        disabled={pendingId === order.ID}
-                        onClick={async () => {
-                          const tracking = window.prompt(
-                            "Enter a tracking reference (optional):",
-                            ""
-                          );
-                          if (tracking === null) return;
-                          const trackingHash = tracking.trim()
-                            ? keccak256(toUtf8Bytes(tracking.trim()))
-                            : undefined;
-                          setPendingId(order.ID);
-                          await markShipped(order.ID, trackingHash);
-                          setPendingId("");
-                          await load();
-                        }}
-                        className="inline-flex items-center gap-1.5 bg-primary text-white font-semibold text-xs px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
-                      >
-                        {pendingId === order.ID ? (
-                          <span className="h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                        ) : (
-                          <FiTruck size={12} />
-                        )}
-                        Mark as shipped
-                      </button>
+                      shippingFor === order.ID ? (
+                        <form
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            void submitShipment(order.ID);
+                          }}
+                          className="flex items-center gap-1.5"
+                        >
+                          <label htmlFor={`tracking-${order.ID}`} className="sr-only">
+                            Tracking reference (optional)
+                          </label>
+                          <input
+                            id={`tracking-${order.ID}`}
+                            autoFocus
+                            value={trackingInput}
+                            onChange={(e) => setTrackingInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Escape") {
+                                setShippingFor(null);
+                                setTrackingInput("");
+                              }
+                            }}
+                            placeholder="Tracking ref (optional)"
+                            className="h-8 w-40 rounded-lg border border-border-subtle bg-surface-sunken px-2 text-xs focus:border-primary focus:outline-none"
+                          />
+                          <button
+                            type="submit"
+                            className="inline-flex items-center gap-1 bg-primary text-white font-semibold text-xs px-2.5 py-1.5 rounded-lg hover:opacity-90 transition-opacity"
+                          >
+                            <FiTruck size={12} /> Ship
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShippingFor(null);
+                              setTrackingInput("");
+                            }}
+                            className="text-xs text-text-muted hover:text-white px-1"
+                          >
+                            Cancel
+                          </button>
+                        </form>
+                      ) : (
+                        <button
+                          disabled={pendingId === order.ID}
+                          onClick={() => {
+                            setShippingFor(order.ID);
+                            setTrackingInput("");
+                          }}
+                          className="inline-flex items-center gap-1.5 bg-primary text-white font-semibold text-xs px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+                        >
+                          {pendingId === order.ID ? (
+                            <span className="h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                          ) : (
+                            <FiTruck size={12} />
+                          )}
+                          Mark as shipped
+                        </button>
+                      )
                     ) : order.Status === "disputed" ? (
                       <Link
                         href="/seller/disputes"
