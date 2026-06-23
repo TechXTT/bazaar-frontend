@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import { IOrder, IProduct, OrderReq, ProductReq } from "../interfaces/products";
+import { IOrder, IProduct, OrderReq, OrderResponse, ProductReq } from "../interfaces/products";
 import backendAxiosInstance from "..";
 
 export const ORDER_FILTERS = {
@@ -50,5 +50,7 @@ export const _updateProduct = async (
 export const _deleteProduct = async (id: string): Promise<AxiosResponse> =>
   backendAxiosInstance.delete(`/api/products/${id}`);
 
-export const _createOrders = async (orders: OrderReq[]): Promise<AxiosResponse> =>
+export const _createOrders = async (
+  orders: OrderReq[]
+): Promise<AxiosResponse<OrderResponse[]>> =>
   backendAxiosInstance.post("/api/products/orders", { data: orders });

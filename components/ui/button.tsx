@@ -14,11 +14,11 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-surface-accent text-white shadow-primary hover:bg-surface-accentHover hover:scale-[1.01] active:scale-[0.99] disabled:bg-surface-accent/50 disabled:shadow-none",
+    "bg-vault-accent text-vault-on-accent shadow-vault-glow hover:opacity-90 hover:scale-[1.01] active:scale-[0.99] disabled:bg-vault-accent/50 disabled:shadow-none",
   secondary:
-    "border border-border-strong bg-surface-panel text-text-primary hover:bg-surface-hover hover:border-primary/40",
-  ghost: "text-text-secondary hover:bg-white/10 hover:text-white",
-  danger: "bg-status-danger text-white hover:opacity-90",
+    "border border-vault-border bg-vault-surface text-vault-text hover:bg-vault-surface-2 hover:border-vault-border-accent",
+  ghost: "text-vault-text-secondary hover:bg-white/10 hover:text-vault-text",
+  danger: "bg-vault-danger text-white hover:opacity-90",
 };
 
 const sizeClasses: Record<Size, string> = {
@@ -41,7 +41,7 @@ export default function Button({
   return (
     <button
       className={clsx(
-        "inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-surface-accent focus:ring-offset-2 focus:ring-offset-surface-base disabled:cursor-not-allowed disabled:opacity-60",
+        "inline-flex items-center justify-center gap-2 rounded-vault-md font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-vault-accent focus:ring-offset-2 focus:ring-offset-vault-bg disabled:cursor-not-allowed disabled:opacity-60",
         variantClasses[variant],
         sizeClasses[size],
         className

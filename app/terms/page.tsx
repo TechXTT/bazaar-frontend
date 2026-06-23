@@ -1,7 +1,12 @@
-"use client";
-
+import type { Metadata } from "next";
 import InfoPage, { InfoSection } from "@/components/ui/info-page";
 import Link from "next/link";
+
+// FE-6: read-only page → Server Component with SEO metadata.
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description: "The Bazaar terms of service.",
+};
 
 const LAST_UPDATED = "May 31, 2026";
 
@@ -13,7 +18,7 @@ export default function TermsPage() {
       subtitle={`Last updated ${LAST_UPDATED}`}
     >
       <div className="space-y-10">
-        <p className="rounded-xl border border-border-subtle bg-bg-secondary p-4 text-sm leading-relaxed text-text-secondary">
+        <p className="rounded-xl border border-vault-border bg-vault-surface p-4 text-sm leading-relaxed text-vault-text-secondary">
           The Bazaar is non-custodial, decentralized software. By accessing or using
           it you agree to these Terms. If you do not agree, do not use the platform.
           This document is a template for a demonstration project and is not legal
@@ -93,13 +98,13 @@ export default function TermsPage() {
           </p>
         </InfoSection>
 
-        <p className="text-sm text-text-secondary">
+        <p className="text-sm text-vault-text-secondary">
           Questions about these Terms?{" "}
-          <Link href="/contact" className="text-primary hover:underline">
+          <Link href="/contact" className="text-vault-accent hover:underline">
             Contact us
           </Link>
           . See also our{" "}
-          <Link href="/privacy" className="text-primary hover:underline">
+          <Link href="/privacy" className="text-vault-accent hover:underline">
             Privacy Policy
           </Link>
           .

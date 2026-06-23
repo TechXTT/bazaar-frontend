@@ -8,6 +8,7 @@ const initialState: AuthState = {
   user: null,
   cart: { products: [], total: 0 },
   jwt: null,
+  bootstrapped: false,
 };
 
 export const authSlice = createSlice({
@@ -22,6 +23,11 @@ export const authSlice = createSlice({
       state.isLoggedIn = false;
       state.user = null;
       state.jwt = null;
+    },
+    // FE-11: marks rehydration + auth bootstrap complete so protected routes can
+    // safely evaluate isLoggedIn without redirecting mid-rehydration.
+    setBootstrapped: (state: AuthState) => {
+      state.bootstrapped = true;
     },
     setUser: (state: AuthState, action: IUserPayload) => {
       state.user = action.payload;
@@ -40,6 +46,6 @@ export const authSlice = createSlice({
   },
 });
 
-export const { login, logout, setUser, addItemsToCart, clearCart, removeItemFromCart } = authSlice.actions;
+export const { login, logout, setBootstrapped, setUser, addItemsToCart, clearCart, removeItemFromCart } = authSlice.actions;
 
 export default authSlice.reducer;

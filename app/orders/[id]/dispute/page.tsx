@@ -29,6 +29,7 @@ import {
 } from "react-icons/fi";
 import { DISPUTE_STATUS_CONFIG, rulingLabel } from "@/utils/disputes";
 import { getErrorMessage } from "@/utils/helpers";
+import WithdrawBanner from "@/components/ui/withdraw-banner";
 
 function resolveURI(uri: string): string {
   if (uri.startsWith("ipfs://")) {
@@ -39,10 +40,10 @@ function resolveURI(uri: string): string {
 
 /** Per-status background/border styling specific to this page's status pill. */
 const STATUS_BG: Record<string, string> = {
-  fee_pending: "bg-yellow-500/10 border-yellow-500/20",
-  arbitrating: "bg-orange-500/10 border-orange-500/20",
-  resolved:    "bg-green-500/10 border-green-500/20",
-  timed_out:   "bg-bg-secondary border-border-subtle",
+  fee_pending: "bg-vault-warning-soft border-vault-warning/30",
+  arbitrating: "bg-vault-warning-soft border-vault-warning/30",
+  resolved:    "bg-vault-success-soft border-vault-success/30",
+  timed_out:   "bg-vault-surface border-vault-border",
 };
 
 export default function DisputePage() {
@@ -157,80 +158,83 @@ export default function DisputePage() {
   const myFeeDeposit = evidence.some((e) => e.Party === walletAddress);
   const arbCostETH = (Number(arbitrationCost) / 1e18).toFixed(4);
   const cfg = dispute ? DISPUTE_STATUS_CONFIG[dispute.Status] : null;
-  const statusBg = dispute ? STATUS_BG[dispute.Status] ?? "bg-bg-secondary border-border-subtle" : "";
+  const statusBg = dispute ? STATUS_BG[dispute.Status] ?? "bg-vault-surface border-vault-border" : "";
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
       {/* Back */}
       <Link
         href={`/orders/${orderId}`}
-        className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-white transition-colors mb-8"
+        className="inline-flex items-center gap-1.5 text-body text-vault-text-secondary hover:text-vault-text transition-colors mb-8"
       >
         <FiArrowLeft size={14} /> Order detail
       </Link>
 
       <div className="flex items-center gap-3 mb-8">
-        <h1 className="text-2xl font-bold">Dispute</h1>
-        <span className="font-mono text-sm text-text-muted bg-bg-secondary border border-border-subtle rounded-lg px-2.5 py-1">
+        <h1 className="text-h1 font-bold text-vault-text">Dispute</h1>
+        <span className="font-mono text-body text-vault-text-tertiary bg-vault-surface border border-vault-border rounded-vault px-2.5 py-1">
           {orderId.slice(0, 8)}…
         </span>
       </div>
 
       {!auth.isLoggedIn && (
-        <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 mb-4">
-          <p className="text-sm text-text-secondary">
-            <Link href="/auth/login" className="text-primary hover:underline">Sign in</Link> to manage disputes.
+        <div className="rounded-vault-lg border border-vault-border bg-vault-surface p-5 mb-4">
+          <p className="text-body text-vault-text-secondary">
+            <Link href="/auth/login" className="text-vault-accent hover:underline">Sign in</Link> to manage disputes.
           </p>
         </div>
       )}
 
+      {/* SC-6: surface any pull-payment balance (e.g. a dispute the user won). */}
+      <WithdrawBanner className="mb-4" />
+
       <div className="space-y-4">
         {/* Status */}
-        <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">Status</p>
+        <div className="rounded-vault-lg border border-vault-border bg-vault-surface p-5 space-y-4">
+          <p className="text-overline uppercase text-vault-text-tertiary">Status</p>
           {hasDispute && cfg ? (
             <div className="space-y-3">
-              <div className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 ${statusBg}`}>
+              <div className={`inline-flex items-center gap-2 rounded-vault-md border px-3 py-2 ${statusBg}`}>
                 <cfg.Icon size={15} className={cfg.className} />
-                <span className={`text-sm font-semibold ${cfg.className}`}>{cfg.label}</span>
+                <span className={`text-body-strong ${cfg.className}`}>{cfg.label}</span>
               </div>
               {dispute.ArbitratorDisputeID !== null && (
-                <p className="text-sm text-text-secondary">
+                <p className="text-body text-vault-text-secondary">
                   Kleros dispute:{" "}
                   <a
                     href={`${CONFIG.KLEROS_COURT_URL}/cases/${dispute.ArbitratorDisputeID}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-primary hover:underline"
+                    className="inline-flex items-center gap-1 text-vault-accent hover:underline"
                   >
                     #{dispute.ArbitratorDisputeID} <FiExternalLink size={11} />
                   </a>
                 </p>
               )}
               {dispute.Ruling !== null && (
-                <div className="rounded-xl border border-border-subtle bg-surface-sunken px-4 py-3">
-                  <p className="text-xs text-text-muted uppercase tracking-widest mb-1">Ruling</p>
-                  <p className="text-sm font-semibold text-white">
+                <div className="rounded-vault-md border border-vault-border bg-vault-inset px-4 py-3">
+                  <p className="text-caption text-vault-text-tertiary uppercase tracking-widest mb-1">Ruling</p>
+                  <p className="text-body font-semibold text-vault-text">
                     {rulingLabel(dispute.Ruling)}
                   </p>
                 </div>
               )}
             </div>
           ) : (
-            <p className="text-sm text-text-secondary">No dispute raised yet for this order.</p>
+            <p className="text-body text-vault-text-secondary">No dispute raised yet for this order.</p>
           )}
         </div>
 
         {/* Actions */}
         {isParty && !isResolved && (
-          <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">Actions</p>
+          <div className="rounded-vault-lg border border-vault-border bg-vault-surface p-5 space-y-4">
+            <p className="text-overline uppercase text-vault-text-tertiary">Actions</p>
             <div className="flex flex-wrap gap-2">
               {!hasDispute && (
                 <button
                   onClick={handleRaiseDispute}
                   disabled={isPending}
-                  className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  className="inline-flex items-center gap-2 bg-vault-accent text-vault-on-accent font-semibold px-4 py-2.5 rounded-vault-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed text-body"
                 >
                   {isPending ? (
                     <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -244,7 +248,7 @@ export default function DisputePage() {
                 <button
                   onClick={handlePayArbFee}
                   disabled={isPending}
-                  className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  className="inline-flex items-center gap-2 bg-vault-accent text-vault-on-accent font-semibold px-4 py-2.5 rounded-vault-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed text-body"
                 >
                   {isPending && (
                     <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -256,10 +260,10 @@ export default function DisputePage() {
                 <button
                   onClick={handleTimeout}
                   disabled={isPending}
-                  className="inline-flex items-center gap-2 border border-border-subtle font-semibold px-4 py-2.5 rounded-xl hover:border-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  className="inline-flex items-center gap-2 border border-vault-border text-vault-text font-semibold px-4 py-2.5 rounded-vault-md hover:border-vault-border-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-body"
                 >
                   {isPending && (
-                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-border-subtle border-t-white" />
+                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-vault-border border-t-vault-text" />
                   )}
                   <FiClock size={14} /> Claim Timeout
                 </button>
@@ -270,14 +274,14 @@ export default function DisputePage() {
 
         {/* Evidence submission */}
         {isParty && hasDispute && !isResolved && (
-          <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">Submit Evidence</p>
-            <p className="text-xs text-text-secondary">
+          <div className="rounded-vault-lg border border-vault-border bg-vault-surface p-5 space-y-4">
+            <p className="text-overline uppercase text-vault-text-tertiary">Submit Evidence</p>
+            <p className="text-caption text-vault-text-secondary">
               Upload a file (image, PDF, etc.). The URL will be recorded on-chain.
             </p>
-            <label className="flex items-center gap-3 rounded-xl border border-border-subtle px-4 py-3 cursor-pointer hover:border-primary transition-colors">
-              <FiPaperclip size={16} className="text-text-muted shrink-0" />
-              <span className="text-sm text-text-secondary flex-1 truncate">
+            <label className="flex items-center gap-3 rounded-vault-md border border-vault-border px-4 py-3 cursor-pointer hover:border-vault-border-accent transition-colors">
+              <FiPaperclip size={16} className="text-vault-text-tertiary shrink-0" />
+              <span className="text-body text-vault-text-secondary flex-1 truncate">
                 {evidenceFile ? evidenceFile.name : "Choose a file…"}
               </span>
               <input
@@ -290,7 +294,7 @@ export default function DisputePage() {
             <button
               onClick={handleSubmitEvidence}
               disabled={isPending || !evidenceFile}
-              className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              className="inline-flex items-center gap-2 bg-vault-accent text-vault-on-accent font-semibold px-4 py-2.5 rounded-vault-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed text-body"
             >
               {isPending ? (
                 <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -304,17 +308,17 @@ export default function DisputePage() {
 
         {/* Evidence list */}
         {evidence.length > 0 && (
-          <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-4">
-            <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+          <div className="rounded-vault-lg border border-vault-border bg-vault-surface p-5 space-y-4">
+            <p className="text-overline uppercase text-vault-text-tertiary">
               Evidence ({evidence.length})
             </p>
             <div className="space-y-2">
               {evidence.map((ev) => (
                 <div
                   key={ev.ID}
-                  className="rounded-xl border border-border-subtle bg-surface-sunken px-4 py-3 space-y-1"
+                  className="rounded-vault-md border border-vault-border bg-vault-inset px-4 py-3 space-y-1"
                 >
-                  <p className="text-xs text-text-muted">
+                  <p className="text-caption text-vault-text-tertiary">
                     Party:{" "}
                     <span className="font-mono">{ev.Party.slice(0, 10)}…</span>
                   </p>
@@ -322,7 +326,7 @@ export default function DisputePage() {
                     href={resolveURI(ev.URI)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline break-all"
+                    className="inline-flex items-center gap-1.5 text-caption text-vault-accent hover:underline break-all"
                   >
                     <FiExternalLink size={11} className="shrink-0" />
                     {ev.URI}

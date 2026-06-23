@@ -3,11 +3,14 @@
 import { productsService } from "@/api";
 import { IProduct } from "@/api/interfaces/products";
 import ProductCard from "@/app/stores/components/product";
+import Skeleton from "@/components/ui/skeleton";
+import EmptyState from "@/components/ui/empty-state";
+import Button from "@/components/ui/button";
 import { CONFIG } from "@/config/config";
 import { formatFeeBps } from "@/utils/helpers";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FiShield, FiLock, FiUsers, FiArrowRight } from "react-icons/fi";
+import { FiShield, FiLock, FiUsers, FiArrowRight, FiShoppingBag } from "react-icons/fi";
 
 const FEE_LABEL = formatFeeBps(CONFIG.PLATFORM_FEE_BPS);
 
@@ -34,50 +37,50 @@ function HeroVisual() {
     <div className="hidden lg:flex items-center justify-center">
       <div className="relative w-full max-w-[380px] animate-float">
         {/* Glow halo */}
-        <div className="pointer-events-none absolute -inset-10 rounded-full bg-primary/20 blur-[90px]" />
-        <div className="pointer-events-none absolute -inset-6 top-1/2 rounded-full bg-violet-500/15 blur-[60px]" />
+        <div className="pointer-events-none absolute -inset-10 rounded-full bg-vault-accent/20 blur-[90px]" />
+        <div className="pointer-events-none absolute -inset-6 top-1/2 rounded-full bg-vault-violet/15 blur-[60px]" />
 
         {/* Main card — gradient border via wrapper */}
-        <div className="relative rounded-2xl p-px bg-gradient-to-b from-primary/40 via-primary/10 to-transparent shadow-2xl shadow-black/50">
-          <div className="rounded-[15px] bg-[#161925] overflow-hidden">
+        <div className="relative rounded-vault-lg p-px bg-gradient-to-b from-vault-accent/40 via-vault-accent/10 to-transparent shadow-vault-card">
+          <div className="rounded-[15px] bg-vault-surface overflow-hidden">
             {/* Image area */}
-            <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-primary/25 via-[#161925] to-surface-sunken">
+            <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-vault-accent/25 via-vault-surface to-vault-inset">
               {/* Faint grid backdrop */}
-              <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: "radial-gradient(circle, #8b7dff 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
+              <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: "radial-gradient(circle, #8b5cf6 1px, transparent 1px)", backgroundSize: "20px 20px" }} />
               <div className="absolute inset-0 grid grid-cols-2 gap-4 p-5">
-                <div className="rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center backdrop-blur-sm">
-                  <div className="h-10 w-10 rounded-lg bg-primary/40 shadow-inner shadow-primary/20" />
+                <div className="rounded-vault-md bg-vault-accent/20 border border-vault-accent/30 flex items-center justify-center backdrop-blur-sm">
+                  <div className="h-10 w-10 rounded-vault bg-vault-accent/40" />
                 </div>
-                <div className="rounded-xl bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center">
-                  <div className="h-10 w-10 rounded-lg bg-indigo-400/30" />
+                <div className="rounded-vault-md bg-vault-violet/15 border border-vault-violet/25 flex items-center justify-center">
+                  <div className="h-10 w-10 rounded-vault bg-vault-violet/30" />
                 </div>
-                <div className="rounded-xl bg-violet-500/15 border border-violet-500/25 flex items-center justify-center">
-                  <div className="h-10 w-10 rounded-lg bg-violet-400/30" />
+                <div className="rounded-vault-md bg-vault-violet/15 border border-vault-violet/25 flex items-center justify-center">
+                  <div className="h-10 w-10 rounded-vault bg-vault-violet/30" />
                 </div>
-                <div className="rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center">
-                  <div className="h-10 w-10 rounded-lg bg-primary/40 shadow-inner shadow-primary/20" />
+                <div className="rounded-vault-md bg-vault-accent/20 border border-vault-accent/30 flex items-center justify-center">
+                  <div className="h-10 w-10 rounded-vault bg-vault-accent/40" />
                 </div>
               </div>
               {/* Store label */}
-              <div className="absolute top-3 left-3 rounded-lg bg-black/60 backdrop-blur-sm px-2.5 py-1 border border-white/10">
-                <p className="text-xs font-semibold text-white/90">TechStore Pro</p>
+              <div className="absolute top-3 left-3 rounded-vault bg-black/60 backdrop-blur-sm px-2.5 py-1 border border-white/10">
+                <p className="text-caption font-semibold text-vault-text">TechStore Pro</p>
               </div>
               {/* Rating */}
-              <div className="absolute top-3 right-3 rounded-lg bg-black/60 backdrop-blur-sm px-2 py-1 border border-white/10 flex items-center gap-1">
-                <span className="text-yellow-400 text-xs">★</span>
-                <span className="text-xs font-semibold text-white/90">4.9</span>
+              <div className="absolute top-3 right-3 rounded-vault bg-black/60 backdrop-blur-sm px-2 py-1 border border-white/10 flex items-center gap-1">
+                <span className="text-vault-warning text-caption">★</span>
+                <span className="text-caption font-semibold text-vault-text">4.9</span>
               </div>
             </div>
 
             {/* Product info */}
-            <div className="p-4 space-y-3 border-t border-primary/10">
+            <div className="p-4 space-y-3 border-t border-vault-border">
               <div>
-                <p className="font-semibold text-white">Hardware Wallet v3</p>
-                <p className="text-xs text-text-muted mt-0.5">Digital security device</p>
+                <p className="font-semibold text-vault-text">Hardware Wallet v3</p>
+                <p className="text-caption text-vault-text-tertiary mt-0.5">Digital security device</p>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-primary font-bold text-lg">0.042 ETH</span>
-                <div className="bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-lg shadow-primary/40">
+                <span className="text-vault-accent font-bold text-h3">0.042 ETH</span>
+                <div className="bg-vault-accent text-vault-on-accent text-label font-semibold px-3 py-1.5 rounded-vault shadow-vault-glow">
                   Add to cart
                 </div>
               </div>
@@ -86,24 +89,24 @@ function HeroVisual() {
         </div>
 
         {/* Floating badge: Escrow protected */}
-        <div className="absolute -bottom-4 -left-8 rounded-xl border border-green-500/30 bg-green-950/90 backdrop-blur-sm px-3 py-2 shadow-xl shadow-black/40 animate-float-delayed">
+        <div className="absolute -bottom-4 -left-8 rounded-vault-md border border-vault-success/40 bg-vault-success-soft/90 backdrop-blur-sm px-3 py-2 shadow-vault-card animate-float-delayed">
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 relative">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
+              <span className="absolute inline-flex h-full w-full rounded-full bg-vault-success opacity-75 animate-ping" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-vault-success" />
             </span>
-            <span className="text-xs font-semibold text-green-400">Escrow protected</span>
+            <span className="text-caption font-semibold text-vault-success">Escrow protected</span>
           </div>
         </div>
 
         {/* Floating badge: On-chain */}
-        <div className="absolute -top-4 -right-6 rounded-xl border border-primary/30 bg-[#15132e]/90 backdrop-blur-sm px-3 py-2 shadow-xl shadow-black/40">
+        <div className="absolute -top-4 -right-6 rounded-vault-md border border-vault-border-accent bg-vault-accent-soft/90 backdrop-blur-sm px-3 py-2 shadow-vault-card">
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 relative">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping" style={{ animationDelay: "0.8s" }} />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+              <span className="absolute inline-flex h-full w-full rounded-full bg-vault-accent opacity-75 animate-ping" style={{ animationDelay: "0.8s" }} />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-vault-accent" />
             </span>
-            <span className="text-xs font-semibold text-primary">On-chain escrow</span>
+            <span className="text-caption font-semibold text-vault-accent">On-chain escrow</span>
           </div>
         </div>
       </div>
@@ -125,19 +128,19 @@ export default function Home() {
   }, []);
 
   return (
-    <main>
+    <main className="bg-vault-bg">
       {/* ─── Hero ─── */}
       <section className="relative min-h-[calc(100vh-64px)] flex items-center">
         {/* Glow blobs — isolated so they don't clip the text */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-32 left-1/2 -translate-x-1/4 h-[700px] w-[900px] rounded-full bg-primary/20 blur-[160px]" />
-          <div className="absolute bottom-0 right-0 h-[500px] w-[600px] rounded-full bg-violet-600/15 blur-[140px]" />
-          <div className="absolute top-1/3 -left-32 h-[400px] w-[500px] rounded-full bg-indigo-500/10 blur-[120px]" />
+          <div className="absolute -top-32 left-1/2 -translate-x-1/4 h-[700px] w-[900px] rounded-full bg-vault-accent/20 blur-[160px]" />
+          <div className="absolute bottom-0 right-0 h-[500px] w-[600px] rounded-full bg-vault-violet/15 blur-[140px]" />
+          <div className="absolute top-1/3 -left-32 h-[400px] w-[500px] rounded-full bg-vault-accent/10 blur-[120px]" />
           {/* Dot grid */}
           <div
             className="absolute inset-0 opacity-[0.07]"
             style={{
-              backgroundImage: "radial-gradient(circle, #8b7dff 1px, transparent 1px)",
+              backgroundImage: "radial-gradient(circle, #8b5cf6 1px, transparent 1px)",
               backgroundSize: "30px 30px",
             }}
           />
@@ -147,20 +150,20 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left copy */}
             <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-medium text-primary">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+              <div className="inline-flex items-center gap-2 rounded-vault-full border border-vault-border-accent bg-vault-accent-soft px-4 py-1.5 text-label text-vault-accent">
+                <span className="h-1.5 w-1.5 rounded-full bg-vault-accent animate-pulse" />
                 Powered by Ethereum · Open source
               </div>
 
-              <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight leading-[1.05]">
-                The world&apos;s most{" "}
-                <span className="bg-gradient-to-r from-primary via-violet-400 to-indigo-400 bg-clip-text text-transparent">
-                  trustless
+              <h1 className="text-h1 sm:text-display-l lg:text-display-xl font-extrabold tracking-tight leading-[1.05] text-vault-text">
+                The marketplace where{" "}
+                <span className="bg-gradient-to-r from-vault-accent via-vault-violet to-vault-info bg-clip-text text-transparent">
+                  every trade
                 </span>{" "}
-                marketplace.
+                is protected.
               </h1>
 
-              <p className="text-lg text-text-secondary leading-relaxed max-w-md">
+              <p className="text-body-l text-vault-text-secondary leading-relaxed max-w-md">
                 Buy and sell anything with on-chain escrow protection and
                 community-driven dispute resolution. No middlemen. No censorship.
               </p>
@@ -168,27 +171,27 @@ export default function Home() {
               <div className="flex flex-wrap gap-3">
                 <Link
                   href="/stores"
-                  className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-7 py-3.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/30"
+                  className="inline-flex items-center gap-2 bg-vault-accent text-vault-on-accent font-semibold px-7 py-3.5 rounded-vault-md hover:opacity-90 transition-opacity shadow-vault-glow"
                 >
                   Browse stores <FiArrowRight size={16} />
                 </Link>
                 <Link
                   href="/seller/stores"
-                  className="inline-flex items-center gap-2 border border-border-subtle font-semibold px-7 py-3.5 rounded-xl hover:border-primary hover:bg-bg-secondary transition-all"
+                  className="inline-flex items-center gap-2 border border-vault-border text-vault-text font-semibold px-7 py-3.5 rounded-vault-md hover:border-vault-border-accent hover:bg-vault-surface transition-all"
                 >
                   Open a store
                 </Link>
               </div>
 
-              <div className="flex flex-wrap gap-10 pt-4 border-t border-border-subtle">
+              <div className="flex flex-wrap gap-10 pt-4 border-t border-vault-border">
                 {[
                   { value: "0", label: "Listing fees" },
                   { value: FEE_LABEL, label: "Flat fee per sale" },
                   { value: "24/7", label: "Always online" },
                 ].map((s) => (
                   <div key={s.label}>
-                    <p className="text-2xl font-bold text-white">{s.value}</p>
-                    <p className="text-xs text-text-secondary mt-0.5">{s.label}</p>
+                    <p className="text-h2 font-bold text-vault-text">{s.value}</p>
+                    <p className="text-caption text-vault-text-secondary mt-0.5">{s.label}</p>
                   </div>
                 ))}
               </div>
@@ -202,9 +205,9 @@ export default function Home() {
       {/* ─── How it works ─── */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 space-y-14">
         <div className="text-center space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary">How it works</p>
-          <h2 className="text-3xl font-bold">Trade with confidence</h2>
-          <p className="text-text-secondary max-w-md mx-auto text-sm leading-relaxed">
+          <p className="text-overline uppercase text-vault-accent">How it works</p>
+          <h2 className="text-h1 font-bold text-vault-text">Trade with confidence</h2>
+          <p className="text-vault-text-secondary max-w-md mx-auto text-body leading-relaxed">
             Smart contracts guarantee fairness. Every trade is protected from start to finish.
           </p>
         </div>
@@ -213,23 +216,23 @@ export default function Home() {
           {HOW_IT_WORKS.map((step, i) => (
             <div
               key={step.title}
-              className="relative rounded-2xl border border-border-subtle bg-bg-secondary p-7 space-y-4 hover:border-primary/60 transition-all overflow-hidden group hover:shadow-xl hover:shadow-primary/8"
+              className="relative rounded-vault-lg border border-vault-border bg-vault-surface p-7 space-y-4 hover:border-vault-border-accent transition-all overflow-hidden group hover:shadow-vault-card"
             >
               {/* Step number — large background watermark */}
-              <span className="pointer-events-none absolute -top-4 -right-1 text-[100px] font-black leading-none select-none text-border-subtle/60 group-hover:text-primary/12 transition-colors duration-500">
+              <span className="pointer-events-none absolute -top-4 -right-1 text-[100px] font-black leading-none select-none text-vault-border/60 group-hover:text-vault-accent/12 transition-colors duration-500">
                 {String(i + 1).padStart(2, "0")}
               </span>
               {/* Subtle glow on hover */}
               <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-primary/10 blur-[40px]" />
+                <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-vault-accent/10 blur-[40px]" />
               </div>
 
-              <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 text-primary group-hover:bg-primary/20 group-hover:border-primary/40 transition-all">
+              <div className="relative flex h-11 w-11 items-center justify-center rounded-vault-md bg-vault-accent-soft border border-vault-border-accent text-vault-accent group-hover:bg-vault-accent/20 transition-all">
                 <step.Icon size={22} />
               </div>
               <div className="relative space-y-1.5">
-                <h3 className="font-semibold text-white">{step.title}</h3>
-                <p className="text-sm text-text-secondary leading-relaxed">{step.desc}</p>
+                <h3 className="text-title text-vault-text">{step.title}</h3>
+                <p className="text-body text-vault-text-secondary leading-relaxed">{step.desc}</p>
               </div>
             </div>
           ))}
@@ -240,12 +243,12 @@ export default function Home() {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-24 space-y-6">
         <div className="flex items-end justify-between">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold">Featured products</h2>
-            <p className="text-sm text-text-secondary">Hand-picked from stores on The Bazaar.</p>
+            <h2 className="text-h2 font-bold text-vault-text">Fresh from the Bazaar</h2>
+            <p className="text-body text-vault-text-secondary">Hand-picked from stores on The Bazaar.</p>
           </div>
           <Link
             href="/stores"
-            className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-primary transition-colors"
+            className="inline-flex items-center gap-1.5 text-body text-vault-text-secondary hover:text-vault-accent transition-colors"
           >
             View all <FiArrowRight size={14} />
           </Link>
@@ -254,11 +257,11 @@ export default function Home() {
         {loading && (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="rounded-xl bg-bg-secondary animate-pulse">
-                <div className="aspect-square" />
-                <div className="p-3 space-y-2">
-                  <div className="h-3 w-3/4 rounded bg-border-subtle" />
-                  <div className="h-3 w-1/3 rounded bg-border-subtle" />
+              <div key={i} className="overflow-hidden rounded-vault-lg border border-vault-border bg-vault-surface">
+                <Skeleton className="aspect-[4/3] rounded-none" />
+                <div className="p-4 space-y-3">
+                  <Skeleton h={14} w="75%" />
+                  <Skeleton h={20} w="40%" />
                 </div>
               </div>
             ))}
@@ -266,35 +269,23 @@ export default function Home() {
         )}
 
         {!loading && error && (
-          <p className="text-text-secondary text-sm">Could not load products.</p>
+          <EmptyState
+            title="Could not load products"
+            description="Something went wrong fetching the latest listings. Try refreshing the page."
+          />
         )}
 
         {!loading && !error && products.length === 0 && (
-          <div className="relative rounded-2xl border border-dashed border-border-subtle overflow-hidden px-6 py-20 text-center space-y-4">
-            {/* Background texture */}
-            <div className="pointer-events-none absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle, #8b7dff 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-              <div className="h-48 w-48 rounded-full bg-primary/10 blur-[60px]" />
-            </div>
-            <div className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
-              <svg width="26" height="26" viewBox="0 0 100 100" fill="none">
-                <rect x="10" y="35" width="80" height="55" rx="6" stroke="white" strokeWidth="5" fill="none"/>
-                <path d="M34 35V28C34 18.6 41.6 11 51 11C60.4 11 68 18.6 68 28V35" stroke="white" strokeWidth="5" fill="none" strokeLinecap="round"/>
-                <line x1="51" y1="50" x2="51" y2="70" stroke="white" strokeWidth="5" strokeLinecap="round"/>
-                <line x1="40" y1="60" x2="62" y2="60" stroke="white" strokeWidth="5" strokeLinecap="round"/>
-              </svg>
-            </div>
-            <div className="relative">
-              <p className="font-semibold text-white">No products yet</p>
-              <p className="mt-1.5 text-sm text-text-secondary">Be the first seller — open a store and list your products.</p>
-            </div>
-            <Link
-              href="/seller/stores"
-              className="relative inline-flex items-center gap-2 bg-primary text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/25"
-            >
-              Open a store <FiArrowRight size={14} />
-            </Link>
-          </div>
+          <EmptyState
+            icon={<FiShoppingBag size={28} />}
+            title="No products yet"
+            description="Be the first seller — open a store and list your products."
+            action={
+              <Link href="/seller/stores">
+                <Button icon={<FiArrowRight size={14} />}>Open a store</Button>
+              </Link>
+            }
+          />
         )}
 
         {!loading && !error && products.length > 0 && (
@@ -308,7 +299,7 @@ export default function Home() {
 
       {/* ─── Seller CTA ─── */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-24">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-violet-600 to-indigo-700 p-10 sm:p-14">
+        <div className="relative overflow-hidden rounded-vault-2xl bg-gradient-to-br from-vault-accent via-vault-violet to-vault-accent p-10 sm:p-14">
           {/* Dot grid overlay */}
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.12]"
@@ -323,24 +314,24 @@ export default function Home() {
 
           <div className="relative grid sm:grid-cols-2 gap-8 items-center">
             <div className="space-y-4">
-              <p className="text-xs font-semibold uppercase tracking-widest text-white/60">For sellers</p>
-              <h2 className="text-3xl font-bold leading-snug text-white">
+              <p className="text-overline uppercase text-vault-on-accent/60">For sellers</p>
+              <h2 className="text-h1 font-bold leading-snug text-vault-on-accent">
                 Start selling in minutes, not days.
               </h2>
-              <p className="text-white/70 leading-relaxed text-sm">
+              <p className="text-vault-on-accent/70 leading-relaxed text-body">
                 No application, no approval, no listing fees — just a {FEE_LABEL} fee when you make a sale. Connect your wallet, create a store, and start earning crypto immediately.
               </p>
             </div>
             <div className="flex sm:justify-end gap-3 flex-wrap">
               <Link
                 href="/seller/stores"
-                className="inline-flex items-center gap-2 bg-white text-primary font-bold px-7 py-3.5 rounded-xl hover:bg-white/90 transition-opacity shadow-xl text-sm"
+                className="inline-flex items-center gap-2 bg-white text-vault-accent font-bold px-7 py-3.5 rounded-vault-md hover:bg-white/90 transition-opacity shadow-xl text-body"
               >
                 Open a store <FiArrowRight size={16} />
               </Link>
               <Link
                 href="/stores"
-                className="inline-flex items-center gap-2 border border-white/30 text-white font-semibold px-7 py-3.5 rounded-xl hover:bg-white/10 transition-all text-sm"
+                className="inline-flex items-center gap-2 border border-white/30 text-white font-semibold px-7 py-3.5 rounded-vault-md hover:bg-white/10 transition-all text-body"
               >
                 Browse first
               </Link>

@@ -1,5 +1,7 @@
 import { UUID } from "crypto";
+import { z } from "zod";
 import { IStore } from "./stores";
+import type { OrderStatus } from "@/utils/orders";
 
 export interface IProduct {
     CreatedAt: string;
@@ -38,7 +40,22 @@ export interface IOrder {
     Product: IProduct;
     Quantity: number;
     Total: number;
-    Status: string;
+    /** XL-1: typed against the backend's lowercase status values. */
+    Status: OrderStatus;
+
+    // XL-2: on-chain correlation / settlement metadata returned by the backend.
+    /** Hash of the escrow `createOrder` transaction, once known. */
+    TxHash?: string;
+    /** bytes32 order id used inside the escrow contract. */
+    ContractOrderID?: string;
+    /** Settlement token symbol/address (e.g. "ETH" or the USDC contract address). */
+    Token?: string;
+    /** Protocol fee snapshotted for this order (in the order's base unit). */
+    Fee?: number;
+    /** On-chain product id (bytes32) used inside the escrow contract. */
+    OnChainProductID?: string;
+    /** URI of the meta-evidence document for a dispute on this order. */
+    MetaEvidenceURI?: string;
 }
 
 export interface OrderReq {
@@ -48,8 +65,31 @@ export interface OrderReq {
     BuyerAddress: string;
 }
 
-/** Shape returned by POST /api/products/orders for each created order. */
+/**
+ * Shape returned by POST /api/products/orders for each created order.
+ *
+ * FE-2: `product_id`/`quantity` let the client correlate each response to the cart
+ * item it belongs to by ProductID rather than by fragile array position (the backend
+ * could reorder or dedup). They are optional because the current backend response
+ * only includes `id`/`owner_address`; once it adds them, checkout correlates by id.
+ */
 export interface OrderResponse {
     id: string;
     owner_address: string;
+    product_id?: UUID;
+    quantity?: number;
 }
+
+/**
+ * FE-12: runtime-validate the order-creation response before escrowing any funds,
+ * so a malformed payload fails loudly instead of producing a bad on-chain amount.
+ * `id` must be a non-empty string and `owner_address` a 0x-prefixed address.
+ */
+export const orderResponseSchema = z.object({
+    id: z.string().min(1),
+    owner_address: z.string().regex(/^0x[0-9a-fA-F]{40}$/, "invalid receiver address"),
+    product_id: z.string().uuid().optional(),
+    quantity: z.number().int().positive().optional(),
+});
+
+export const orderResponseArraySchema = z.array(orderResponseSchema);

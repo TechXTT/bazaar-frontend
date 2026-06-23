@@ -82,18 +82,18 @@ const FAQ: Category[] = [
 function FaqItem({ item }: { item: QA }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="overflow-hidden rounded-xl border border-border-subtle bg-bg-secondary">
+    <div className="overflow-hidden rounded-xl border border-vault-border bg-vault-surface">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-surface-hover"
+        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-vault-surface-2"
       >
         <span className="text-sm font-medium text-white">{item.q}</span>
         <FiChevronDown
           size={18}
-          className={`shrink-0 text-text-muted transition-transform duration-200 ${
-            open ? "rotate-180 text-primary" : ""
+          className={`shrink-0 text-vault-text-tertiary transition-transform duration-200 ${
+            open ? "rotate-180 text-vault-accent" : ""
           }`}
         />
       </button>
@@ -103,7 +103,7 @@ function FaqItem({ item }: { item: QA }) {
         }`}
       >
         <div className="overflow-hidden">
-          <p className="px-5 pb-4 text-sm leading-relaxed text-text-secondary">
+          <p className="px-5 pb-4 text-sm leading-relaxed text-vault-text-secondary">
             {item.a}
           </p>
         </div>
@@ -122,7 +122,7 @@ export default function FaqPage() {
       <div className="space-y-10">
         {FAQ.map((cat) => (
           <div key={cat.heading} className="space-y-3">
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-vault-text-tertiary">
               {cat.heading}
             </h2>
             <div className="space-y-2.5">
@@ -134,14 +134,14 @@ export default function FaqPage() {
         ))}
       </div>
 
-      <div className="mt-12 rounded-2xl border border-border-subtle bg-bg-secondary p-6 text-center">
+      <div className="mt-12 rounded-2xl border border-vault-border bg-vault-surface p-6 text-center">
         <p className="text-sm font-medium text-white">Still have a question?</p>
-        <p className="mt-1 text-sm text-text-secondary">
+        <p className="mt-1 text-sm text-vault-text-secondary">
           We&apos;re happy to help — reach out and we&apos;ll get back to you.
         </p>
         <Link
           href="/contact"
-          className="mt-4 inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-primary transition hover:bg-primary-600"
+          className="mt-4 inline-flex items-center justify-center rounded-xl bg-vault-accent px-5 py-2.5 text-sm font-semibold text-vault-on-accent shadow-vault-glow transition hover:opacity-90"
         >
           Contact us
         </Link>

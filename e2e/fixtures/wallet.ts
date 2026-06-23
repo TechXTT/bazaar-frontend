@@ -22,7 +22,7 @@ export const ESCROW_ADDRESS =
 
 // Minimal Escrow surface needed by the tests (read order state, release, claim).
 export const ESCROW_ABI = [
-  "function orders(bytes32) view returns (address buyer, address receiver, address token, uint256 amount, uint256 releaseTime, bool release, bool completed, bytes32 productId)",
+  "function orders(bytes32) view returns (address buyer, address receiver, address token, uint256 amount, uint256 releaseTime, uint256 shippingDeadline, uint256 deliveryWindow, uint96 feeBps, bool shipped, bool release, bool completed, bytes32 productId)",
   "function createOrder(bytes32 orderId, bytes32 productId, address receiver, uint256 releaseTime) payable",
   "function releaseOrder(bytes32 orderId)",
   "function claimOrder(bytes32 orderId)",
@@ -97,13 +97,20 @@ export function orderIdToBytes32(orderId: string): string {
 export async function readOrder(orderId: string) {
   const escrow = new ethers.Contract(ESCROW_ADDRESS, ESCROW_ABI, provider);
   const o = await escrow.orders(orderIdToBytes32(orderId));
+  // Decode by named properties (ethers Result supports named access) so we stay
+  // correct against the canonical struct even as fields are added/reordered.
   return {
-    buyer: o[0] as string,
-    receiver: o[1] as string,
-    amount: o[3] as bigint,
-    releaseTime: o[4] as bigint,
-    release: o[5] as boolean,
-    completed: o[6] as boolean,
+    buyer: o.buyer as string,
+    receiver: o.receiver as string,
+    token: o.token as string,
+    amount: o.amount as bigint,
+    releaseTime: o.releaseTime as bigint,
+    shippingDeadline: o.shippingDeadline as bigint,
+    deliveryWindow: o.deliveryWindow as bigint,
+    shipped: o.shipped as boolean,
+    release: o.release as boolean,
+    completed: o.completed as boolean,
+    productId: o.productId as string,
   };
 }
 

@@ -63,14 +63,14 @@ export default function ContactPage() {
             {...(c.href.startsWith("http")
               ? { target: "_blank", rel: "noopener noreferrer" }
               : {})}
-            className="group rounded-2xl border border-border-subtle bg-bg-secondary p-5 transition-colors hover:border-primary/40"
+            className="group rounded-2xl border border-vault-border bg-vault-surface p-5 transition-colors hover:border-vault-accent/40"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-vault-accent/20 bg-vault-accent/10 text-vault-accent">
               <c.Icon size={18} />
             </div>
             <h3 className="mt-3 font-semibold text-white">{c.title}</h3>
-            <p className="mt-1 text-sm text-text-secondary">{c.desc}</p>
-            <span className="mt-3 inline-block break-all text-xs font-semibold text-primary group-hover:underline">
+            <p className="mt-1 text-sm text-vault-text-secondary">{c.desc}</p>
+            <span className="mt-3 inline-block break-all text-xs font-semibold text-vault-accent group-hover:underline">
               {c.cta}
             </span>
           </a>
@@ -78,9 +78,9 @@ export default function ContactPage() {
       </div>
 
       {/* Message form */}
-      <div className="mt-10 rounded-2xl border border-border-subtle bg-bg-secondary p-6 sm:p-8">
+      <div className="mt-10 rounded-2xl border border-vault-border bg-vault-surface p-6 sm:p-8">
         <div className="mb-6 flex items-center gap-2.5">
-          <FiMessageCircle size={18} className="text-primary" />
+          <FiMessageCircle size={18} className="text-vault-accent" />
           <h2 className="text-lg font-semibold text-white">Send a message</h2>
         </div>
         <form onSubmit={onSubmit} className="space-y-5">
@@ -115,7 +115,7 @@ export default function ContactPage() {
             />
           </Field>
           <div className="flex items-center justify-between gap-4">
-            <p className="text-xs text-text-muted">
+            <p className="text-xs text-vault-text-tertiary">
               This opens your email client with the message prefilled.
             </p>
             <Button type="submit" disabled={!name || !email || !message}>

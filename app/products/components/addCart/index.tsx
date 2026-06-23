@@ -32,14 +32,14 @@ const AddToCart = ({ product }: { product: IProduct }) => {
 
   if (!auth.isLoggedIn) {
     return (
-      <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-3">
-        <div className="flex items-center gap-2 text-sm text-text-secondary">
+      <div className="rounded-vault-lg border border-vault-border bg-vault-surface p-5 space-y-3">
+        <div className="flex items-center gap-2 text-body text-vault-text-secondary">
           <FiLock size={14} />
           Sign in to purchase this product.
         </div>
         <Link
           href={`/auth/login?next=${encodeURIComponent(pathname)}`}
-          className="flex w-full items-center justify-center gap-2 bg-primary text-white font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity"
+          className="flex w-full items-center justify-center gap-2 bg-vault-accent text-vault-on-accent font-semibold py-3 rounded-vault-md hover:opacity-90 transition-opacity"
         >
           Sign in to buy
         </Link>
@@ -50,26 +50,26 @@ const AddToCart = ({ product }: { product: IProduct }) => {
   const total = (product.Price * amount).toFixed(4);
 
   return (
-    <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-5">
+    <div className="rounded-vault-lg border border-vault-border bg-vault-surface p-5 space-y-5">
       {/* Quantity */}
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-text-secondary">Quantity</span>
+        <span className="text-body-strong text-vault-text-secondary">Quantity</span>
         <div className="flex items-center gap-3">
           <button
             type="button"
             aria-label="Decrease quantity"
             onClick={() => setAmount((a) => Math.max(1, a - 1))}
             disabled={amount <= 1}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-border-subtle hover:border-primary hover:text-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-border-subtle disabled:hover:text-current"
+            className="flex h-8 w-8 items-center justify-center rounded-vault border border-vault-border text-vault-text hover:border-vault-border-accent hover:text-vault-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-vault-border disabled:hover:text-vault-text"
           >
             <FiMinus size={14} />
           </button>
-          <span className="w-6 text-center font-semibold" aria-live="polite">{amount}</span>
+          <span className="w-6 text-center font-semibold text-vault-text" aria-live="polite">{amount}</span>
           <button
             type="button"
             aria-label="Increase quantity"
             onClick={() => setAmount((a) => a + 1)}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-border-subtle hover:border-primary hover:text-primary transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-vault border border-vault-border text-vault-text hover:border-vault-border-accent hover:text-vault-accent transition-colors"
           >
             <FiPlus size={14} />
           </button>
@@ -77,9 +77,9 @@ const AddToCart = ({ product }: { product: IProduct }) => {
       </div>
 
       {/* Total */}
-      <div className="flex items-center justify-between border-t border-border-subtle pt-4">
-        <span className="text-sm text-text-secondary">Total</span>
-        <span className="text-lg font-bold text-white">
+      <div className="flex items-center justify-between border-t border-vault-border pt-4">
+        <span className="text-body text-vault-text-secondary">Total</span>
+        <span className="text-h3 font-bold text-vault-text">
           {total} {product.Unit}
         </span>
       </div>
@@ -87,15 +87,15 @@ const AddToCart = ({ product }: { product: IProduct }) => {
       {/* Add to cart */}
       <button
         onClick={handleAddToCart}
-        className="flex w-full items-center justify-center gap-2 bg-primary text-white font-semibold py-3.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20"
+        className="flex w-full items-center justify-center gap-2 bg-vault-accent text-vault-on-accent font-semibold py-3.5 rounded-vault-md hover:opacity-90 transition-opacity shadow-vault-glow"
       >
         <FiShoppingCart size={18} />
         Add to cart
       </button>
 
       {/* Escrow note */}
-      <p className="text-center text-xs text-text-muted">
-        🔒 Protected by on-chain escrow
+      <p className="flex items-center justify-center gap-1.5 text-center text-caption text-vault-text-tertiary">
+        <FiLock size={12} /> Protected by on-chain escrow
       </p>
     </div>
   );

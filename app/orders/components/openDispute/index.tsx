@@ -42,14 +42,14 @@ const OpenDispute = ({ order }: { order: IOrder }) => {
   const cfg = dispute ? DISPUTE_STATUS_CONFIG[dispute.Status] : null;
 
   return (
-    <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-4">
-      <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">Dispute</p>
+    <div className="rounded-vault-lg border border-vault-border bg-vault-surface p-5 space-y-4">
+      <p className="text-overline uppercase text-vault-text-tertiary">Dispute</p>
 
       {loading ? (
-        <div className="h-4 w-32 rounded bg-surface-sunken animate-pulse" />
+        <div className="h-4 w-32 rounded bg-vault-inset animate-pulse" />
       ) : disputedButUnsynced ? (
-        <div className="flex items-start gap-2 text-sm text-text-secondary">
-          <FiAlertCircle size={15} className="mt-0.5 shrink-0 text-yellow-400" />
+        <div className="flex items-start gap-2 text-body text-vault-text-secondary">
+          <FiAlertCircle size={15} className="mt-0.5 shrink-0 text-vault-warning" />
           <span>
             A dispute has been raised on-chain for this order. Details are still
             syncing — check back shortly.
@@ -59,33 +59,33 @@ const OpenDispute = ({ order }: { order: IOrder }) => {
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             {cfg && <cfg.Icon size={15} className={cfg.className} />}
-            <span className="text-sm font-medium text-white">
+            <span className="text-body-strong text-vault-text">
               {cfg?.label ?? dispute.Status}
             </span>
           </div>
           {dispute.Ruling !== null && (
-            <p className="text-sm text-text-secondary">
+            <p className="text-body text-vault-text-secondary">
               Ruling:{" "}
-              <span className="text-white font-medium">
+              <span className="text-vault-text font-medium">
                 {rulingLabel(dispute.Ruling)}
               </span>
             </p>
           )}
           <Link
             href={`/orders/${order.ID}/dispute`}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+            className="inline-flex items-center gap-1.5 text-body font-semibold text-vault-accent hover:underline"
           >
             Manage dispute <FiArrowRight size={13} />
           </Link>
         </div>
       ) : (
         <div className="space-y-3">
-          <p className="text-sm text-text-secondary">
+          <p className="text-body text-vault-text-secondary">
             No dispute has been raised for this order.
           </p>
           <Link
             href={`/orders/${order.ID}/dispute`}
-            className="inline-flex items-center gap-2 text-sm font-semibold border border-border-subtle rounded-xl px-4 py-2.5 hover:border-primary transition-colors"
+            className="inline-flex items-center gap-2 text-body font-semibold border border-vault-border text-vault-text rounded-vault-md px-4 py-2.5 hover:border-vault-border-accent transition-colors"
           >
             <FiAlertCircle size={14} /> Raise a dispute
           </Link>

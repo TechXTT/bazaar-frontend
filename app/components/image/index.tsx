@@ -1,9 +1,13 @@
 "use client";
 
 import { CONFIG } from "@/config/config";
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useState } from "react";
 import { FiImage } from "react-icons/fi";
 
+// FE-7: render product images through next/image (optimized, lazy, CDN-whitelisted
+// in next.config.js) instead of a raw <img> + manual preloader. Falls back to a
+// placeholder icon when there's no image or it fails to load.
 const BucketImage = ({
   className,
   imageURL,
@@ -14,27 +18,22 @@ const BucketImage = ({
   name: string;
 }) => {
   const src = imageURL ? `${CONFIG.CDN_BASE_URL}/${imageURL}` : "";
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    if (!src) return;
-    const img = new window.Image();
-    img.onload = () => setReady(true);
-    img.onerror = () => setReady(false);
-    img.src = src;
-  }, [src]);
+  const [errored, setErrored] = useState(false);
 
   return (
-    <div className={`relative overflow-hidden bg-surface-sunken ${className}`}>
-      {ready ? (
-        <img
+    <div className={`relative overflow-hidden bg-vault-inset ${className}`}>
+      {src && !errored ? (
+        <Image
           src={src}
           alt={name}
-          className="absolute inset-0 h-full w-full object-cover"
+          fill
+          sizes="(max-width: 768px) 100vw, 33vw"
+          className="object-cover"
+          onError={() => setErrored(true)}
         />
       ) : (
         <div className="absolute inset-0 flex items-center justify-center">
-          <FiImage size={36} className="text-text-muted" />
+          <FiImage size={36} className="text-vault-text-tertiary" />
         </div>
       )}
     </div>

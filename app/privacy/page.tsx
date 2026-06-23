@@ -1,7 +1,12 @@
-"use client";
-
+import type { Metadata } from "next";
 import InfoPage, { InfoSection } from "@/components/ui/info-page";
 import Link from "next/link";
+
+// FE-6: read-only page → Server Component with SEO metadata.
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "The Bazaar privacy policy.",
+};
 
 const LAST_UPDATED = "May 31, 2026";
 
@@ -13,7 +18,7 @@ export default function PrivacyPage() {
       subtitle={`Last updated ${LAST_UPDATED}`}
     >
       <div className="space-y-10">
-        <p className="rounded-xl border border-border-subtle bg-bg-secondary p-4 text-sm leading-relaxed text-text-secondary">
+        <p className="rounded-xl border border-vault-border bg-vault-surface p-4 text-sm leading-relaxed text-vault-text-secondary">
           The Bazaar is designed to collect as little about you as possible. There is
           no account sign-up, and we never ask for your name, email, or government ID
           to use the marketplace. This document is a template for a demonstration
@@ -90,13 +95,13 @@ export default function PrivacyPage() {
           </p>
         </InfoSection>
 
-        <p className="text-sm text-text-secondary">
+        <p className="text-sm text-vault-text-secondary">
           Questions about privacy?{" "}
-          <Link href="/contact" className="text-primary hover:underline">
+          <Link href="/contact" className="text-vault-accent hover:underline">
             Contact us
           </Link>
           . See also our{" "}
-          <Link href="/terms" className="text-primary hover:underline">
+          <Link href="/terms" className="text-vault-accent hover:underline">
             Terms of Service
           </Link>
           .

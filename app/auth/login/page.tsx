@@ -101,9 +101,9 @@ const LoginPage = () => {
   return (
     <div className="flex min-h-[calc(100vh-64px)]">
       {/* Left panel */}
-      <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-between p-12 overflow-hidden bg-[#0b0d14]">
+      <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-between p-12 overflow-hidden bg-vault-bg">
         {/* Background glows */}
-        <div className="pointer-events-none absolute -top-32 -left-32 h-[600px] w-[600px] rounded-full bg-primary/30 blur-[140px]" />
+        <div className="pointer-events-none absolute -top-32 -left-32 h-[600px] w-[600px] rounded-full bg-vault-accent/30 blur-[140px]" />
         <div className="pointer-events-none absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-violet-600/20 blur-[120px]" />
         <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[300px] w-[300px] rounded-full bg-indigo-500/15 blur-[90px]" />
 
@@ -116,30 +116,25 @@ const LoginPage = () => {
           }}
         />
 
-        {/* Logo */}
+        {/* Logo — Vault gradient brand mark */}
         <div className="relative flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20 border border-primary/30">
-            <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
-              <rect x="10" y="35" width="80" height="55" rx="6" stroke="white" strokeWidth="6" fill="none"/>
-              <path d="M34 35V28C34 18.6 41.6 11 51 11C60.4 11 68 18.6 68 28V35" stroke="white" strokeWidth="6" fill="none" strokeLinecap="round"/>
-              <line x1="51" y1="50" x2="51" y2="70" stroke="white" strokeWidth="6" strokeLinecap="round"/>
-              <line x1="40" y1="60" x2="62" y2="60" stroke="white" strokeWidth="6" strokeLinecap="round"/>
-            </svg>
-          </div>
-          <span className="font-bold text-base tracking-widest uppercase text-white">The Bazaar</span>
+          <span className="flex h-10 w-10 items-center justify-center rounded-vault-md bg-gradient-to-br from-vault-accent to-vault-violet text-h3 font-semibold text-vault-on-accent">
+            B
+          </span>
+          <span className="text-overline uppercase text-vault-text">The Bazaar</span>
         </div>
 
         {/* Hero text */}
         <div className="relative space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+          <div className="inline-flex items-center gap-2 rounded-vault-full border border-vault-border-accent bg-vault-accent-soft px-3 py-1 text-label text-vault-accent">
+            <span className="h-1.5 w-1.5 rounded-full bg-vault-accent animate-pulse" />
             Built on Ethereum
           </div>
-          <h2 className="text-5xl font-bold leading-tight text-white">
+          <h2 className="text-5xl font-bold leading-tight text-vault-text">
             Trade anything,<br />
-            <span className="text-primary">trust no one.</span>
+            <span className="text-vault-accent">trust no one.</span>
           </h2>
-          <p className="text-base text-text-secondary max-w-xs leading-relaxed">
+          <p className="text-base text-vault-text-secondary max-w-xs leading-relaxed">
             A permissionless marketplace where smart contracts hold funds and the community resolves disputes.
           </p>
 
@@ -148,26 +143,26 @@ const LoginPage = () => {
             {features.map((f) => (
               <div
                 key={f.label}
-                className="rounded-xl border border-primary/20 bg-primary/10 backdrop-blur-sm px-4 py-2.5"
+                className="rounded-vault-md border border-vault-border-accent bg-vault-accent-soft backdrop-blur-sm px-4 py-2.5"
               >
-                <p className="text-xs font-semibold text-white">{f.label}</p>
-                <p className="text-xs text-text-secondary">{f.desc}</p>
+                <p className="text-label text-vault-text">{f.label}</p>
+                <p className="text-caption text-vault-text-secondary">{f.desc}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Footer */}
-        <p className="relative text-xs text-text-muted">
+        <p className="relative text-xs text-vault-text-tertiary">
           © {new Date().getFullYear()} The Bazaar. Decentralized commerce.
         </p>
       </div>
 
       {/* Right panel */}
-      <div className="relative flex w-full lg:w-1/2 flex-col items-center justify-center px-6 py-12 bg-[#0d0f17]">
+      <div className="relative flex w-full lg:w-1/2 flex-col items-center justify-center px-6 py-12 bg-vault-surface">
         {/* Subtle glow */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="h-[400px] w-[400px] rounded-full bg-primary/15 blur-[100px]" />
+          <div className="h-[400px] w-[400px] rounded-full bg-vault-accent/15 blur-[100px]" />
         </div>
 
         <div className="relative w-full max-w-sm space-y-8">
@@ -184,8 +179,8 @@ const LoginPage = () => {
 
           {/* Heading */}
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold text-white">Welcome back</h1>
-            <p className="text-sm text-text-secondary">Connect your wallet to continue.</p>
+            <h1 className="text-h1 text-vault-text">Welcome back</h1>
+            <p className="text-body text-vault-text-secondary">Connect your wallet to continue.</p>
           </div>
 
           {/* MetaMask button */}
@@ -222,7 +217,7 @@ const LoginPage = () => {
             </button>
 
             {errorMsg && (
-              <div className="flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+              <div className="flex items-start gap-2.5 rounded-vault-md border border-vault-danger/30 bg-vault-danger-soft px-4 py-3 text-body text-vault-danger" role="alert">
                 <span className="mt-0.5 shrink-0">⚠</span>
                 <span>{errorMsg}</span>
               </div>
@@ -231,25 +226,25 @@ const LoginPage = () => {
 
           {/* Divider */}
           <div className="relative flex items-center gap-3">
-            <div className="h-px flex-1 bg-border-subtle" />
-            <span className="text-xs text-text-muted">how it works</span>
-            <div className="h-px flex-1 bg-border-subtle" />
+            <div className="h-px flex-1 bg-vault-border" />
+            <span className="text-caption text-vault-text-tertiary">how it works</span>
+            <div className="h-px flex-1 bg-vault-border" />
           </div>
 
           {/* Steps */}
           <ol className="space-y-4">
             {steps.map((s, i) => (
               <li key={i} className="flex items-start gap-3">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/15 border border-primary/25 text-[10px] font-bold text-primary">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-vault-border-accent bg-vault-accent-soft text-[10px] font-bold text-vault-accent">
                   {i + 1}
                 </span>
-                <span className="text-sm text-text-secondary leading-relaxed">{s}</span>
+                <span className="text-body text-vault-text-secondary leading-relaxed">{s}</span>
               </li>
             ))}
           </ol>
 
           {/* Security note */}
-          <p className="text-center text-xs text-text-muted">
+          <p className="text-center text-xs text-vault-text-tertiary">
             🔒 We never store your private key or seed phrase.
           </p>
         </div>

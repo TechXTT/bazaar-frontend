@@ -6,6 +6,8 @@ import { useParams } from "next/navigation";
 import { useInView } from "react-intersection-observer";
 import ProductCard from "@/app/stores/components/product";
 import ReputationCard from "@/app/stores/components/reputation";
+import Skeleton from "@/components/ui/skeleton";
+import Spinner from "@/components/ui/spinner";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { IProduct } from "@/api/interfaces/products";
@@ -32,15 +34,10 @@ function parseCursorTimestamp(raw: string): string | null {
   return Number.isNaN(ms) ? null : new Date(ms).toISOString();
 }
 
-function StoreAvatar({ name, size = "lg" }: { name: string; size?: "lg" | "sm" }) {
+function StoreAvatar({ name }: { name: string }) {
   const letter = name?.trim()?.[0]?.toUpperCase() ?? "?";
-  const hue = (name.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0) % 6) * 60;
-  const dim = size === "lg" ? "h-16 w-16 text-2xl rounded-2xl" : "h-10 w-10 text-base rounded-xl";
   return (
-    <div
-      className={`flex shrink-0 items-center justify-center font-bold text-white shadow-inner ${dim}`}
-      style={{ background: `hsl(${hue}, 40%, 30%)`, border: `1px solid hsl(${hue}, 40%, 40%)` }}
-    >
+    <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-vault-lg bg-gradient-to-br from-vault-accent to-vault-violet text-display-l font-bold text-vault-on-accent shadow-vault-card ring-4 ring-vault-bg">
       {letter}
     </div>
   );
@@ -88,17 +85,18 @@ const StorePage = () => {
   if (!store) {
     return (
       <div className="mx-auto max-w-7xl px-4 pt-10 pb-24 sm:px-6 lg:px-8 space-y-8">
-        <div className="h-6 w-32 rounded-lg bg-bg-secondary animate-pulse" />
+        <Skeleton h={24} w={128} />
+        <Skeleton className="h-40 rounded-vault-xl" />
         <div className="flex items-center gap-4">
-          <div className="h-16 w-16 rounded-2xl bg-bg-secondary animate-pulse" />
+          <Skeleton className="h-20 w-20 rounded-vault-lg" />
           <div className="space-y-2">
-            <div className="h-6 w-40 rounded-lg bg-bg-secondary animate-pulse" />
-            <div className="h-4 w-24 rounded-lg bg-bg-secondary animate-pulse" />
+            <Skeleton h={24} w={160} />
+            <Skeleton h={16} w={96} />
           </div>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="aspect-square rounded-xl bg-bg-secondary animate-pulse" />
+            <Skeleton key={i} className="aspect-square rounded-vault-lg" />
           ))}
         </div>
       </div>
@@ -112,19 +110,27 @@ const StorePage = () => {
       {/* Back */}
       <Link
         href="/stores"
-        className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-white transition-colors mb-8"
+        className="inline-flex items-center gap-1.5 text-body text-vault-text-secondary hover:text-vault-text transition-colors mb-6"
       >
         <FiArrowLeft size={14} /> All stores
       </Link>
 
+      {/* Gradient banner */}
+      <div className="relative h-40 overflow-hidden rounded-vault-xl bg-gradient-to-br from-vault-accent via-vault-violet to-vault-accent">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.12]"
+          style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "24px 24px" }}
+        />
+      </div>
+
       {/* Store header */}
-      <div className="flex flex-col lg:flex-row lg:items-start gap-6 mb-10">
+      <div className="-mt-10 px-2 flex flex-col gap-6 lg:flex-row lg:items-start mb-10">
         {/* Left: identity */}
-        <div className="flex items-center gap-4 flex-1">
+        <div className="flex flex-1 items-end gap-4">
           <StoreAvatar name={store.Name} />
-          <div>
-            <h1 className="text-2xl font-bold">{store.Name}</h1>
-            <p className="text-sm text-text-secondary mt-0.5">
+          <div className="pb-1 space-y-1">
+            <h1 className="text-h1 font-bold text-vault-text">{store.Name}</h1>
+            <p className="text-body text-vault-text-secondary">
               {products.length > 0
                 ? `${products.length} product${products.length !== 1 ? "s" : ""}`
                 : "Independent seller"}
@@ -133,20 +139,20 @@ const StorePage = () => {
         </div>
 
         {/* Right: reputation card */}
-        <div className="w-full lg:w-72 shrink-0 rounded-2xl border border-border-subtle bg-bg-secondary p-5">
-          <p className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-4">
+        <div className="w-full lg:w-72 shrink-0 rounded-vault-lg border border-vault-border bg-vault-surface p-5">
+          <p className="text-overline uppercase text-vault-text-tertiary mb-4">
             Seller Reputation
           </p>
           {hasRep ? (
             <ReputationCard rep={store.Reputation ?? null} />
           ) : (
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 text-primary">
+              <div className="flex h-9 w-9 items-center justify-center rounded-vault-md bg-vault-accent-soft border border-vault-border-accent text-vault-accent">
                 <FiPackage size={16} />
               </div>
               <div>
-                <p className="text-sm font-medium text-white">New seller</p>
-                <p className="text-xs text-text-muted">No orders yet</p>
+                <p className="text-body-strong text-vault-text">New seller</p>
+                <p className="text-caption text-vault-text-tertiary">No orders yet</p>
               </div>
             </div>
           )}
@@ -154,22 +160,22 @@ const StorePage = () => {
       </div>
 
       {/* Divider */}
-      <div className="border-t border-border-subtle mb-8" />
+      <div className="border-t border-vault-border mb-8" />
 
       {/* Products */}
       {products.length === 0 && !enableScroll && (
-        <div className="rounded-2xl border border-border-subtle bg-bg-secondary px-6 py-20 text-center space-y-3">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 text-primary">
+        <div className="rounded-vault-lg border border-vault-border bg-vault-surface px-6 py-20 text-center space-y-3">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-vault-md bg-vault-accent-soft border border-vault-border-accent text-vault-accent">
             <FiPackage size={20} />
           </div>
-          <p className="font-semibold text-white">No products yet</p>
-          <p className="text-sm text-text-secondary">This store hasn&apos;t listed any products.</p>
+          <p className="text-title text-vault-text">No products yet</p>
+          <p className="text-body text-vault-text-secondary">This store hasn&apos;t listed any products.</p>
         </div>
       )}
 
       {products.length > 0 && (
         <div className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+          <p className="text-overline uppercase text-vault-text-tertiary">
             Products
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -182,7 +188,7 @@ const StorePage = () => {
 
       {enableScroll && (
         <div ref={ref} className="flex justify-center py-10">
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-border-subtle border-t-primary" />
+          <Spinner className="h-5 w-5 text-vault-accent" />
         </div>
       )}
     </div>

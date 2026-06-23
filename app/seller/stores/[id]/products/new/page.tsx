@@ -72,16 +72,16 @@ export default function SellerNewProductPage() {
     <div>
       <Link
         href={`/seller/stores/${id}`}
-        className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-white transition-colors mb-8"
+        className="inline-flex items-center gap-1.5 text-body text-vault-text-secondary hover:text-vault-text transition-colors mb-8"
       >
         <FiArrowLeft size={14} /> Back to store
       </Link>
 
       <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
-        <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-6 space-y-6">
+        <div className="rounded-vault-lg border border-vault-border bg-vault-surface p-6 space-y-6">
           <div>
-            <h1 className="text-xl font-bold">Add product</h1>
-            <p className="text-sm text-text-secondary mt-1">Fill in the details for your new listing.</p>
+            <h1 className="text-h2 font-bold text-vault-text">Add product</h1>
+            <p className="text-body text-vault-text-secondary mt-1">Fill in the details for your new listing.</p>
           </div>
 
           <form className="space-y-5" onSubmit={onSubmit}>
@@ -112,9 +112,9 @@ export default function SellerNewProductPage() {
               />
             </Field>
             <Field label="Image" htmlFor="image" error={errors.image?.message as string | undefined}>
-              <label className="flex items-center gap-3 rounded-xl border border-border-subtle px-4 py-3 cursor-pointer hover:border-primary transition-colors">
-                <FiImage size={16} className="text-text-muted shrink-0" />
-                <span className="text-sm text-text-secondary flex-1 truncate">
+              <label className="flex items-center gap-3 rounded-vault-md border border-vault-border px-4 py-3 cursor-pointer hover:border-vault-border-accent transition-colors">
+                <FiImage size={16} className="text-vault-text-tertiary shrink-0" />
+                <span className="text-body text-vault-text-secondary flex-1 truncate">
                   {image instanceof File ? image.name : "Choose an image…"}
                 </span>
                 <input
@@ -132,7 +132,7 @@ export default function SellerNewProductPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              className="inline-flex items-center gap-2 bg-vault-accent text-vault-on-accent font-semibold px-5 py-2.5 rounded-vault-md hover:opacity-90 transition-opacity shadow-vault-glow disabled:opacity-50 disabled:cursor-not-allowed text-body"
             >
               {isSubmitting ? (
                 <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -145,19 +145,19 @@ export default function SellerNewProductPage() {
         </div>
 
         {/* Image preview */}
-        <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-3 h-fit">
-          <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">Preview</p>
+        <div className="rounded-vault-lg border border-vault-border bg-vault-surface p-5 space-y-3 h-fit">
+          <p className="text-overline uppercase text-vault-text-tertiary">Preview</p>
           {preview ? (
             <Image
               src={preview}
               alt="Product preview"
               width={320}
               height={320}
-              className="h-64 w-full rounded-xl object-cover"
+              className="h-64 w-full rounded-vault-md object-cover"
               unoptimized
             />
           ) : (
-            <div className="flex h-64 items-center justify-center rounded-xl border border-dashed border-border-subtle bg-surface-sunken text-sm text-text-muted">
+            <div className="flex h-64 items-center justify-center rounded-vault-md border border-dashed border-vault-border bg-vault-inset text-body text-vault-text-tertiary">
               Image will appear here
             </div>
           )}

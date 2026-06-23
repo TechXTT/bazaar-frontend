@@ -27,19 +27,19 @@ export default function InfoPage({
     <div className="relative">
       {/* Header glow */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-64 overflow-hidden">
-        <div className="absolute left-1/2 top-[-120px] h-72 w-[640px] -translate-x-1/2 rounded-full bg-primary/15 blur-[120px]" />
+        <div className="absolute left-1/2 top-[-120px] h-72 w-[640px] -translate-x-1/2 rounded-full bg-vault-accent/15 blur-[120px]" />
       </div>
 
       <div className={`relative mx-auto ${max} px-4 py-16 sm:px-6 lg:py-20`}>
         <header className="space-y-3 text-center">
           {eyebrow && (
-            <p className="text-xs font-semibold uppercase tracking-widest text-primary">
+            <p className="text-xs font-semibold uppercase tracking-widest text-vault-accent">
               {eyebrow}
             </p>
           )}
           <h1 className="text-3xl font-bold text-white sm:text-4xl">{title}</h1>
           {subtitle && (
-            <p className="mx-auto max-w-xl text-sm leading-relaxed text-text-secondary sm:text-base">
+            <p className="mx-auto max-w-xl text-sm leading-relaxed text-vault-text-secondary sm:text-base">
               {subtitle}
             </p>
           )}
@@ -64,7 +64,7 @@ export function InfoSection({
   return (
     <section className="space-y-3">
       <h2 className="text-lg font-semibold text-white">{title}</h2>
-      <div className="space-y-3 text-sm leading-relaxed text-text-secondary">
+      <div className="space-y-3 text-sm leading-relaxed text-vault-text-secondary">
         {children}
       </div>
     </section>
