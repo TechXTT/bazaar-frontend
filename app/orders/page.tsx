@@ -26,10 +26,10 @@ export default function OrdersPage() {
   if (!orders) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-        <div className="h-8 w-40 rounded-lg bg-bg-secondary animate-pulse mb-8" />
+        <div className="h-8 w-40 rounded-lg bg-vault-surface animate-pulse mb-8" />
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 rounded-2xl bg-bg-secondary animate-pulse" />
+            <div key={i} className="h-20 rounded-2xl bg-vault-surface animate-pulse" />
           ))}
         </div>
       </div>
@@ -42,30 +42,30 @@ export default function OrdersPage() {
       <div className="flex items-center gap-3 mb-8">
         <h1 className="text-2xl font-bold">My Orders</h1>
         {orders.length > 0 && (
-          <span className="text-sm font-medium text-text-muted bg-bg-secondary border border-border-subtle rounded-full px-2.5 py-0.5">
+          <span className="text-sm font-medium text-vault-text-tertiary bg-vault-surface border border-vault-border rounded-full px-2.5 py-0.5">
             {orders.length}
           </span>
         )}
       </div>
 
       {orders.length === 0 ? (
-        <div className="relative flex flex-col items-center justify-center py-24 space-y-5 rounded-2xl border border-dashed border-border-subtle overflow-hidden text-center">
+        <div className="relative flex flex-col items-center justify-center py-24 space-y-5 rounded-2xl border border-dashed border-vault-border overflow-hidden text-center">
           <div className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(circle, #8b7dff 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <div className="h-56 w-56 rounded-full bg-primary/18 blur-[70px]" />
+            <div className="h-56 w-56 rounded-full bg-vault-accent/18 blur-[70px]" />
           </div>
-          <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 text-primary shadow-lg shadow-primary/10">
+          <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-vault-accent/10 border border-vault-accent/20 text-vault-accent shadow-lg shadow-vault-accent/10">
             <FiPackage size={28} />
           </div>
           <div className="relative space-y-1 text-center">
             <p className="font-semibold text-white text-lg">No orders yet</p>
-            <p className="text-sm text-text-secondary max-w-xs mx-auto">
+            <p className="text-sm text-vault-text-secondary max-w-xs mx-auto">
               Your paid orders will appear here after checkout.
             </p>
           </div>
           <Link
             href="/stores"
-            className="relative inline-flex items-center gap-2 bg-primary text-white font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/30 text-sm"
+            className="relative inline-flex items-center gap-2 bg-vault-accent text-white font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-vault-accent/30 text-sm"
           >
             Browse stores <FiArrowRight size={14} />
           </Link>
@@ -92,7 +92,7 @@ export default function OrdersPage() {
 
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold truncate text-white">{order.Product.Name}</p>
-                  <p className="text-xs text-text-muted mt-0.5">
+                  <p className="text-xs text-vault-text-tertiary mt-0.5">
                     Qty {order.Quantity} · {order.Total?.toFixed(4)} {order.Product.Unit}
                     {date && ` · ${date}`}
                   </p>
@@ -102,7 +102,7 @@ export default function OrdersPage() {
                   <OrderStatusBadge status={order.Status} />
                   <FiArrowRight
                     size={14}
-                    className="text-text-muted group-hover:text-primary transition-colors"
+                    className="text-vault-text-tertiary group-hover:text-vault-accent transition-colors"
                   />
                 </div>
               </Link>
