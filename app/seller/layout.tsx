@@ -18,11 +18,15 @@ export default function SellerLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
   const router = useRouter();
 
+  // FE-11: wait for rehydration/bootstrap before deciding to redirect, so a refresh
+  // doesn't bounce a genuinely logged-in seller to /auth/login.
   useEffect(() => {
-    if (!auth.isLoggedIn) {
+    if (auth.bootstrapped && !auth.isLoggedIn) {
       router.replace(`/auth/login?next=${encodeURIComponent(pathname)}`);
     }
-  }, [auth.isLoggedIn, pathname, router]);
+  }, [auth.bootstrapped, auth.isLoggedIn, pathname, router]);
+
+  if (!auth.bootstrapped) return null;
 
   return (
     <main className="min-h-screen">

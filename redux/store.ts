@@ -35,8 +35,8 @@ const storage: WebStorage =
 // backend's httpOnly refresh cookie. This transform strips `jwt` on the way OUT to
 // storage (it stays in the live store) and forces it back to null on the way IN.
 const stripJwtTransform = createTransform<AuthState, AuthState>(
-  (inboundState) => ({ ...inboundState, jwt: null }),
-  (outboundState) => ({ ...outboundState, jwt: null })
+  (inboundState) => ({ ...inboundState, jwt: null, bootstrapped: false }),
+  (outboundState) => ({ ...outboundState, jwt: null, bootstrapped: false })
 );
 
 const persistConfig: PersistConfig<AuthState> = {
