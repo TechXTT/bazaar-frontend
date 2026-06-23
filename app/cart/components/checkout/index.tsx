@@ -1,7 +1,7 @@
 "use client";
 
 import { productsService } from "@/api";
-import { OrderResponse } from "@/api/interfaces/products";
+import { orderResponseArraySchema } from "@/api/interfaces/products";
 import { CONFIG } from "@/config/config";
 import { createOrder, createOrderERC20 } from "@/components/escrow";
 import { removeItemFromCart } from "@/redux/slices/auth-slice";
@@ -101,7 +101,13 @@ const Checkout = ({ paymentToken, disabled = false }: CheckoutProps) => {
         return;
       }
 
-      const orderResponses: OrderResponse[] = response.data;
+      // FE-12: validate the response shape before deriving any on-chain amount.
+      const parsed = orderResponseArraySchema.safeParse(response.data);
+      if (!parsed.success) {
+        toast.error("Received an invalid order response — checkout aborted");
+        return;
+      }
+      const orderResponses = parsed.data;
       const releaseTime = CONFIG.ESCROW_RELEASE_DAYS * 24 * 60 * 60;
 
       // FE-1: escrow txs are submitted one-by-one and any one can revert or be

@@ -1,4 +1,5 @@
 import { UUID } from "crypto";
+import { z } from "zod";
 import { IStore } from "./stores";
 
 export interface IProduct {
@@ -62,3 +63,17 @@ export interface OrderResponse {
     product_id?: UUID;
     quantity?: number;
 }
+
+/**
+ * FE-12: runtime-validate the order-creation response before escrowing any funds,
+ * so a malformed payload fails loudly instead of producing a bad on-chain amount.
+ * `id` must be a non-empty string and `owner_address` a 0x-prefixed address.
+ */
+export const orderResponseSchema = z.object({
+    id: z.string().min(1),
+    owner_address: z.string().regex(/^0x[0-9a-fA-F]{40}$/, "invalid receiver address"),
+    product_id: z.string().uuid().optional(),
+    quantity: z.number().int().positive().optional(),
+});
+
+export const orderResponseArraySchema = z.array(orderResponseSchema);
