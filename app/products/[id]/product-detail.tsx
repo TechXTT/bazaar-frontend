@@ -3,6 +3,9 @@
 import { productsService } from "@/api";
 import { IProduct } from "@/api/interfaces/products";
 import BucketImage from "@/app/components/image";
+import Skeleton from "@/components/ui/skeleton";
+import EmptyState from "@/components/ui/empty-state";
+import Button from "@/components/ui/button";
 import { RootState } from "@/redux/store";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -27,14 +30,16 @@ export default function ProductDetail() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <div className="text-center space-y-2">
-          <p className="font-semibold text-white">Product not found</p>
-          <p className="text-sm text-text-secondary">This product may have been removed.</p>
-        </div>
-        <button onClick={() => router.back()} className="text-sm text-primary hover:underline">
-          ← Go back
-        </button>
+      <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
+        <EmptyState
+          title="Product not found"
+          description="This product may have been removed or is no longer available."
+          action={
+            <Button variant="secondary" onClick={() => router.back()} icon={<FiArrowLeft size={14} />}>
+              Go back
+            </Button>
+          }
+        />
       </div>
     );
   }
@@ -42,17 +47,17 @@ export default function ProductDetail() {
   if (!product) {
     return (
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="h-5 w-24 rounded bg-bg-secondary animate-pulse mb-8" />
+        <Skeleton h={20} w={96} className="mb-8" />
         <div className="grid lg:grid-cols-2 gap-8">
-          <div className="aspect-square rounded-2xl bg-bg-secondary animate-pulse" />
+          <Skeleton className="aspect-square rounded-vault-lg" />
           <div className="space-y-4 pt-2">
-            <div className="h-4 w-20 rounded bg-bg-secondary animate-pulse" />
-            <div className="h-8 w-3/4 rounded bg-bg-secondary animate-pulse" />
-            <div className="h-6 w-1/3 rounded bg-bg-secondary animate-pulse" />
+            <Skeleton h={16} w={80} />
+            <Skeleton h={32} w="75%" />
+            <Skeleton h={24} w="33%" />
             <div className="space-y-2 pt-2">
-              <div className="h-3 w-full rounded bg-bg-secondary animate-pulse" />
-              <div className="h-3 w-5/6 rounded bg-bg-secondary animate-pulse" />
-              <div className="h-3 w-4/6 rounded bg-bg-secondary animate-pulse" />
+              <Skeleton h={12} w="100%" />
+              <Skeleton h={12} w="83%" />
+              <Skeleton h={12} w="66%" />
             </div>
           </div>
         </div>
@@ -67,14 +72,14 @@ export default function ProductDetail() {
       {/* Back */}
       <Link
         href={`/stores/${product.StoreID}`}
-        className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-white transition-colors mb-8"
+        className="inline-flex items-center gap-1.5 text-body text-vault-text-secondary hover:text-vault-text transition-colors mb-8"
       >
         <FiArrowLeft size={14} /> {product.Store?.Name ?? "Store"}
       </Link>
 
       <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
         {/* Image */}
-        <div className="relative aspect-square rounded-2xl overflow-hidden border border-border-subtle">
+        <div className="relative aspect-square rounded-vault-lg overflow-hidden border border-vault-border bg-vault-surface">
           <BucketImage
             key={product.ID}
             className="h-full w-full"
@@ -89,7 +94,7 @@ export default function ProductDetail() {
           <div>
             <Link
               href={`/stores/${product.StoreID}`}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border-subtle bg-bg-secondary px-3 py-1 text-xs font-medium text-text-secondary hover:border-primary hover:text-primary transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-vault-full border border-vault-border bg-vault-surface px-3 py-1 text-label text-vault-text-secondary hover:border-vault-border-accent hover:text-vault-accent transition-colors"
             >
               {product.Store?.Name}
             </Link>
@@ -97,31 +102,37 @@ export default function ProductDetail() {
 
           {/* Name + price */}
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold leading-tight">{product.Name}</h1>
-            <p className="text-2xl font-semibold text-primary">
+            <h1 className="text-h1 font-bold leading-tight text-vault-text">{product.Name}</h1>
+            <p className="text-display-l font-bold text-vault-text">
               {product.Price} {product.Unit}
+            </p>
+          </div>
+
+          {/* Escrow protection banner */}
+          <div className="flex items-start gap-2.5 rounded-vault-md border border-vault-success/40 bg-vault-success-soft px-4 py-3">
+            <FiShield size={16} className="mt-0.5 shrink-0 text-vault-success" />
+            <p className="text-body text-vault-success">
+              Protected by escrow. Your funds are released to the seller only after delivery —
+              or instantly when you confirm receipt.
             </p>
           </div>
 
           {/* Description */}
           {product.Description && (
-            <p className="text-sm text-text-secondary leading-relaxed border-t border-border-subtle pt-4">
-              {product.Description}
-            </p>
+            <div className="border-t border-vault-border pt-4 space-y-2">
+              <h2 className="text-title text-vault-text">About this item</h2>
+              <p className="text-body text-vault-text-secondary leading-relaxed">
+                {product.Description}
+              </p>
+            </div>
           )}
-
-          {/* Escrow trust indicator */}
-          <div className="flex items-center gap-2 text-xs text-text-muted">
-            <FiShield size={13} className="text-primary shrink-0" />
-            Escrowed payment — funds released on delivery confirmation
-          </div>
 
           {/* CTA */}
           <div className="mt-auto">
             {isOwner ? (
               <Link
                 href={`/seller/stores/${product.StoreID}/products/${product.ID}/edit`}
-                className="inline-flex items-center gap-2 border border-border-subtle font-semibold px-5 py-2.5 rounded-xl hover:border-primary hover:bg-bg-secondary transition-all text-sm"
+                className="inline-flex items-center gap-2 border border-vault-border text-vault-text font-semibold px-5 py-2.5 rounded-vault-md hover:border-vault-border-accent hover:bg-vault-surface transition-all text-body"
               >
                 <FiEdit2 size={14} /> Edit product
               </Link>
