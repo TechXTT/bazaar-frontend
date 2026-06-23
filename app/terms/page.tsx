@@ -1,7 +1,12 @@
-"use client";
-
+import type { Metadata } from "next";
 import InfoPage, { InfoSection } from "@/components/ui/info-page";
 import Link from "next/link";
+
+// FE-6: read-only page → Server Component with SEO metadata.
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description: "The Bazaar terms of service.",
+};
 
 const LAST_UPDATED = "May 31, 2026";
 

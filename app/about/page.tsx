@@ -1,8 +1,14 @@
-"use client";
-
+import type { Metadata } from "next";
 import InfoPage from "@/components/ui/info-page";
 import Link from "next/link";
 import { FiArrowRight, FiGlobe, FiLock, FiShield, FiUsers } from "react-icons/fi";
+
+// FE-6: read-only marketing page → Server Component with SEO metadata.
+export const metadata: Metadata = {
+  title: "About",
+  description:
+    "The Bazaar is a permissionless, escrow-protected marketplace with community dispute resolution.",
+};
 
 const VALUES = [
   {

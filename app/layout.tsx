@@ -1,18 +1,31 @@
-"use client";
+import type { Metadata } from "next";
 import Script from "next/script";
-import Navigation from "./components/navbar";
 import "./globals.css";
 import { Inter } from "next/font/google";
-import ReduxProvider from "./components/redux";
-import WalletSubscriber from "./components/wallet-subscriber";
-import NetworkBanner from "./components/network-banner";
-import { MetaMaskProvider } from "@metamask/sdk-react";
-import { useEffect, useState } from "react";
-import { Toaster } from "sonner";
+import Providers from "./providers";
 import Link from "next/link";
 import { FiGithub, FiShield, FiZap } from "react-icons/fi";
 
 const inter = Inter({ subsets: ["latin"] });
+
+// FE-6: real SEO metadata, now that the root layout is a Server Component.
+export const metadata: Metadata = {
+  title: {
+    default: "The Bazaar — Decentralized escrow marketplace",
+    template: "%s · The Bazaar",
+  },
+  description:
+    "A permissionless marketplace where smart contracts hold funds in escrow and the community resolves disputes via Kleros arbitration.",
+  metadataBase: process.env.NEXT_PUBLIC_CURRENT_URL
+    ? new URL(process.env.NEXT_PUBLIC_CURRENT_URL)
+    : undefined,
+  openGraph: {
+    title: "The Bazaar — Decentralized escrow marketplace",
+    description:
+      "Buy and sell with on-chain escrow protection and community dispute resolution.",
+    type: "website",
+  },
+};
 
 const FOOTER_LINKS = {
   Marketplace: [
@@ -117,11 +130,8 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 const GA_ENABLED = Boolean(GA_ID) && process.env.NEXT_PUBLIC_E2E !== "true";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const [location, setLocation] = useState<string>("");
-  useEffect(() => { setLocation(window.location.href); }, []);
-
   return (
-    <html lang="en">
+    <html lang="en" className={inter.className}>
       <head>
         {GA_ENABLED && (
           <>
@@ -141,27 +151,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         )}
       </head>
       <body className="bg-background" style={{ background: "radial-gradient(ellipse 120% 60% at 50% -10%, #1a1733 0%, #0d0f17 48%)" }}>
-        <ReduxProvider>
-          <MetaMaskProvider
-            debug={true}
-            sdkOptions={{
-              dappMetadata: { name: "The Bazaar", url: location },
-              // Under e2e tests an injected window.ethereum shim is provided; force the
-              // SDK to adopt it instead of starting a remote (QR/socket) connection that
-              // can't complete headlessly. No effect in normal use.
-              ...(process.env.NEXT_PUBLIC_E2E === "true"
-                ? { extensionOnly: true, checkInstallationImmediately: false }
-                : {}),
-            }}
-          >
-            <WalletSubscriber />
-            <Navigation />
-            <NetworkBanner />
-            <div className="pt-16">{children}</div>
-            <Footer />
-            <Toaster position="bottom-right" richColors theme="dark" />
-          </MetaMaskProvider>
-        </ReduxProvider>
+        <Providers>{children}</Providers>
+        <Footer />
       </body>
     </html>
   );
