@@ -17,5 +17,11 @@ export const _verifySIWE = async (
 ): Promise<AxiosResponse<{ token: string; user: IUser }>> =>
     backendAxiosInstance.post("/api/auth/verify", { message, signature });
 
+// The refresh token travels in the httpOnly cookie (withCredentials), so no body
+// is sent; the backend rotates the cookie and returns a fresh access token.
 export const _refreshToken = async (): Promise<AxiosResponse<{ token: string }>> =>
-    backendAxiosInstance.post("/api/users/refresh");
+    backendAxiosInstance.post("/api/auth/refresh");
+
+// Denylists the refresh token server-side and clears the httpOnly cookie.
+export const _logout = async (): Promise<AxiosResponse<void>> =>
+    backendAxiosInstance.post("/api/auth/logout");

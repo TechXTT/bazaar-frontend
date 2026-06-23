@@ -8,6 +8,9 @@ const backendAxiosInstance = axios.create({
     headers: {
         "Content-Type": "application/json",
     },
+    // Send the httpOnly refresh cookie on auth requests (FE-4 / BE-16). The
+    // backend pins explicit CORS origins with credentials (BE-1), so this is safe.
+    withCredentials: true,
 });
 
 backendAxiosInstance.interceptors.request.use((config) => {
@@ -30,7 +33,7 @@ backendAxiosInstance.interceptors.response.use(
 );
 
 // Users Endpoints
-import { _getMe, _updateUser, _getNonce, _verifySIWE, _refreshToken } from "./services/users";
+import { _getMe, _updateUser, _getNonce, _verifySIWE, _refreshToken, _logout } from "./services/users";
 
 // FE-4: the JWT is held in memory only and is not persisted. After a reload a
 // previously-authenticated session rehydrates with `isLoggedIn: true` but no token,
@@ -62,6 +65,7 @@ const usersService = {
     getNonce: _getNonce,
     verifySIWE: _verifySIWE,
     refreshToken: _refreshToken,
+    logout: _logout,
 };
 
 const productsService = {

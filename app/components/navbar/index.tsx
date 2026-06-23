@@ -194,7 +194,7 @@ export default function Navigation() {
 
                       <div className="border-t border-border-subtle py-1.5">
                         <button
-                          onClick={() => { dispatch(logout()); window.location.href = "/"; }}
+                          onClick={() => { usersService.logout().catch(() => {}); dispatch(logout()); window.location.href = "/"; }}
                           className="flex w-full items-center gap-2.5 px-4 py-2 text-sm text-red-400 hover:bg-bg-secondary transition-colors"
                         >
                           <FiLogOut size={14} /> Sign out
@@ -242,7 +242,7 @@ export default function Navigation() {
                 <MobileLink href="/orders">My orders</MobileLink>
                 <div className="my-2 border-t border-border-subtle" />
                 <button
-                  onClick={() => { dispatch(logout()); window.location.href = "/"; }}
+                  onClick={() => { usersService.logout().catch(() => {}); dispatch(logout()); window.location.href = "/"; }}
                   className="block w-full text-left px-3 py-2.5 text-sm font-medium text-red-400 hover:bg-bg-secondary rounded-xl transition-colors"
                 >
                   Sign out
