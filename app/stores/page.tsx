@@ -2,23 +2,10 @@
 
 import { storesService } from "@/api";
 import { IStore } from "@/api/interfaces/stores";
-import { ScoreBadgeInline } from "@/app/stores/components/reputation";
+import StoreCard from "@/components/ui/store-card";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { FiArrowRight, FiSearch, FiShoppingBag } from "react-icons/fi";
-
-function StoreAvatar({ name }: { name: string }) {
-  const letter = name?.trim()?.[0]?.toUpperCase() ?? "?";
-  const hue = (name.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0) % 6) * 60;
-  return (
-    <div
-      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-lg font-bold text-white shadow-inner"
-      style={{ background: `hsl(${hue}, 40%, 30%)`, border: `1px solid hsl(${hue}, 40%, 40%)` }}
-    >
-      {letter}
-    </div>
-  );
-}
 
 export default function StoresPage() {
   const [stores, setStores] = useState<IStore[] | null>(null);
@@ -67,7 +54,7 @@ export default function StoresPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search stores…"
-              className="w-full rounded-xl border border-border-subtle bg-bg-secondary py-3 pl-11 pr-4 text-sm placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
+              className="w-full rounded-vault-md border border-vault-border bg-vault-surface py-3 pl-11 pr-4 text-body text-vault-text placeholder:text-vault-text-tertiary transition-colors focus:border-vault-border-accent focus:outline-none"
             />
           </div>
         </div>
@@ -130,22 +117,7 @@ export default function StoresPage() {
       {filtered && filtered.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 pb-24">
           {filtered.map((store) => (
-            <Link key={store.ID} href={`/stores/${store.ID}`} className="group">
-              <div className="flex items-center gap-4 rounded-2xl border border-border-subtle bg-bg-secondary p-5 hover:border-primary hover:shadow-lg hover:shadow-primary/5 transition-all">
-                <StoreAvatar name={store.Name} />
-                <div className="min-w-0 flex-1">
-                  <h2 className="font-semibold truncate group-hover:text-white transition-colors">
-                    {store.Name}
-                  </h2>
-                  <div className="mt-1">
-                    <ScoreBadgeInline score={store.Reputation?.Score ?? null} />
-                  </div>
-                </div>
-                <div className="shrink-0 flex h-8 w-8 items-center justify-center rounded-lg border border-border-subtle text-text-muted group-hover:border-primary group-hover:text-primary transition-all">
-                  <FiArrowRight size={14} />
-                </div>
-              </div>
-            </Link>
+            <StoreCard key={store.ID} store={store} />
           ))}
         </div>
       )}

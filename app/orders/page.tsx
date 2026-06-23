@@ -84,10 +84,10 @@ export default function OrdersPage() {
               <Link
                 key={order.ID}
                 href={`/orders/${order.ID}`}
-                className="flex items-center gap-4 rounded-2xl border border-border-subtle bg-bg-secondary p-4 hover:border-primary transition-all group"
+                className="group flex items-center gap-4 rounded-vault-lg border border-vault-border bg-vault-surface p-4 transition-all hover:border-vault-border-accent hover:shadow-vault-card"
               >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-sunken border border-border-subtle">
-                  <FiPackage size={18} className="text-text-muted" />
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-vault-md border border-vault-border bg-vault-inset">
+                  <FiPackage size={18} className="text-vault-text-tertiary" />
                 </div>
 
                 <div className="flex-1 min-w-0">

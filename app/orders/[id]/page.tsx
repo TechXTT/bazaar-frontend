@@ -10,6 +10,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FiArrowLeft, FiCalendar, FiCheckCircle, FiHash, FiPackage, FiRotateCcw } from "react-icons/fi";
 import OrderStatusBadge from "@/components/ui/order-status-badge";
+import Stepper from "@/components/ui/stepper";
 
 type BuyerEscrowMeta = { onChain: boolean; shipped: boolean; completed: boolean; shippingDeadline: bigint };
 
@@ -135,9 +136,14 @@ export default function OrderPage() {
       </Link>
 
       {/* Header */}
-      <div className="flex items-center gap-3 mb-8">
+      <div className="flex items-center gap-3 mb-6">
         <h1 className="text-2xl font-bold">Order detail</h1>
         {order.Status && <OrderStatusBadge status={order.Status} size="md" />}
+      </div>
+
+      {/* Escrow lifecycle tracking */}
+      <div className="mb-8 overflow-x-auto rounded-vault-lg border border-vault-border bg-vault-surface p-5">
+        <Stepper status={order.Status} />
       </div>
 
       <div className="grid lg:grid-cols-[1fr_380px] gap-8 items-start">
