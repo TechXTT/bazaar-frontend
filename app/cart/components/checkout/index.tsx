@@ -12,13 +12,14 @@ import { useState } from "react";
 import { FiArrowRight } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
-import { getErrorMessage } from "@/utils/helpers";
+import { getErrorMessage, settlementCurrencyFromUnit } from "@/utils/helpers";
 
 interface CheckoutProps {
   paymentToken: "ETH" | "USDC";
+  disabled?: boolean;
 }
 
-const Checkout = ({ paymentToken }: CheckoutProps) => {
+const Checkout = ({ paymentToken, disabled = false }: CheckoutProps) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const cart = useSelector((state: RootState) => state.auth.cart);
@@ -109,8 +110,14 @@ const Checkout = ({ paymentToken }: CheckoutProps) => {
         const item = cart.products[i];
         const quantity = item.Quantity ?? 1;
 
-        if (paymentToken === "USDC") {
-          const amount = BigInt(Math.round(item.Price * quantity * 1e6));
+        // FE-3: settle each item in the currency its Price is denominated in
+        // (derived from the listing's Unit), converting explicitly. The buyer
+        // never picks a token the price isn't denominated in.
+        const currency = settlementCurrencyFromUnit(item.Unit);
+
+        if (currency === "USDC") {
+          const { parseUnits } = await import("ethers");
+          const amount = parseUnits((item.Price * quantity).toString(), 6);
           const { orderTx } = await createOrderERC20(
             order.id, item.ID, order.owner_address, releaseTime, amount
           );
@@ -154,7 +161,7 @@ const Checkout = ({ paymentToken }: CheckoutProps) => {
   return (
     <button
       onClick={handleCheckout}
-      disabled={loading || cart.products.length === 0}
+      disabled={loading || disabled || cart.products.length === 0}
       className="w-full flex items-center justify-center gap-2 bg-primary text-white font-semibold py-3.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {loading ? (

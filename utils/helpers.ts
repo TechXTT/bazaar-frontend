@@ -43,3 +43,27 @@ export const formatFeeBps = (bps: number): string => {
 
 /** Net fraction a seller receives after the fee, e.g. 200 bps -> 0.98. */
 export const sellerNetFraction = (bps: number): number => (10_000 - bps) / 10_000;
+
+/**
+ * Settlement currency a listing's numeric `Price` is denominated in.
+ *
+ * FE-3: a listing's single `Price` has exactly one denomination — the buyer must
+ * NOT be able to pay a token the price isn't denominated in (e.g. charging an ETH
+ * price as USDC, or vice-versa, with no conversion). Listings are created via the
+ * "Price (ETH)" editor, so the canonical/default denomination is ETH; a backend
+ * `Unit` of "USDC" marks a USDC-denominated listing. Anything else falls back to ETH.
+ */
+export type SettlementCurrency = "ETH" | "USDC";
+
+export const DEFAULT_SETTLEMENT_CURRENCY: SettlementCurrency = "ETH";
+
+/** Resolve the settlement currency a product's `Price` is denominated in. */
+export const settlementCurrencyFromUnit = (unit?: string | null): SettlementCurrency => {
+  const u = (unit ?? "").trim().toUpperCase();
+  if (u === "USDC") return "USDC";
+  return DEFAULT_SETTLEMENT_CURRENCY; // "ETH", "" or any other label settles in ETH
+};
+
+/** Decimals used to convert a `Price` into the on-chain base unit for a currency. */
+export const settlementDecimals = (currency: SettlementCurrency): number =>
+  currency === "USDC" ? 6 : 18;

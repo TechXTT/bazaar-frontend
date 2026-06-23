@@ -3,18 +3,26 @@
 import { clearCart, removeItemFromCart } from "@/redux/slices/auth-slice";
 import { RootState, useAppDispatch } from "@/redux/store";
 import Link from "next/link";
-import { useState } from "react";
 import { useSelector } from "react-redux";
 import Checkout from "./components/checkout";
 import BucketImage from "@/app/components/image";
 import { FiArrowRight, FiShoppingBag, FiTrash2, FiX } from "react-icons/fi";
-
-type PaymentToken = "ETH" | "USDC";
+import { settlementCurrencyFromUnit } from "@/utils/helpers";
 
 const CartPage = () => {
   const dispatch = useAppDispatch();
   const cart = useSelector((state: RootState) => state.auth.cart);
-  const [paymentToken, setPaymentToken] = useState<PaymentToken>("ETH");
+
+  // FE-3: the payment currency is the listing's denomination, not a free buyer
+  // choice. Derive it from the cart items so the buyer can never pay a token the
+  // price isn't denominated in. The cart can only be checked out if every item
+  // settles in the same currency (mixed-currency carts are blocked below).
+  const currencies = Array.from(
+    new Set(cart.products.map((p) => settlementCurrencyFromUnit(p.Unit)))
+  );
+  const paymentToken = currencies[0] ?? "ETH";
+  const mixedCurrencies = currencies.length > 1;
+  const decimals = paymentToken === "USDC" ? 2 : 4;
 
   if (!cart.products || cart.products.length === 0) {
     return (
@@ -127,9 +135,7 @@ const CartPage = () => {
             <div className="border-t border-border-subtle pt-3 flex justify-between">
               <span className="font-semibold">Total</span>
               <span className="font-bold text-lg text-white">
-                {paymentToken === "USDC"
-                  ? `${cart.total.toFixed(2)} USDC`
-                  : `${cart.total.toFixed(4)} ETH`}
+                {cart.total.toFixed(decimals)} {paymentToken}
               </span>
             </div>
             <p className="text-xs text-text-muted">
@@ -138,30 +144,25 @@ const CartPage = () => {
             </p>
           </div>
 
-          {/* Payment token */}
-          <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-3">
+          {/* Payment currency — fixed to the listing's denomination (FE-3) */}
+          <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-2">
             <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">
               Pay with
             </p>
-            <div className="grid grid-cols-2 gap-2">
-              {(["ETH", "USDC"] as PaymentToken[]).map((token) => (
-                <button
-                  key={token}
-                  onClick={() => setPaymentToken(token)}
-                  className={`py-2.5 rounded-xl border text-sm font-semibold transition-all ${
-                    paymentToken === token
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border-subtle hover:border-primary text-text-secondary"
-                  }`}
-                >
-                  {token}
-                </button>
-              ))}
+            <div className="flex items-center justify-between rounded-xl border border-primary bg-primary/10 px-4 py-2.5">
+              <span className="text-sm font-semibold text-primary">{paymentToken}</span>
+              <span className="text-xs text-text-muted">Listing currency</span>
             </div>
+            {mixedCurrencies && (
+              <p className="text-xs text-status-danger" role="alert">
+                Your cart mixes ETH- and USDC-priced items. Remove items so they
+                share one currency before checking out.
+              </p>
+            )}
           </div>
 
           {/* Checkout */}
-          <Checkout paymentToken={paymentToken} />
+          <Checkout paymentToken={paymentToken} disabled={mixedCurrencies} />
 
           <p className="text-center text-xs text-text-muted">
             🔒 Escrowed payment — released on delivery
