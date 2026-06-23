@@ -22,7 +22,7 @@ export const ESCROW_ADDRESS =
 
 // Minimal Escrow surface needed by the tests (read order state, release, claim).
 export const ESCROW_ABI = [
-  "function orders(bytes32) view returns (address buyer, address receiver, address token, uint256 amount, uint256 releaseTime, uint256 shippingDeadline, uint256 deliveryWindow, bool shipped, bool release, bool completed, bytes32 productId)",
+  "function orders(bytes32) view returns (address buyer, address receiver, address token, uint256 amount, uint256 releaseTime, uint256 shippingDeadline, uint256 deliveryWindow, uint96 feeBps, bool shipped, bool release, bool completed, bytes32 productId)",
   "function createOrder(bytes32 orderId, bytes32 productId, address receiver, uint256 releaseTime) payable",
   "function releaseOrder(bytes32 orderId)",
   "function claimOrder(bytes32 orderId)",
