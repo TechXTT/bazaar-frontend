@@ -12,6 +12,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { FiAlertCircle, FiClock, FiDollarSign, FiPackage, FiTruck } from "react-icons/fi";
 import OrderStatusBadge from "@/components/ui/order-status-badge";
+import Skeleton from "@/components/ui/skeleton";
+import EmptyState from "@/components/ui/empty-state";
 
 const FEE_LABEL = formatFeeBps(CONFIG.PLATFORM_FEE_BPS);
 const NET_FRACTION = sellerNetFraction(CONFIG.PLATFORM_FEE_BPS);
@@ -94,7 +96,7 @@ export default function SellerOrdersPage() {
     return (
       <div className="space-y-3">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-20 rounded-2xl bg-bg-secondary animate-pulse" />
+          <Skeleton key={i} className="h-20 rounded-vault-lg" />
         ))}
       </div>
     );
@@ -104,8 +106,8 @@ export default function SellerOrdersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Orders received</h1>
-          <p className="mt-1 text-sm text-text-secondary">
+          <h1 className="text-h1 font-bold text-vault-text">Orders received</h1>
+          <p className="mt-1 text-body text-vault-text-secondary">
             Payout and dispute management. A {FEE_LABEL} protocol fee is deducted from each payout.
           </p>
         </div>
@@ -118,7 +120,7 @@ export default function SellerOrdersPage() {
               setPendingId("");
               await load();
             }}
-            className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20 text-sm disabled:opacity-50"
+            className="inline-flex items-center gap-2 bg-vault-accent text-vault-on-accent font-semibold px-4 py-2.5 rounded-vault-md hover:opacity-90 transition-opacity shadow-vault-glow text-body disabled:opacity-50"
           >
             {pendingId === "all" ? (
               <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -131,19 +133,11 @@ export default function SellerOrdersPage() {
       </div>
 
       {orders.length === 0 ? (
-        <div className="relative flex flex-col items-center justify-center py-24 space-y-5 rounded-2xl border border-dashed border-border-subtle overflow-hidden text-center">
-          <div className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(circle, #8b7dff 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <div className="h-56 w-56 rounded-full bg-primary/18 blur-[70px]" />
-          </div>
-          <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 text-primary shadow-lg shadow-primary/10">
-            <FiPackage size={28} />
-          </div>
-          <div className="relative text-center space-y-1">
-            <p className="font-semibold text-white text-lg">No orders received</p>
-            <p className="text-sm text-text-secondary">Paid orders for your stores will appear here.</p>
-          </div>
-        </div>
+        <EmptyState
+          icon={<FiPackage size={28} />}
+          title="No orders received"
+          description="Paid orders for your stores will appear here."
+        />
       ) : (
         <div className="space-y-3">
           {orders.map((order) => {
@@ -165,22 +159,22 @@ export default function SellerOrdersPage() {
             return (
               <div
                 key={order.ID}
-                className="flex items-center gap-4 rounded-2xl border border-border-subtle bg-bg-secondary p-4"
+                className="flex items-center gap-4 rounded-vault-lg border border-vault-border bg-vault-surface p-4"
               >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-sunken border border-border-subtle">
-                  <FiPackage size={18} className="text-text-muted" />
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-vault-md bg-vault-inset border border-vault-border">
+                  <FiPackage size={18} className="text-vault-text-tertiary" />
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-white truncate">{order.Product.Name}</p>
-                  <p className="text-xs text-text-muted mt-0.5">
+                  <p className="font-semibold text-vault-text truncate">{order.Product.Name}</p>
+                  <p className="text-caption text-vault-text-tertiary mt-0.5">
                     Qty {order.Quantity} · {order.Total?.toFixed(4)} {order.Product.Unit}
                     {date && ` · ${date}`}
                   </p>
                   {canClaim && order.Total != null && (
-                    <p className="mt-0.5 text-xs text-text-secondary">
+                    <p className="mt-0.5 text-caption text-vault-text-secondary">
                       You receive{" "}
-                      <span className="font-medium text-white">
+                      <span className="font-medium text-vault-text">
                         {(order.Total * NET_FRACTION).toFixed(4)} {order.Product.Unit}
                       </span>{" "}
                       after the {FEE_LABEL} fee
@@ -201,7 +195,7 @@ export default function SellerOrdersPage() {
                           setPendingId("");
                           await load();
                         }}
-                        className="inline-flex items-center gap-1.5 bg-primary text-white font-semibold text-xs px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+                        className="inline-flex items-center gap-1.5 bg-vault-accent text-vault-on-accent font-semibold text-label px-3 py-1.5 rounded-vault hover:opacity-90 transition-opacity disabled:opacity-50"
                       >
                         {pendingId === order.ID ? (
                           <span className="h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -234,11 +228,11 @@ export default function SellerOrdersPage() {
                               }
                             }}
                             placeholder="Tracking ref (optional)"
-                            className="h-8 w-40 rounded-lg border border-border-subtle bg-surface-sunken px-2 text-xs focus:border-primary focus:outline-none"
+                            className="h-8 w-40 rounded-vault border border-vault-border bg-vault-inset px-2 text-label text-vault-text focus:border-vault-border-accent focus:outline-none"
                           />
                           <button
                             type="submit"
-                            className="inline-flex items-center gap-1 bg-primary text-white font-semibold text-xs px-2.5 py-1.5 rounded-lg hover:opacity-90 transition-opacity"
+                            className="inline-flex items-center gap-1 bg-vault-accent text-vault-on-accent font-semibold text-label px-2.5 py-1.5 rounded-vault hover:opacity-90 transition-opacity"
                           >
                             <FiTruck size={12} /> Ship
                           </button>
@@ -248,7 +242,7 @@ export default function SellerOrdersPage() {
                               setShippingFor(null);
                               setTrackingInput("");
                             }}
-                            className="text-xs text-text-muted hover:text-white px-1"
+                            className="text-label text-vault-text-tertiary hover:text-vault-text px-1"
                           >
                             Cancel
                           </button>
@@ -260,7 +254,7 @@ export default function SellerOrdersPage() {
                             setShippingFor(order.ID);
                             setTrackingInput("");
                           }}
-                          className="inline-flex items-center gap-1.5 bg-primary text-white font-semibold text-xs px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+                          className="inline-flex items-center gap-1.5 bg-vault-accent text-vault-on-accent font-semibold text-label px-3 py-1.5 rounded-vault hover:opacity-90 transition-opacity disabled:opacity-50"
                         >
                           {pendingId === order.ID ? (
                             <span className="h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -273,18 +267,18 @@ export default function SellerOrdersPage() {
                     ) : order.Status === "disputed" ? (
                       <Link
                         href="/seller/disputes"
-                        className="inline-flex items-center gap-1 text-xs text-yellow-400 hover:underline font-medium"
+                        className="inline-flex items-center gap-1 text-label text-vault-warning hover:underline font-medium"
                       >
                         <FiAlertCircle size={12} /> Resolve
                       </Link>
                     ) : !orderMeta ? (
-                      <span className="text-xs text-text-muted">Checking…</span>
+                      <span className="text-label text-vault-text-tertiary">Checking…</span>
                     ) : !orderMeta.onChain ? (
-                      <span className="inline-flex items-center gap-1 text-xs text-text-muted">
+                      <span className="inline-flex items-center gap-1 text-label text-vault-text-tertiary">
                         <FiClock size={11} /> Awaiting payment
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-xs text-text-muted">
+                      <span className="inline-flex items-center gap-1 text-label text-vault-text-tertiary">
                         <FiClock size={11} />
                         {formatRemaining(orderMeta.releaseTime, now)}
                       </span>
