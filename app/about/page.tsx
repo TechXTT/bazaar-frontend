@@ -50,7 +50,7 @@ export default function AboutPage() {
     >
       {/* Mission */}
       <div className="mx-auto max-w-2xl space-y-4 text-center">
-        <p className="text-sm leading-relaxed text-text-secondary sm:text-base">
+        <p className="text-sm leading-relaxed text-vault-text-secondary sm:text-base">
           Traditional marketplaces ask you to trust a company with your money, your
           data, and the final word on every dispute. We think you shouldn&apos;t have
           to. The Bazaar replaces that trust with code: payments are escrowed
@@ -64,13 +64,13 @@ export default function AboutPage() {
         {VALUES.map((v) => (
           <div
             key={v.title}
-            className="rounded-2xl border border-border-subtle bg-bg-secondary p-6 transition-colors hover:border-primary/40"
+            className="rounded-2xl border border-vault-border bg-vault-surface p-6 transition-colors hover:border-vault-accent/40"
           >
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-vault-accent/20 bg-vault-accent/10 text-vault-accent">
               <v.Icon size={20} />
             </div>
             <h3 className="mt-4 font-semibold text-white">{v.title}</h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-text-secondary">{v.desc}</p>
+            <p className="mt-1.5 text-sm leading-relaxed text-vault-text-secondary">{v.desc}</p>
           </div>
         ))}
       </div>
@@ -82,13 +82,13 @@ export default function AboutPage() {
           {STEPS.map((s) => (
             <div
               key={s.n}
-              className="relative overflow-hidden rounded-2xl border border-border-subtle bg-bg-secondary p-6"
+              className="relative overflow-hidden rounded-2xl border border-vault-border bg-vault-surface p-6"
             >
-              <span className="pointer-events-none absolute -top-3 right-1 select-none text-6xl font-black leading-none text-border-subtle/50">
+              <span className="pointer-events-none absolute -top-3 right-1 select-none text-6xl font-black leading-none text-vault-border/50">
                 {s.n}
               </span>
               <h3 className="relative font-semibold text-white">{s.title}</h3>
-              <p className="relative mt-1.5 text-sm leading-relaxed text-text-secondary">
+              <p className="relative mt-1.5 text-sm leading-relaxed text-vault-text-secondary">
                 {s.desc}
               </p>
             </div>
@@ -97,7 +97,7 @@ export default function AboutPage() {
       </div>
 
       {/* CTA */}
-      <div className="mt-16 overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary-600 to-primary-700 p-10 text-center sm:p-14">
+      <div className="mt-16 overflow-hidden rounded-3xl bg-gradient-to-br from-vault-accent to-vault-violet p-10 text-center sm:p-14">
         <h2 className="text-2xl font-bold text-white">Ready to trade trustlessly?</h2>
         <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-white/75">
           Browse stores or open your own in minutes — no application, no approval, no listing fees.
@@ -105,7 +105,7 @@ export default function AboutPage() {
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link
             href="/stores"
-            className="inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3.5 text-sm font-bold text-primary shadow-xl transition hover:bg-white/90"
+            className="inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3.5 text-sm font-bold text-vault-accent shadow-xl transition hover:bg-white/90"
           >
             Browse stores <FiArrowRight size={16} />
           </Link>
