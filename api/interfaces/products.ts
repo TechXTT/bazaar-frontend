@@ -1,6 +1,7 @@
 import { UUID } from "crypto";
 import { z } from "zod";
 import { IStore } from "./stores";
+import type { OrderStatus } from "@/utils/orders";
 
 export interface IProduct {
     CreatedAt: string;
@@ -39,7 +40,22 @@ export interface IOrder {
     Product: IProduct;
     Quantity: number;
     Total: number;
-    Status: string;
+    /** XL-1: typed against the backend's lowercase status values. */
+    Status: OrderStatus;
+
+    // XL-2: on-chain correlation / settlement metadata returned by the backend.
+    /** Hash of the escrow `createOrder` transaction, once known. */
+    TxHash?: string;
+    /** bytes32 order id used inside the escrow contract. */
+    ContractOrderID?: string;
+    /** Settlement token symbol/address (e.g. "ETH" or the USDC contract address). */
+    Token?: string;
+    /** Protocol fee snapshotted for this order (in the order's base unit). */
+    Fee?: number;
+    /** On-chain product id (bytes32) used inside the escrow contract. */
+    OnChainProductID?: string;
+    /** URI of the meta-evidence document for a dispute on this order. */
+    MetaEvidenceURI?: string;
 }
 
 export interface OrderReq {
