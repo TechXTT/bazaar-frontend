@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </>
         )}
       </head>
-      <body className="bg-background" style={{ background: "radial-gradient(ellipse 120% 60% at 50% -10%, #1a1733 0%, #0d0f17 48%)" }}>
+      <body className="bg-vault-bg" style={{ background: "radial-gradient(ellipse 120% 60% at 50% -10%, #1a1733 0%, #0b0e14 48%)" }}>
         <Providers>{children}</Providers>
         <Footer />
       </body>

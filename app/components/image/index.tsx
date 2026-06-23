@@ -21,7 +21,7 @@ const BucketImage = ({
   const [errored, setErrored] = useState(false);
 
   return (
-    <div className={`relative overflow-hidden bg-surface-sunken ${className}`}>
+    <div className={`relative overflow-hidden bg-vault-inset ${className}`}>
       {src && !errored ? (
         <Image
           src={src}
@@ -33,7 +33,7 @@ const BucketImage = ({
         />
       ) : (
         <div className="absolute inset-0 flex items-center justify-center">
-          <FiImage size={36} className="text-text-muted" />
+          <FiImage size={36} className="text-vault-text-tertiary" />
         </div>
       )}
     </div>

@@ -103,7 +103,7 @@ const LoginPage = () => {
       {/* Left panel */}
       <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-between p-12 overflow-hidden bg-vault-bg">
         {/* Background glows */}
-        <div className="pointer-events-none absolute -top-32 -left-32 h-[600px] w-[600px] rounded-full bg-primary/30 blur-[140px]" />
+        <div className="pointer-events-none absolute -top-32 -left-32 h-[600px] w-[600px] rounded-full bg-vault-accent/30 blur-[140px]" />
         <div className="pointer-events-none absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-violet-600/20 blur-[120px]" />
         <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[300px] w-[300px] rounded-full bg-indigo-500/15 blur-[90px]" />
 
@@ -134,7 +134,7 @@ const LoginPage = () => {
             Trade anything,<br />
             <span className="text-vault-accent">trust no one.</span>
           </h2>
-          <p className="text-base text-text-secondary max-w-xs leading-relaxed">
+          <p className="text-base text-vault-text-secondary max-w-xs leading-relaxed">
             A permissionless marketplace where smart contracts hold funds and the community resolves disputes.
           </p>
 
@@ -153,7 +153,7 @@ const LoginPage = () => {
         </div>
 
         {/* Footer */}
-        <p className="relative text-xs text-text-muted">
+        <p className="relative text-xs text-vault-text-tertiary">
           © {new Date().getFullYear()} The Bazaar. Decentralized commerce.
         </p>
       </div>
@@ -162,7 +162,7 @@ const LoginPage = () => {
       <div className="relative flex w-full lg:w-1/2 flex-col items-center justify-center px-6 py-12 bg-vault-surface">
         {/* Subtle glow */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="h-[400px] w-[400px] rounded-full bg-primary/15 blur-[100px]" />
+          <div className="h-[400px] w-[400px] rounded-full bg-vault-accent/15 blur-[100px]" />
         </div>
 
         <div className="relative w-full max-w-sm space-y-8">
@@ -244,7 +244,7 @@ const LoginPage = () => {
           </ol>
 
           {/* Security note */}
-          <p className="text-center text-xs text-text-muted">
+          <p className="text-center text-xs text-vault-text-tertiary">
             🔒 We never store your private key or seed phrase.
           </p>
         </div>

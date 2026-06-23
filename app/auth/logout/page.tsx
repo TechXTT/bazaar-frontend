@@ -16,7 +16,7 @@ export default function LogoutPage() {
 
   return (
     <div className="flex items-center justify-center h-screen">
-      <p className="text-text-secondary">Signing out…</p>
+      <p className="text-vault-text-secondary">Signing out…</p>
     </div>
   );
 }
