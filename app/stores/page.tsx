@@ -32,23 +32,23 @@ export default function StoresPage() {
       <div className="relative py-20">
         {/* Blobs isolated so they don't clip the text */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full bg-primary/30 blur-[130px]" />
+          <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full bg-vault-accent/30 blur-[130px]" />
           <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[300px] w-[500px] rounded-full bg-violet-500/20 blur-[90px]" />
           <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(circle, #8b7dff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
         </div>
         <div className="relative text-center space-y-5">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-bg-secondary px-3 py-1 text-xs text-text-secondary">
+          <div className="inline-flex items-center gap-2 rounded-full border border-vault-border bg-vault-surface px-3 py-1 text-xs text-vault-text-secondary">
             <FiShoppingBag size={12} />
             Independent sellers · Escrow-protected
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight">Discover Stores</h1>
-          <p className="text-text-secondary max-w-md mx-auto text-sm leading-relaxed">
+          <p className="text-vault-text-secondary max-w-md mx-auto text-sm leading-relaxed">
             Browse stores from independent sellers. Every purchase is protected by on-chain escrow.
           </p>
 
           {/* Search */}
           <div className="relative mx-auto max-w-md">
-            <FiSearch size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+            <FiSearch size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-vault-text-tertiary" />
             <input
               type="text"
               value={query}
@@ -64,7 +64,7 @@ export default function StoresPage() {
       {!stores && !error && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 pb-24">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-28 rounded-2xl bg-bg-secondary animate-pulse" />
+            <div key={i} className="h-28 rounded-2xl bg-vault-surface animate-pulse" />
           ))}
         </div>
       )}
@@ -72,30 +72,30 @@ export default function StoresPage() {
       {/* Error */}
       {error && (
         <div className="pb-24 text-center">
-          <p className="text-text-secondary text-sm">Failed to load stores. Try refreshing.</p>
+          <p className="text-vault-text-secondary text-sm">Failed to load stores. Try refreshing.</p>
         </div>
       )}
 
       {/* Empty */}
       {stores && stores.length === 0 && (
         <div className="pb-24">
-          <div className="relative rounded-2xl border border-dashed border-border-subtle overflow-hidden px-6 py-24 text-center space-y-5">
+          <div className="relative rounded-2xl border border-dashed border-vault-border overflow-hidden px-6 py-24 text-center space-y-5">
             {/* Dot grid texture */}
             <div className="pointer-events-none absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(circle, #8b7dff 1px, transparent 1px)", backgroundSize: "22px 22px" }} />
             {/* Center glow */}
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-              <div className="h-56 w-56 rounded-full bg-primary/22 blur-[70px]" />
+              <div className="h-56 w-56 rounded-full bg-vault-accent/22 blur-[70px]" />
             </div>
-            <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 text-primary shadow-lg shadow-primary/10">
+            <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-vault-accent/10 border border-vault-accent/20 text-vault-accent shadow-lg shadow-vault-accent/10">
               <FiShoppingBag size={28} />
             </div>
             <div className="relative">
               <p className="font-semibold text-white text-lg">No stores yet</p>
-              <p className="mt-2 text-sm text-text-secondary max-w-xs mx-auto">Be the first to open one and start selling to the world — no listing fees.</p>
+              <p className="mt-2 text-sm text-vault-text-secondary max-w-xs mx-auto">Be the first to open one and start selling to the world — no listing fees.</p>
             </div>
             <Link
               href="/seller/stores"
-              className="relative inline-flex items-center gap-2 bg-primary text-white text-sm font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/30"
+              className="relative inline-flex items-center gap-2 bg-vault-accent text-white text-sm font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-vault-accent/30"
             >
               Open a store <FiArrowRight size={14} />
             </Link>
@@ -106,8 +106,8 @@ export default function StoresPage() {
       {/* No search results */}
       {filtered && filtered.length === 0 && stores && stores.length > 0 && (
         <div className="pb-24 text-center py-16">
-          <p className="text-text-secondary text-sm">No stores match &ldquo;{query}&rdquo;.</p>
-          <button onClick={() => setQuery("")} className="mt-2 text-sm text-primary hover:underline">
+          <p className="text-vault-text-secondary text-sm">No stores match &ldquo;{query}&rdquo;.</p>
+          <button onClick={() => setQuery("")} className="mt-2 text-sm text-vault-accent hover:underline">
             Clear search
           </button>
         </div>
@@ -125,14 +125,14 @@ export default function StoresPage() {
       {/* CTA */}
       {stores && stores.length > 0 && (
         <div className="pb-24">
-          <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="rounded-2xl border border-vault-border bg-vault-surface p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
             <div>
               <p className="font-semibold text-white">Want to sell on The Bazaar?</p>
-              <p className="mt-1 text-sm text-text-secondary">No listing fees, no approval — open a store in seconds.</p>
+              <p className="mt-1 text-sm text-vault-text-secondary">No listing fees, no approval — open a store in seconds.</p>
             </div>
             <Link
               href="/seller/stores"
-              className="shrink-0 inline-flex items-center gap-2 bg-primary text-white font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20"
+              className="shrink-0 inline-flex items-center gap-2 bg-vault-accent text-white font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-vault-accent/20"
             >
               Open a store <FiArrowRight size={16} />
             </Link>
