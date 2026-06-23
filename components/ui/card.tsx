@@ -9,10 +9,10 @@ export default function Card({ className, variant = "panel", ...props }: CardPro
   return (
     <div
       className={clsx(
-        "rounded-2xl border p-5 shadow-sm",
+        "rounded-vault-lg border p-5 shadow-vault-card",
         variant === "panel"
-          ? "border-border-subtle bg-surface-panel"
-          : "border-border-subtle bg-surface-sunken",
+          ? "border-vault-border bg-vault-surface"
+          : "border-vault-border bg-vault-inset",
         className
       )}
       {...props}

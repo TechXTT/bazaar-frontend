@@ -13,8 +13,8 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textare
     <textarea
       ref={ref}
       className={clsx(
-        "min-h-[120px] w-full rounded-lg border bg-surface-sunken px-3.5 py-2.5 text-sm text-text-primary outline-none transition placeholder:text-text-muted focus:border-primary/50 focus:ring-2 focus:ring-surface-accent/40",
-        error ? "border-status-danger" : "border-border-subtle",
+        "min-h-[120px] w-full rounded-vault-md border bg-vault-inset px-3.5 py-2.5 text-body text-vault-text outline-none transition placeholder:text-vault-text-tertiary focus:border-vault-border-accent focus:ring-2 focus:ring-vault-accent/30",
+        error ? "border-vault-danger" : "border-vault-border",
         className
       )}
       {...props}

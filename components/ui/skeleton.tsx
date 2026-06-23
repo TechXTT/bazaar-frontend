@@ -14,5 +14,5 @@ export default function Skeleton({ className, h, w }: SkeletonProps) {
     width: w,
   };
 
-  return <div className={clsx("animate-pulse rounded-lg bg-surface-hover", className)} style={style} />;
+  return <div className={clsx("animate-pulse rounded-vault-md bg-vault-surface-2", className)} style={style} />;
 }
