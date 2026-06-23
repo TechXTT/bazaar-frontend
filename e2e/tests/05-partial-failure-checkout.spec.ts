@@ -142,10 +142,13 @@ test("one rejected item is left in the cart; retry only re-charges the unpaid it
   });
 
   await test.step("one item's tx is rejected → 'N of M paid' surfaces, paid item leaves the cart", async () => {
-    // Arm the wallet to reject the next escrow send (the per-item loop submits them
-    // sequentially; whichever item escrows first is "paid", the next is rejected).
+    // Arm the wallet to reject the SECOND escrow send: the per-item loop submits them
+    // sequentially, so item 1 escrows ("paid") and item 2 is rejected — the checkout
+    // stops at the first failure, leaving exactly one paid (→ "1 of 2 paid"). One-shot,
+    // so the later retry sends succeed.
     await buyerPage.evaluate(() => {
-      (window as unknown as { __e2eRejectNextSend?: boolean }).__e2eRejectNextSend = true;
+      (window as unknown as { __e2eRejectSendIndex?: number; __e2eSendCount?: number }).__e2eRejectSendIndex = 2;
+      (window as unknown as { __e2eSendCount?: number }).__e2eSendCount = 0;
     });
 
     await buyerPage.getByRole("button", { name: /pay with eth/i }).click();
