@@ -109,24 +109,19 @@ export default function Navigation() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[#0d0f17]/95 backdrop-blur-md border-b border-border-subtle shadow-lg shadow-black/20"
+          ? "bg-vault-bg/95 backdrop-blur-md border-b border-vault-border shadow-lg shadow-black/20"
           : "bg-transparent"
       }`}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-6">
 
-          {/* Logo */}
+          {/* Logo — Vault gradient brand mark (Figma navbar node 8:2) */}
           <Link href="/" className="shrink-0 flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 border border-primary/30">
-              <svg width="16" height="16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="10" y="35" width="80" height="55" rx="6" stroke="currentColor" strokeWidth="7" fill="none" className="text-primary" style={{color: "var(--color-primary, #8b7dff)"}} />
-                <path d="M34 35V28C34 18.6 41.6 11 51 11C60.4 11 68 18.6 68 28V35" stroke="currentColor" strokeWidth="7" fill="none" strokeLinecap="round" style={{color: "var(--color-primary, #8b7dff)"}} />
-                <line x1="51" y1="50" x2="51" y2="70" stroke="currentColor" strokeWidth="7" strokeLinecap="round" style={{color: "var(--color-primary, #8b7dff)"}} />
-                <line x1="40" y1="60" x2="62" y2="60" stroke="currentColor" strokeWidth="7" strokeLinecap="round" style={{color: "var(--color-primary, #8b7dff)"}} />
-              </svg>
-            </div>
-            <span className="font-bold text-sm tracking-widest uppercase text-white">
+            <span className="flex h-[30px] w-[30px] items-center justify-center rounded-[9px] bg-gradient-to-br from-vault-accent to-vault-violet text-title text-vault-on-accent">
+              B
+            </span>
+            <span className="text-overline uppercase text-vault-text">
               The Bazaar
             </span>
           </Link>
