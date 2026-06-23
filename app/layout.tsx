@@ -111,6 +111,11 @@ function Footer() {
   );
 }
 
+// FE-8: GA tag id comes from NEXT_PUBLIC_GA_ID. Only load analytics when an id is
+// configured and we are not running under e2e (so tests never hit GA).
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+const GA_ENABLED = Boolean(GA_ID) && process.env.NEXT_PUBLIC_E2E !== "true";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useState<string>("");
   useEffect(() => { setLocation(window.location.href); }, []);
@@ -118,15 +123,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        <Script src="https://www.googletagmanager.com/gtag/js?id=G-1H1H1CR559" strategy="afterInteractive" />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-1H1H1CR559');
-          `}
-        </Script>
+        {GA_ENABLED && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_ID}');
+              `}
+            </Script>
+          </>
+        )}
       </head>
       <body className="bg-background" style={{ background: "radial-gradient(ellipse 120% 60% at 50% -10%, #1a1733 0%, #0d0f17 48%)" }}>
         <ReduxProvider>
