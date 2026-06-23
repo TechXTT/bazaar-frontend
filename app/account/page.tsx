@@ -45,13 +45,13 @@ function WalletAddress({ address }: { address: string }) {
     <button
       type="button"
       onClick={copy}
-      className="flex items-center gap-2 w-full rounded-xl border border-border-subtle bg-surface-sunken px-4 py-3 text-left hover:border-primary transition-colors group"
+      className="flex items-center gap-2 w-full rounded-vault-md border border-vault-border bg-vault-inset px-4 py-3 text-left hover:border-vault-border-accent transition-colors group"
     >
-      <span className="flex-1 font-mono text-xs text-text-secondary truncate">{address}</span>
+      <span className="flex-1 font-mono text-caption text-vault-text-secondary truncate">{address}</span>
       {copied ? (
-        <FiCheck size={14} className="shrink-0 text-green-400" />
+        <FiCheck size={14} className="shrink-0 text-vault-success" />
       ) : (
-        <FiCopy size={14} className="shrink-0 text-text-muted group-hover:text-primary transition-colors" />
+        <FiCopy size={14} className="shrink-0 text-vault-text-tertiary group-hover:text-vault-accent transition-colors" />
       )}
     </button>
   );
@@ -109,28 +109,20 @@ export default function AccountPage() {
   const initials =
     `${auth.user?.FirstName?.[0] ?? ""}${auth.user?.LastName?.[0] ?? ""}`.toUpperCase() || "?";
 
-  const hue =
-    ((auth.user?.FirstName ?? "") + (auth.user?.LastName ?? ""))
-      .split("")
-      .reduce((acc, c) => acc + c.charCodeAt(0), 0) % 360;
-
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
       {/* Avatar header */}
       <div className="flex items-center gap-5 mb-10">
-        <div
-          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-xl font-bold text-white shadow-lg"
-          style={{ background: `hsl(${hue},55%,42%)` }}
-        >
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-vault-lg bg-gradient-to-br from-vault-accent to-vault-violet text-h2 font-bold text-vault-on-accent shadow-vault-card">
           {initials}
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="text-h1 font-bold text-vault-text">
             {auth.user?.FirstName
               ? `${auth.user.FirstName} ${auth.user.LastName}`
               : "Your account"}
           </h1>
-          <p className="text-sm text-text-secondary mt-0.5">
+          <p className="text-body text-vault-text-secondary mt-0.5">
             {wallet.connected ? "Wallet connected" : "Wallet not connected"}
           </p>
         </div>
@@ -138,12 +130,12 @@ export default function AccountPage() {
 
       <div className="grid lg:grid-cols-[1fr_320px] gap-6 items-start">
         {/* Profile form */}
-        <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-6 space-y-6">
+        <div className="rounded-vault-lg border border-vault-border bg-vault-surface p-6 space-y-6">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-1">
+            <p className="text-overline uppercase text-vault-text-tertiary mb-1">
               Profile
             </p>
-            <p className="text-sm text-text-secondary">Update your display name.</p>
+            <p className="text-body text-vault-text-secondary">Update your display name.</p>
           </div>
 
           <form className="space-y-5" onSubmit={onSubmit}>
@@ -188,7 +180,7 @@ export default function AccountPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                className="inline-flex items-center gap-2 bg-vault-accent text-vault-on-accent font-semibold px-5 py-2.5 rounded-vault-md hover:opacity-90 transition-opacity shadow-vault-glow disabled:opacity-50 disabled:cursor-not-allowed text-body"
               >
                 {isSubmitting ? (
                   <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -201,7 +193,7 @@ export default function AccountPage() {
               <button
                 type="button"
                 onClick={() => { dispatch(logout()); router.push("/auth/login"); }}
-                className="inline-flex items-center gap-2 border border-border-subtle font-semibold px-5 py-2.5 rounded-xl hover:border-red-400 hover:text-red-400 transition-all text-sm"
+                className="inline-flex items-center gap-2 border border-vault-border text-vault-text font-semibold px-5 py-2.5 rounded-vault-md hover:border-vault-danger hover:text-vault-danger transition-all text-body"
               >
                 <FiLogOut size={14} /> Sign out
               </button>
@@ -212,15 +204,15 @@ export default function AccountPage() {
         {/* Sidebar */}
         <div className="space-y-4">
           {/* Wallet status */}
-          <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+          <div className="rounded-vault-lg border border-vault-border bg-vault-surface p-5 space-y-3">
+            <p className="text-overline uppercase text-vault-text-tertiary">
               Wallet
             </p>
             <div className="flex items-center gap-2">
               <span
-                className={`h-2 w-2 rounded-full ${wallet.connected ? "bg-green-400" : "bg-red-400"}`}
+                className={`h-2 w-2 rounded-full ${wallet.connected ? "bg-vault-success" : "bg-vault-danger"}`}
               />
-              <span className="text-sm font-medium text-white">
+              <span className="text-body-strong text-vault-text">
                 {wallet.connected ? "Connected" : "Not connected"}
               </span>
             </div>
@@ -228,15 +220,15 @@ export default function AccountPage() {
               <WalletAddress address={wallet.account} />
             )}
             {!wallet.connected && (
-              <p className="text-xs text-text-muted">
+              <p className="text-caption text-vault-text-tertiary">
                 Open MetaMask in your browser to connect.
               </p>
             )}
           </div>
 
           {/* Quick links */}
-          <div className="rounded-2xl border border-border-subtle bg-bg-secondary p-5 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-widest text-text-muted">
+          <div className="rounded-vault-lg border border-vault-border bg-vault-surface p-5 space-y-3">
+            <p className="text-overline uppercase text-vault-text-tertiary">
               Quick links
             </p>
             <div className="space-y-1">
@@ -248,11 +240,11 @@ export default function AccountPage() {
                 <Link
                   key={href}
                   href={href}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-text-secondary hover:bg-surface-sunken hover:text-white transition-all group"
+                  className="flex items-center gap-3 rounded-vault-md px-3 py-2.5 text-body text-vault-text-secondary hover:bg-vault-surface-2 hover:text-vault-text transition-all group"
                 >
-                  <Icon size={15} className="text-text-muted group-hover:text-primary transition-colors" />
+                  <Icon size={15} className="text-vault-text-tertiary group-hover:text-vault-accent transition-colors" />
                   <span className="flex-1">{label}</span>
-                  <FiArrowRight size={13} className="text-text-muted group-hover:text-primary transition-colors" />
+                  <FiArrowRight size={13} className="text-vault-text-tertiary group-hover:text-vault-accent transition-colors" />
                 </Link>
               ))}
             </div>
