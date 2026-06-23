@@ -79,11 +79,16 @@ export default function Navigation() {
   // which is driven by CONFIG.CHAIN_ID. We intentionally do not auto-switch here.
 
   useEffect(() => {
+    // FE-4/FE-11: on a fresh page load the in-memory JWT is gone and is re-minted
+    // from the httpOnly refresh cookie by bootstrapAuth. Wait for that to settle
+    // (`bootstrapped`) before evaluating auth — otherwise the navbar would log the
+    // user out before the refresh completes, dropping the session on every navigation.
+    if (!auth.bootstrapped) return;
     if (!auth.isLoggedIn || !auth.jwt) { dispatch(logout()); return; }
     usersService.getMe()
       .then((res) => { if (res.status === 200) dispatch(setUser(res.data)); else dispatch(logout()); })
       .catch(() => dispatch(logout()));
-  }, [auth.jwt]);
+  }, [auth.jwt, auth.bootstrapped]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
