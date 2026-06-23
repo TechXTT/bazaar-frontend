@@ -209,7 +209,7 @@ const Checkout = ({ paymentToken, disabled = false }: CheckoutProps) => {
     <button
       onClick={handleCheckout}
       disabled={loading || disabled || cart.products.length === 0}
-      className="w-full flex items-center justify-center gap-2 bg-primary text-white font-semibold py-3.5 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+      className="w-full flex items-center justify-center gap-2 bg-vault-accent text-vault-on-accent font-semibold py-3.5 rounded-vault-md hover:opacity-90 transition-opacity shadow-vault-glow disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {loading ? (
         <>

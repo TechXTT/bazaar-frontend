@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 import Checkout from "./components/checkout";
 import BucketImage from "@/app/components/image";
-import { FiArrowRight, FiShoppingBag, FiTrash2, FiX } from "react-icons/fi";
+import { FiArrowRight, FiLock, FiShoppingBag, FiTrash2, FiX } from "react-icons/fi";
 import { settlementCurrencyFromUnit } from "@/utils/helpers";
 
 const CartPage = () => {
@@ -51,12 +51,13 @@ const CartPage = () => {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-      <h1 className="text-2xl font-bold mb-8">
-        Your Cart{" "}
-        <span className="text-base font-normal text-text-secondary ml-1">
+      <h1 className="text-h1 font-bold mb-2 text-vault-text">Checkout</h1>
+      <p className="text-body text-vault-text-secondary mb-8">
+        Review your orders and fund each escrow on-chain. Funds go to the contract — never directly to the seller.
+        <span className="ml-1 text-vault-text-tertiary">
           ({itemCount} item{itemCount !== 1 ? "s" : ""})
         </span>
-      </h1>
+      </p>
 
       <div className="grid lg:grid-cols-[1fr_340px] gap-8 items-start">
         {/* Left: items */}
@@ -78,25 +79,25 @@ const CartPage = () => {
               <div className="flex-1 min-w-0">
                 <Link
                   href={`/products/${item.ID}`}
-                  className="font-semibold truncate hover:text-primary transition-colors block"
+                  className="font-semibold truncate text-vault-text hover:text-vault-accent transition-colors block"
                 >
                   {item.Name}
                 </Link>
-                <p className="text-xs text-text-secondary mt-0.5">
+                <p className="text-caption text-vault-text-secondary mt-0.5">
                   Qty {item.Quantity ?? 1} × {item.Price} {item.Unit}
                 </p>
               </div>
 
               <div className="shrink-0 text-right">
-                <p className="font-semibold">
+                <p className="font-semibold text-vault-text">
                   {(item.Price * (item.Quantity ?? 1)).toFixed(4)}
                 </p>
-                <p className="text-xs text-text-muted">{item.Unit}</p>
+                <p className="text-caption text-vault-text-tertiary">{item.Unit}</p>
               </div>
 
               <button
                 onClick={() => dispatch(removeItemFromCart(item.ID))}
-                className="shrink-0 flex h-8 w-8 items-center justify-center rounded-lg border border-border-subtle text-text-muted hover:border-red-400 hover:text-red-400 transition-colors"
+                className="shrink-0 flex h-8 w-8 items-center justify-center rounded-vault border border-vault-border text-vault-text-tertiary hover:border-vault-danger hover:text-vault-danger transition-colors"
                 aria-label="Remove"
               >
                 <FiX size={14} />
@@ -106,7 +107,7 @@ const CartPage = () => {
 
           <button
             onClick={() => dispatch(clearCart())}
-            className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-red-400 transition-colors mt-2"
+            className="inline-flex items-center gap-1.5 text-body text-vault-text-tertiary hover:text-vault-danger transition-colors mt-2"
           >
             <FiTrash2 size={13} /> Clear cart
           </button>
@@ -122,24 +123,24 @@ const CartPage = () => {
 
             <div className="space-y-2">
               {cart.products.map((item) => (
-                <div key={item.ID} className="flex justify-between text-sm">
-                  <span className="text-text-secondary truncate mr-3 max-w-[160px]">
+                <div key={item.ID} className="flex justify-between text-body">
+                  <span className="text-vault-text-secondary truncate mr-3 max-w-[160px]">
                     {item.Name} ×{item.Quantity ?? 1}
                   </span>
-                  <span className="shrink-0">
+                  <span className="shrink-0 text-vault-text">
                     {(item.Price * (item.Quantity ?? 1)).toFixed(4)} {item.Unit}
                   </span>
                 </div>
               ))}
             </div>
 
-            <div className="border-t border-border-subtle pt-3 flex justify-between">
-              <span className="font-semibold">Total</span>
-              <span className="font-bold text-lg text-white">
+            <div className="border-t border-vault-border pt-3 flex justify-between">
+              <span className="font-semibold text-vault-text">Total</span>
+              <span className="font-bold text-h3 text-vault-text">
                 {cart.total.toFixed(decimals)} {paymentToken}
               </span>
             </div>
-            <p className="text-xs text-text-muted">
+            <p className="text-caption text-vault-text-tertiary">
               No buyer fees — you pay the listed price. Funds are held in escrow and
               released to the seller on delivery.
             </p>
@@ -155,7 +156,7 @@ const CartPage = () => {
               <span className="text-caption text-vault-text-tertiary">Listing currency</span>
             </div>
             {mixedCurrencies && (
-              <p className="text-xs text-status-danger" role="alert">
+              <p className="text-caption text-vault-danger" role="alert">
                 Your cart mixes ETH- and USDC-priced items. Remove items so they
                 share one currency before checking out.
               </p>
@@ -165,8 +166,8 @@ const CartPage = () => {
           {/* Checkout */}
           <Checkout paymentToken={paymentToken} disabled={mixedCurrencies} />
 
-          <p className="text-center text-xs text-text-muted">
-            🔒 Escrowed payment — released on delivery
+          <p className="flex items-center justify-center gap-1.5 text-center text-caption text-vault-text-tertiary">
+            <FiLock size={12} /> Escrowed payment — released on delivery
           </p>
         </div>
       </div>
