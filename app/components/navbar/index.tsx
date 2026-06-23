@@ -29,13 +29,13 @@ function NavLink({ href, label }: { href: string; label: string }) {
   return (
     <Link
       href={href}
-      className={`relative text-sm font-medium transition-colors px-1 py-1.5 ${
-        active ? "text-white" : "text-text-secondary hover:text-white"
+      className={`relative text-body-strong transition-colors px-1 py-1.5 ${
+        active ? "text-vault-text" : "text-vault-text-secondary hover:text-vault-text"
       }`}
     >
       {label}
       {active && (
-        <span className="absolute -bottom-px left-0 right-0 h-0.5 rounded-full bg-primary" />
+        <span className="absolute -bottom-px left-0 right-0 h-0.5 rounded-full bg-vault-accent" />
       )}
     </Link>
   );
@@ -43,14 +43,12 @@ function NavLink({ href, label }: { href: string; label: string }) {
 
 function UserAvatar({ name, size = 28 }: { name: string; size?: number }) {
   const initials = name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase() || "?";
-  const hue = name.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0) % 360;
   return (
     <div
-      className="flex items-center justify-center rounded-lg text-white font-bold text-xs"
+      className="flex items-center justify-center rounded-vault bg-gradient-to-br from-vault-accent to-vault-violet text-vault-on-accent font-bold"
       style={{
         width: size,
         height: size,
-        background: `hsl(${hue},55%,42%)`,
         fontSize: size * 0.4,
       }}
     >
@@ -141,12 +139,12 @@ export default function Navigation() {
                 {/* Cart */}
                 <Link
                   href="/cart"
-                  className="relative p-2 rounded-xl text-text-secondary hover:text-white hover:bg-bg-secondary transition-colors"
+                  className="relative p-2 rounded-vault-md text-vault-text-secondary hover:text-vault-text hover:bg-vault-surface transition-colors"
                   title="Cart"
                 >
                   <FiShoppingCart size={19} />
                   {cartCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-white">
+                    <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-vault-accent text-[9px] font-bold text-vault-on-accent">
                       {cartCount > 9 ? "9+" : cartCount}
                     </span>
                   )}
@@ -156,32 +154,32 @@ export default function Navigation() {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setUserMenuOpen((v) => !v)}
-                    className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-xl hover:bg-bg-secondary transition-colors"
+                    className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-vault-md hover:bg-vault-surface transition-colors"
                   >
                     {displayName ? (
                       <UserAvatar name={displayName} size={28} />
                     ) : (
-                      <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-bg-secondary border border-border-subtle">
-                        <FiUser size={15} className="text-text-muted" />
+                      <div className="flex h-7 w-7 items-center justify-center rounded-vault bg-vault-surface border border-vault-border">
+                        <FiUser size={15} className="text-vault-text-tertiary" />
                       </div>
                     )}
-                    <span className="hidden sm:block text-sm font-medium text-text-secondary max-w-[90px] truncate">
+                    <span className="hidden sm:block text-body-strong text-vault-text-secondary max-w-[90px] truncate">
                       {auth.user?.FirstName || "Account"}
                     </span>
                     <FiChevronDown
                       size={13}
-                      className={`text-text-muted transition-transform ${userMenuOpen ? "rotate-180" : ""}`}
+                      className={`text-vault-text-tertiary transition-transform ${userMenuOpen ? "rotate-180" : ""}`}
                     />
                   </button>
 
                   {userMenuOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl border border-border-subtle bg-[#161925] shadow-2xl overflow-hidden z-50">
+                    <div className="absolute right-0 top-full mt-2 w-56 rounded-vault-lg border border-vault-border bg-vault-surface shadow-vault-popover overflow-hidden z-50">
                       {/* User info header */}
                       {displayName && (
-                        <div className="px-4 py-3 border-b border-border-subtle">
-                          <p className="text-sm font-semibold text-white truncate">{displayName}</p>
+                        <div className="px-4 py-3 border-b border-vault-border">
+                          <p className="text-body-strong text-vault-text truncate">{displayName}</p>
                           {walletShort && (
-                            <p className="text-xs text-text-muted font-mono mt-0.5">{walletShort}</p>
+                            <p className="text-caption text-vault-text-tertiary font-mono mt-0.5">{walletShort}</p>
                           )}
                         </div>
                       )}
@@ -192,10 +190,10 @@ export default function Navigation() {
                         <DropdownLink href="/seller/stores" Icon={FiShoppingBag} label="Seller dashboard" />
                       </div>
 
-                      <div className="border-t border-border-subtle py-1.5">
+                      <div className="border-t border-vault-border py-1.5">
                         <button
                           onClick={() => { usersService.logout().catch(() => {}); dispatch(logout()); window.location.href = "/"; }}
-                          className="flex w-full items-center gap-2.5 px-4 py-2 text-sm text-red-400 hover:bg-bg-secondary transition-colors"
+                          className="flex w-full items-center gap-2.5 px-4 py-2 text-body text-vault-danger hover:bg-vault-surface-2 transition-colors"
                         >
                           <FiLogOut size={14} /> Sign out
                         </button>
@@ -207,7 +205,7 @@ export default function Navigation() {
             ) : (
               <Link
                 href="/auth/login"
-                className="bg-primary text-white text-sm font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-primary/20"
+                className="bg-vault-accent text-vault-on-accent text-body-strong font-semibold px-4 py-2 rounded-vault-md hover:opacity-90 transition-opacity shadow-vault-glow"
               >
                 Sign in
               </Link>
@@ -216,7 +214,7 @@ export default function Navigation() {
             {/* Mobile toggle */}
             <button
               onClick={() => setMobileOpen((v) => !v)}
-              className="md:hidden p-2 rounded-xl text-text-secondary hover:text-white hover:bg-bg-secondary transition-colors ml-1"
+              className="md:hidden p-2 rounded-vault-md text-vault-text-secondary hover:text-vault-text hover:bg-vault-surface transition-colors ml-1"
             >
               {mobileOpen ? <FiX size={19} /> : <FiMenu size={19} />}
             </button>
@@ -226,7 +224,7 @@ export default function Navigation() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-[#0d0f17]/98 backdrop-blur-md border-t border-border-subtle">
+        <div className="md:hidden bg-vault-bg/98 backdrop-blur-md border-t border-vault-border">
           <div className="px-4 py-3 space-y-0.5">
             {NAV_LINKS.map((l) => (
               <MobileLink key={l.href} href={l.href}>{l.label}</MobileLink>
@@ -234,16 +232,16 @@ export default function Navigation() {
             {auth.isLoggedIn ? (
               <>
                 <MobileLink href="/seller/stores">Seller dashboard</MobileLink>
-                <div className="my-2 border-t border-border-subtle" />
+                <div className="my-2 border-t border-vault-border" />
                 <MobileLink href="/cart">
                   Cart{cartCount > 0 ? ` (${cartCount})` : ""}
                 </MobileLink>
                 <MobileLink href="/account">Account</MobileLink>
                 <MobileLink href="/orders">My orders</MobileLink>
-                <div className="my-2 border-t border-border-subtle" />
+                <div className="my-2 border-t border-vault-border" />
                 <button
                   onClick={() => { usersService.logout().catch(() => {}); dispatch(logout()); window.location.href = "/"; }}
-                  className="block w-full text-left px-3 py-2.5 text-sm font-medium text-red-400 hover:bg-bg-secondary rounded-xl transition-colors"
+                  className="block w-full text-left px-3 py-2.5 text-body-strong text-vault-danger hover:bg-vault-surface-2 rounded-vault-md transition-colors"
                 >
                   Sign out
                 </button>
@@ -262,9 +260,9 @@ function DropdownLink({ href, Icon, label }: { href: string; Icon: React.Element
   return (
     <Link
       href={href}
-      className="flex items-center gap-2.5 px-4 py-2 text-sm text-text-secondary hover:text-white hover:bg-bg-secondary transition-colors"
+      className="flex items-center gap-2.5 px-4 py-2 text-body text-vault-text-secondary hover:text-vault-text hover:bg-vault-surface-2 transition-colors"
     >
-      <Icon size={14} className="text-text-muted" />
+      <Icon size={14} className="text-vault-text-tertiary" />
       {label}
     </Link>
   );
@@ -274,7 +272,7 @@ function MobileLink({ href, children }: { href: string; children: React.ReactNod
   return (
     <Link
       href={href}
-      className="block px-3 py-2.5 text-sm font-medium text-text-secondary hover:text-white rounded-xl hover:bg-bg-secondary transition-colors"
+      className="block px-3 py-2.5 text-body-strong text-vault-text-secondary hover:text-vault-text rounded-vault-md hover:bg-vault-surface-2 transition-colors"
     >
       {children}
     </Link>
