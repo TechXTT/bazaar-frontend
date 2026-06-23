@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { FiArrowRight, FiPackage } from "react-icons/fi";
 import OrderStatusBadge from "@/components/ui/order-status-badge";
+import WithdrawBanner from "@/components/ui/withdraw-banner";
 
 export default function OrdersPage() {
   const auth = useSelector((state: RootState) => state.auth);
@@ -37,6 +38,7 @@ export default function OrdersPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+      <WithdrawBanner className="mb-8" />
       <div className="flex items-center gap-3 mb-8">
         <h1 className="text-2xl font-bold">My Orders</h1>
         {orders.length > 0 && (

@@ -272,3 +272,27 @@ export async function getFeeBps(): Promise<bigint> {
   const contract = await getEscrowContract();
   return contract.feeBps();
 }
+
+/**
+ * SC-6 (pull payment): read the ETH currently credited to `account` in the escrow,
+ * claimable via {@link withdraw}. The contract now credits dispute winners' funds to
+ * `withdrawable[account]` instead of auto-sending, so the UI must surface a claim.
+ *
+ * Uses the injected provider read-only (no signer / wallet prompt) so it can run on
+ * page load without forcing a connection.
+ */
+export async function getWithdrawable(account: string): Promise<bigint> {
+  if (!account || typeof window === "undefined" || !window.ethereum) return BigInt(0);
+  const provider = new ethers.BrowserProvider(window.ethereum);
+  const contract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, ABI, provider);
+  return contract.withdrawable(account) as Promise<bigint>;
+}
+
+/** SC-6: claim the caller's pull-payment balance from the escrow. */
+export async function withdraw(): Promise<ethers.TransactionResponse> {
+  const contract = await getEscrowContract();
+  return sendTx(
+    () => contract.withdraw(),
+    { loading: "Waiting for MetaMask…", submitted: "Withdrawal submitted", confirmed: "Funds withdrawn to your wallet", error: "Withdrawal failed" }
+  );
+}

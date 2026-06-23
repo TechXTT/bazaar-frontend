@@ -29,6 +29,7 @@ import {
 } from "react-icons/fi";
 import { DISPUTE_STATUS_CONFIG, rulingLabel } from "@/utils/disputes";
 import { getErrorMessage } from "@/utils/helpers";
+import WithdrawBanner from "@/components/ui/withdraw-banner";
 
 function resolveURI(uri: string): string {
   if (uri.startsWith("ipfs://")) {
@@ -183,6 +184,9 @@ export default function DisputePage() {
           </p>
         </div>
       )}
+
+      {/* SC-6: surface any pull-payment balance (e.g. a dispute the user won). */}
+      <WithdrawBanner className="mb-4" />
 
       <div className="space-y-4">
         {/* Status */}
