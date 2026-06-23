@@ -107,7 +107,16 @@ const Checkout = ({ paymentToken, disabled = false }: CheckoutProps) => {
 
       for (let i = 0; i < orderResponses.length; i++) {
         const order = orderResponses[i];
-        const item = cart.products[i];
+        // FE-2: correlate each created order to its cart item by ProductID when the
+        // backend returns it (so a reordered/deduped response can't escrow the wrong
+        // price against the wrong product); fall back to positional alignment only
+        // while the backend response omits product_id.
+        const item = order.product_id
+          ? cart.products.find((p) => p.ID === order.product_id)
+          : cart.products[i];
+        if (!item) {
+          throw new Error("Could not match an escrow order to a cart item");
+        }
         const quantity = item.Quantity ?? 1;
 
         // FE-3: settle each item in the currency its Price is denominated in
